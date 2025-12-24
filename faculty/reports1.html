@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CampusCode - Reports</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ["Poppins", "sans-serif"], report: ["Roboto", "sans-serif"] },
+                    colors: {
+                        primary: { 50: "#E7F0FA", 100: "#D0E1F5", 200: "#7BA4D0", 300: "#4D84C0", 400: "#2E5E99", 500: "#1E4A7A", 600: "#0D2440" },
+                    },
+                },
+            },
+        };
+    </script>
+
+    <style>
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #e7f0fa; }
+        ::-webkit-scrollbar-thumb { background: #7ba4d0; border-radius: 3px; }
+        .sidebar { width: 16rem; }
+        .nav-item.active { background-color: #d0e1f5; color: #1e4a7a; border-left: 4px solid #1e4a7a; }
+        .report-preview-container {
+            background: white; width: 100%; max-width: 210mm; min-height: 297mm;
+            margin: 0 auto; padding: 20mm; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            position: relative; font-family: 'Roboto', sans-serif;
+        }
+        .watermark {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 7rem; font-weight: 800; color: rgba(0, 0, 0, 0.02); pointer-events: none;
+        }
+        .report-table { width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; font-size: 0.8rem; }
+        .report-table th, .report-table td { border: 1px solid #e5e7eb; padding: 0.75rem; text-align: left; }
+        .report-table th { background: #f9fafb; font-weight: 700; color: #374151; }
+    </style>
+</head>
+
+<body class="bg-gray-50 min-h-screen font-sans">
+    <div class="flex h-screen overflow-hidden">
+        <aside class="sidebar bg-white border-r border-gray-200 flex-shrink-0 overflow-y-auto hidden md:block">
+            <div class="p-6"><h1 class="text-xl font-bold text-primary-600"><i class="fas fa-code mr-2"></i> CampusCode</h1></div>
+            <nav class="mt-2 px-4 space-y-2">
+                <a href="index.html" class="flex items-center px-4 py-3 text-sm font-medium text-gray-600 hover:bg-gray-50 rounded-lg"><i class="fas fa-home mr-3"></i> Dashboard</a>
+                <a href="report.html" class="nav-item active flex items-center px-4 py-3 text-sm font-medium rounded-lg"><i class="fas fa-file-alt mr-3"></i> Reports</a>
+            </nav>
+        </aside>
+
+        <div class="flex-1 overflow-y-auto">
+            <header class="bg-white shadow-sm sticky top-0 z-30 px-8 py-4 flex justify-between items-center">
+                <h2 class="text-lg font-bold text-gray-800">Custom Reports</h2>
+                <div class="flex items-center gap-4">
+                    <div class="text-right hidden sm:block">
+                        <p class="text-sm font-bold text-gray-700">John Doe</p>
+                        <p class="text-xs text-gray-500">Administrator</p>
+                    </div>
+                    <img class="h-10 w-10 rounded-full border border-gray-200" src="https://ui-avatars.com/api/?name=John+Doe&background=1E4A7A&color=fff" />
+                </div>
+            </header>
+
+            <main class="p-8">
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                    <div class="lg:col-span-1">
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 sticky top-24">
+                            <label class="text-xs font-bold text-gray-400 uppercase block mb-2">Report Type</label>
+                            <select id="reportType" onchange="initUI()" class="w-full border border-gray-200 rounded-xl p-3 text-sm mb-6 outline-none bg-gray-50 focus:ring-2 focus:ring-primary-200">
+                                <option value="Students">Student Records (XLSX)</option>
+                                <option value="Contests" selected>Contest Analytics (PDF)</option>
+                                <option value="Problems">Problem Bank (XLSX)</option>
+                            </select>
+
+                            <div id="filterContainer" class="space-y-2 mb-8">
+                                </div>
+
+                            <button id="actionBtn" onclick="handleDownload()" class="w-full py-4 rounded-xl font-bold text-white shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2">
+                                <i class="fas fa-download"></i> Download
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-3">
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">A4 Live Preview</span>
+                            <span id="formatBadge" class="px-3 py-1 bg-primary-50 text-primary-600 rounded-full text-[10px] font-bold uppercase"></span>
+                        </div>
+                        
+                        <div id="report-content" class="report-preview-container rounded-xl">
+                            <div class="watermark">CampusCode</div>
+                            <div class="flex justify-between border-b-2 border-primary-500 pb-6 mb-8">
+                                <div>
+                                    <h1 id="previewTitle" class="text-2xl font-bold text-gray-900 uppercase"></h1>
+                                    <p class="text-primary-500 text-sm font-medium">Platform Activity Report</p>
+                                </div>
+                                <div class="text-right text-[10px] text-gray-400">
+                                    <p class="font-bold text-gray-700">DATE: <span id="currentDate"></span></p>
+                                    <p>REF: #CC-2025-001</p>
+                                </div>
+                            </div>
+
+                            <div id="previewTableContainer"></div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        const fullData = {
+            Students: {
+                headers: ["Name", "ID", "Program", "Year", "Branch", "Score"],
+                rows: [
+                    ["Arjun Mehta", "CS01", "B.Tech", "3rd", "CSE", "920"],
+                    ["Sara Khan", "CS02", "B.Tech", "2nd", "IT", "850"],
+                    ["Liam Smith", "CS03", "B.E", "4th", "ME", "740"],
+                    ["Priya Das", "CS04", "M.Tech", "1st", "CSE", "980"]
+                ],
+                config: { format: 'XLSX', color: 'bg-emerald-500' }
+            },
+            Contests: {
+                headers: ["Contest Title", "Date", "Subject", "Participants", "Status"],
+                rows: [
+                    ["Weekly Sprint #88", "Dec 20", "Data Structures", "1,240", "Live"],
+                    ["Algorithm Master", "Dec 12", "Algorithms", "850", "Past"],
+                    ["Logic Lab", "Jan 05", "Discrete Math", "400", "Upcoming"]
+                ],
+                config: { format: 'PDF', color: 'bg-rose-500' }
+            },
+            Problems: {
+                headers: ["Problem", "Topic", "Language", "Difficulty", "Bookmark"],
+                rows: [
+                    ["Two Sum", "Arrays", "C++", "Easy", "Yes"],
+                    ["Merge Sort", "Sorting", "Java", "Medium", "No"],
+                    ["Graph DFS", "Graphs", "Python", "Hard", "Yes"]
+                ],
+                config: { format: 'XLSX', color: 'bg-blue-500' }
+            }
+        };
+
+        function initUI() {
+            const type = document.getElementById('reportType').value;
+            const container = document.getElementById('filterContainer');
+            const btn = document.getElementById('actionBtn');
+            const badge = document.getElementById('formatBadge');
+            const title = document.getElementById('previewTitle');
+
+            // 1. Setup Filters
+            container.innerHTML = '<p class="text-[10px] font-bold text-gray-400 uppercase mb-2">Sections to Include</p>';
+            fullData[type].headers.forEach((h, i) => {
+                const label = document.createElement('label');
+                label.className = "flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer transition-all";
+                label.innerHTML = `
+                    <input type="checkbox" checked data-index="${i}" class="col-toggle w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500">
+                    <span class="text-xs font-medium text-gray-600">${h}</span>
+                `;
+                label.querySelector('input').addEventListener('change', syncTable);
+                container.appendChild(label);
+            });
+
+            // 2. Setup Action Button
+            btn.className = `w-full py-4 rounded-xl font-bold text-white shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2 ${fullData[type].config.color}`;
+            btn.innerHTML = `<i class="fas ${fullData[type].config.format === 'PDF' ? 'fa-file-pdf' : 'fa-file-excel'}"></i> Download ${fullData[type].config.format}`;
+            
+            badge.innerText = fullData[type].config.format;
+            title.innerText = `${type} Report`;
+
+            syncTable();
+        }
+
+        function syncTable() {
+            const type = document.getElementById('reportType').value;
+            const tableDiv = document.getElementById('previewTableContainer');
+            const activeIndices = Array.from(document.querySelectorAll('.col-toggle'))
+                                      .filter(i => i.checked)
+                                      .map(i => parseInt(i.dataset.index));
+
+            if (activeIndices.length === 0) {
+                tableDiv.innerHTML = '<div class="py-20 text-center text-gray-400 italic">No columns selected</div>';
+                return;
+            }
+
+            let html = `<table class="report-table"><thead><tr>`;
+            activeIndices.forEach(i => html += `<th>${fullData[type].headers[i]}</th>`);
+            html += `</tr></thead><tbody>`;
+            
+            fullData[type].rows.forEach(row => {
+                html += `<tr>`;
+                activeIndices.forEach(i => html += `<td>${row[i]}</td>`);
+                html += `</tr>`;
+            });
+            html += `</tbody></table>`;
+            tableDiv.innerHTML = html;
+        }
+
+        function handleDownload() {
+            const type = document.getElementById('reportType').value;
+            const activeIndices = Array.from(document.querySelectorAll('.col-toggle'))
+                                      .filter(i => i.checked)
+                                      .map(i => parseInt(i.dataset.index));
+
+            // Extract filtered data
+            const filteredHeaders = activeIndices.map(i => fullData[type].headers[i]);
+            const filteredRows = fullData[type].rows.map(row => activeIndices.map(i => row[i]));
+            const exportData = [filteredHeaders, ...filteredRows];
+
+            if (fullData[type].config.format === 'PDF') {
+                const element = document.getElementById('report-content');
+                html2pdf().set({
+                    margin: 10,
+                    filename: `CampusCode_${type}_Report.pdf`,
+                    html2canvas: { scale: 3 },
+                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                }).from(element).save();
+            } else {
+                const ws = XLSX.utils.aoa_to_sheet(exportData);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "Report");
+                XLSX.writeFile(wb, `CampusCode_${type}_Report.xlsx`);
+            }
+        }
+
+        document.getElementById('currentDate').innerText = new Date().toLocaleDateString('en-GB');
+        initUI();
+    </script>
+</body>
+</html>

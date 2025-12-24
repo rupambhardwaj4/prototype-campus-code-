@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Help & Support - HOD Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="shared.css">
+    <script>
+        tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { sans: ["Poppins", "sans-serif"] }, colors: { primary: { 50: "#E7F0FA", 100: "#D0E1F5", 200: "#7BA4D0", 300: "#4D84C0", 400: "#2E5E99", 500: "#1E4A7A", 600: "#0D2440" }, dark: { bg: "#111827", card: "#1F2937", text: "#F9FAFB", border: "#374151" } } } } };
+    </script>
+</head>
+
+<body
+    class="bg-gray-50 dark:bg-gray-900 min-h-screen font-sans transition-colors duration-200 text-gray-800 dark:text-gray-200">
+    <div class="flex h-screen overflow-hidden">
+        <aside
+            class="sidebar w-64 bg-white dark:bg-gray-800 shadow-sm border-r border-gray-200 dark:border-gray-700 flex-shrink-0 flex flex-col transition-colors duration-200">
+            <div class="p-6">
+                <h1 class="text-2xl font-bold text-gray-800 dark:text-white flex items-center gap-2"><i
+                        class="fas fa-code text-primary-500"></i><span>CampusCode</span></h1>
+            </div>
+            <nav class="px-4 space-y-1 flex-1 overflow-y-auto">
+                <a href="dashboard.html"
+                    class="nav-item relative flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors"><i
+                        class="fas fa-home w-6 text-center mr-3"></i><span>Dashboard</span></a>
+                <a href="problem.html"
+                    class="nav-item relative flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors"><i
+                        class="fas fa-tasks w-6 text-center mr-3"></i><span>Problems</span></a>
+                <a href="contest.html"
+                    class="nav-item relative flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors"><i
+                        class="fas fa-trophy w-6 text-center mr-3"></i><span>Contests</span></a>
+                <a href="community.html"
+                    class="nav-item relative flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors"><i
+                        class="fas fa-comments w-6 text-center mr-3"></i><span>Community</span></a>
+                <a href="report.html"
+                    class="nav-item relative flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors"><i
+                        class="fas fa-chart-line w-6 text-center mr-3"></i><span>Reports</span></a>
+                <div class="nav-group"><button id="navUsersBtn"
+                        class="w-full flex items-center justify-between px-4 py-3 text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg transition-colors group">
+                        <div class="flex items-center"><i
+                                class="fas fa-users-cog w-6 text-center mr-3 group-hover:text-primary-600 transition-colors"></i><span
+                                class="group-hover:text-gray-900 dark:group-hover:text-white transition-colors">Users</span>
+                        </div><i id="navUsersIcon"
+                            class="fas fa-chevron-right text-xs text-gray-400 transition-transform duration-200"></i>
+                    </button>
+                    <div id="navUsersMenu" class="hidden pl-4 pr-2 space-y-1 mt-1">
+                        <a href="student.html"
+                            class="nav-item relative flex items-center px-4 py-2.5 text-sm font-medium rounded-lg transition-colors text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"><i
+                                class="fas fa-user-graduate w-6 text-center mr-3 text-xs"></i><span>Students</span></a>
+                        <a href="faculty.html"
+                            class="nav-item relative flex items-center px-4 py-2.5 text-sm font-medium rounded-lg transition-colors text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"><i
+                                class="fas fa-chalkboard-teacher w-6 text-center mr-3 text-xs"></i><span>Faculty</span></a>
+                    </div>
+                </div>
+            </nav>
+            <div class="p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+                <a href="help.html"
+                    class="flex items-center px-4 py-3 text-sm font-medium text-primary-600 dark:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg transition-colors"><i
+                        class="fas fa-question-circle w-6 text-center mr-3"></i><span>Help & Support</span></a>
+                <button id="btn-settings-overlay"
+                    class="w-full flex items-center px-4 py-3 text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg transition-colors">
+                    <i class="fas fa-cog w-6 text-center mr-3"></i><span>Settings</span>
+                </button>
+
+                <!-- SETTINGS OVERLAY MENU (VS Code Style) -->
+                <div id="settingsOverlayMenu"
+                    class="fixed bottom-16 left-16 z-50 w-60 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 hidden animate-[fadeIn_0.1s_ease-out]">
+                    <div class="p-1.5 space-y-0.5">
+                        <button id="menuItemProfile"
+                            class="w-full flex items-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors text-left">
+                            <i class="fas fa-user-circle w-5 text-center mr-2.5 text-gray-400"></i> Profile
+                        </button>
+                        <button id="menuItemSettings"
+                            class="w-full flex items-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors text-left">
+                            <i class="fas fa-cog w-5 text-center mr-2.5 text-gray-400"></i> Settings
+                        </button>
+                        <div class="h-px bg-gray-200 dark:bg-gray-700 my-1 mx-1.5"></div>
+                        <button id="menuItemSnippets"
+                            class="w-full flex items-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors text-left">
+                            <i class="fas fa-file-code w-5 text-center mr-2.5 text-gray-400"></i> User Snippets
+                        </button>
+                        <button id="menuItemUpdates"
+                            class="w-full flex items-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors text-left">
+                            <i class="fas fa-sync-alt w-5 text-center mr-2.5 text-gray-400"></i> Check for Updates
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </aside>
+        <div class="flex-1 overflow-y-auto">
+            <header class="bg-white dark:bg-gray-800 shadow-sm transition-colors duration-200 sticky top-0 z-20">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
+                    <h2 class="text-xl font-bold text-gray-800 dark:text-white ml-2">Help & Support</h2>
+                    <div class="ml-4 flex items-center gap-3">
+                        <button id="themeToggleBtn"
+                            class="p-2 rounded-full text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 focus:outline-none transition-transform active:scale-95"><i
+                                class="fas fa-moon text-xl"></i></button>
+                        <div class="relative">
+                            <button id="notificationBtn"
+                                class="p-2 rounded-full text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 focus:outline-none">
+                                <i class="fas fa-bell text-xl"></i>
+                                <span
+                                    class="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500 border-2 border-white dark:border-gray-800"></span>
+                            </button>
+                        </div>
+                        <button id="headerProfileBtn"
+                            class="ml-2 flex items-center gap-3 p-1 pr-3 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                            <div
+                                class="h-9 w-9 rounded-full bg-primary-500 flex items-center justify-center text-white font-bold text-sm">
+                                JD</div>
+                        </button>
+                    </div>
+                </div>
+            </header>
+            <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 relative">
+
+                <div class="mb-8 text-center md:text-left">
+                    <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Help Center</h1>
+                    <p class="text-gray-600 dark:text-gray-400 mt-1">Search for documentation, troubleshooting, or
+                        contact us directly.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+                    <div class="lg:col-span-7 space-y-6">
+
+                        <div class="relative">
+                            <input type="text" id="faqSearch"
+                                placeholder="Search FAQs (e.g., 'Contest', 'Login', 'IDE')..."
+                                class="w-full pl-12 pr-4 py-4 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition bg-white dark:bg-gray-800 text-gray-800 dark:text-white">
+                            <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg"></i>
+                        </div>
+
+                        <div class="space-y-4" id="faqContainer">
+                            <div class="flex items-center justify-between mb-2">
+                                <h2 class="text-lg font-semibold text-gray-800 dark:text-white">Frequently Asked
+                                    Questions</h2>
+                            </div>
+
+                            <div
+                                class="faq-item bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl overflow-hidden shadow-sm transition-all hover:border-primary-300 dark:hover:border-primary-700">
+                                <button onclick="toggleFaq(this)"
+                                    class="w-full flex items-center justify-between p-5 text-left focus:outline-none">
+                                    <span class="font-semibold text-gray-800 dark:text-gray-200">How do I register for a
+                                        contest?</span>
+                                    <i class="fas fa-chevron-down faq-icon text-gray-400 transition-transform"></i>
+                                </button>
+                                <div class="faq-content px-5 text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
+                                    Go to the <span class="font-semibold text-primary-500">Contests</span> page via the
+                                    sidebar. Click on "Upcoming Contests" and select the "Register" button next to the
+                                    event you wish to join. Registration usually closes 30 minutes before start time.
+                                </div>
+                            </div>
+
+                            <div
+                                class="faq-item bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl overflow-hidden shadow-sm transition-all hover:border-primary-300 dark:hover:border-primary-700">
+                                <button onclick="toggleFaq(this)"
+                                    class="w-full flex items-center justify-between p-5 text-left focus:outline-none">
+                                    <span class="font-semibold text-gray-800 dark:text-gray-200">Why is my code getting
+                                        "Time Limit Exceeded"?</span>
+                                    <i class="fas fa-chevron-down faq-icon text-gray-400 transition-transform"></i>
+                                </button>
+                                <div class="faq-content px-5 text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
+                                    This usually means your algorithm is too slow for the input size. Check your time
+                                    complexity (e.g., ensure you aren't using O(n²) where O(n log n) is required).
+                                    Optimization tips are available in the <span class="font-semibold">Discussion</span>
+                                    tab of the problem.
+                                </div>
+                            </div>
+
+                            <div
+                                class="faq-item bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl overflow-hidden shadow-sm transition-all hover:border-primary-300 dark:hover:border-primary-700">
+                                <button onclick="toggleFaq(this)"
+                                    class="w-full flex items-center justify-between p-5 text-left focus:outline-none">
+                                    <span class="font-semibold text-gray-800 dark:text-gray-200">Where can I view my
+                                        submission history?</span>
+                                    <i class="fas fa-chevron-down faq-icon text-gray-400 transition-transform"></i>
+                                </button>
+                                <div class="faq-content px-5 text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
+                                    You can view your history on your <span class="font-semibold">Profile</span> page
+                                    under the "Activity" heatmap, or by clicking the "Submissions" tab on any specific
+                                    problem page.
+                                </div>
+                            </div>
+                            <div
+                                class="faq-item bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl overflow-hidden shadow-sm transition-all hover:border-primary-300 dark:hover:border-primary-700">
+                                <button onclick="toggleFaq(this)"
+                                    class="w-full flex items-center justify-between p-5 text-left focus:outline-none">
+                                    <span class="font-semibold text-gray-800 dark:text-gray-200">I found a bug in the
+                                        platform.</span>
+                                    <i class="fas fa-chevron-down faq-icon text-gray-400 transition-transform"></i>
+                                </button>
+                                <div class="faq-content px-5 text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
+                                    Please use the contact form on the right side of this page. Select "Platform Bug" as
+                                    the priority/subject to ensure our engineering team sees it immediately.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4 mt-8">
+                            <a href="#"
+                                class="p-4 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl flex flex-col items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-700 transition group shadow-sm">
+                                <i class="fab fa-discord text-2xl text-[#5865F2] mb-2"></i>
+                                <span class="text-sm font-semibold text-gray-700 dark:text-gray-200">Join Discord</span>
+                            </a>
+                            <a href="#"
+                                class="p-4 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl flex flex-col items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-700 transition group shadow-sm">
+                                <i class="fab fa-twitter text-2xl text-[#1DA1F2] mb-2"></i>
+                                <span class="text-sm font-semibold text-gray-700 dark:text-gray-200">Follow
+                                    Updates</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <aside class="lg:col-span-5">
+                        <div
+                            class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-6 md:p-8 rounded-xl shadow-sm relative overflow-hidden">
+                            <div
+                                class="absolute top-0 right-0 w-32 h-32 bg-primary-50 dark:bg-primary-900/20 rounded-full -mr-16 -mt-16 z-0">
+                            </div>
+
+                            <div class="relative z-10">
+                                <h3 class="text-xl font-bold mb-2 text-gray-800 dark:text-white">Open a Ticket</h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Our team typically responds in
+                                    under 4 hours.</p>
+
+                                <form id="supportForm" class="space-y-4">
+                                    <div class="grid grid-cols-1 gap-4">
+                                        <div>
+                                            <label
+                                                class="block text-xs font-bold uppercase tracking-wider mb-1 text-gray-500 dark:text-gray-400">Subject</label>
+                                            <input type="text" required placeholder="Brief summary..."
+                                                class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-400 focus:border-transparent outline-none transition text-sm">
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label
+                                            class="block text-xs font-bold uppercase tracking-wider mb-1 text-gray-500 dark:text-gray-400">Category</label>
+                                        <select
+                                            class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-400 outline-none transition text-sm">
+                                            <option>General Question</option>
+                                            <option>Contest Issue</option>
+                                            <option>Billing / Account</option>
+                                            <option class="text-red-500 font-bold">Report Bug</option>
+                                        </select>
+                                    </div>
+
+                                    <div>
+                                        <label
+                                            class="block text-xs font-bold uppercase tracking-wider mb-1 text-gray-500 dark:text-gray-400">Details</label>
+                                        <textarea rows="5" required placeholder="Describe your issue..."
+                                            class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-400 focus:border-transparent outline-none transition text-sm font-sans"></textarea>
+                                    </div>
+
+                                    <button type="submit"
+                                        class="w-full bg-primary-500 hover:bg-primary-600 text-white font-bold py-3 rounded-xl shadow-md hover:shadow-lg transform active:scale-[0.98] transition-all">
+                                        Submit Ticket
+                                    </button>
+                                </form>
+
+                                <div id="successState" class="hidden text-center py-12">
+                                    <div
+                                        class="w-16 h-16 bg-green-100 dark:bg-green-900/30 text-green-500 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce">
+                                        <i class="fas fa-check text-2xl"></i>
+                                    </div>
+                                    <h4 class="text-xl font-bold mb-2 text-gray-800 dark:text-white">Ticket Received!
+                                    </h4>
+                                    <p class="text-gray-500 dark:text-gray-400 mb-6 text-sm">Check your email for
+                                        confirmation.<br>Ref ID: <span
+                                            class="font-mono text-primary-500">#TKT-4920</span></p>
+                                    <button onclick="window.location.reload()"
+                                        class="text-primary-500 font-bold hover:underline text-sm">Send another
+                                        message</button>
+                                </div>
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+            </main>
+        </div>
+    </div>
+    <!-- PROFILE OVERLAY -->
+    <div id="profileOverlay"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm hidden">
+        <div
+            class="w-[340px] bg-white dark:bg-gray-800 rounded-3xl shadow-2xl overflow-hidden animate-[fadeIn_0.2s_ease-out]">
+            <div class="bg-[#1E4A7A] dark:bg-[#0f2a4a] relative pt-10 pb-16 px-6 text-center">
+                <button id="closeProfileOverlay"
+                    class="absolute top-4 right-4 text-white/70 hover:text-white transition-colors">
+                    <i class="fas fa-times text-lg"></i>
+                </button>
+                <button class="absolute top-4 right-12 text-white/70 hover:text-white transition-colors">
+                    <i class="fas fa-qrcode text-lg"></i>
+                </button>
+
+                <div class="absolute left-1/2 bottom-[-45px] -translate-x-1/2">
+                    <div class="w-24 h-24 rounded-full bg-[#1E4A7A] dark:bg-[#0f2a4a] p-1.5">
+                        <div
+                            class="w-full h-full rounded-full bg-[#1E4A7A] flex items-center justify-center text-white text-4xl font-normal border-4 border-white dark:border-gray-800 shadow-md">
+                            JD
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-14 pb-6 px-6">
+                <div class="text-center mb-6">
+                    <h2 class="text-xl font-bold text-gray-900 dark:text-white">John Doe</h2>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 font-medium">
+                        <i class="fas fa-university mr-1 text-xs"></i> XYZ college
+                    </p>
+                    <div class="mt-3 flex flex-wrap justify-center gap-2">
+                        <span
+                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
+                            <i class="fas fa-building mr-1.5"></i> CSE Department
+                        </span>
+                        <span
+                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300">
+                            <i class="fas fa-user-tie mr-1.5"></i> HOD
+                        </span>
+                    </div>
+                </div>
+
+                <div class="px-4 mb-6 border-b border-gray-100 dark:border-gray-700 pb-6">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div
+                            class="p-3 rounded-2xl bg-gradient-to-br from-blue-50 to-white dark:from-gray-700 dark:to-gray-800 border border-blue-100 dark:border-gray-600 shadow-sm flex flex-col items-center justify-center text-center group hover:shadow-md transition-all">
+                            <div
+                                class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                                <i class="fas fa-id-badge text-xs"></i>
+                            </div>
+                            <p
+                                class="text-[10px] uppercase tracking-wider font-bold text-gray-400 dark:text-gray-500 mb-0.5">
+                                Faculty ID</p>
+                            <p class="text-xs font-bold text-gray-800 dark:text-white">FAC-001</p>
+                        </div>
+                        <div
+                            class="p-3 rounded-2xl bg-gradient-to-br from-purple-50 to-white dark:from-gray-700 dark:to-gray-800 border border-purple-100 dark:border-gray-600 shadow-sm flex flex-col items-center justify-center text-center group hover:shadow-md transition-all">
+                            <div
+                                class="w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                                <i class="fas fa-calendar-alt text-xs"></i>
+                            </div>
+                            <p
+                                class="text-[10px] uppercase tracking-wider font-bold text-gray-400 dark:text-gray-500 mb-0.5">
+                                Joined</p>
+                            <p class="text-xs font-bold text-gray-800 dark:text-white">Aug 2018</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-1">
+                    <button id="btnLogout"
+                        class="w-full flex items-center justify-between p-3 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 group transition-all duration-200 hover:scale-[1.02]">
+                        <div class="flex items-center gap-3">
+                            <div
+                                class="w-8 h-8 rounded-full bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 flex items-center justify-center">
+                                <i class="fas fa-sign-out-alt text-sm"></i>
+                            </div>
+                            <span
+                                class="text-sm font-medium text-gray-700 dark:text-gray-200 group-hover:text-red-600 dark:group-hover:text-red-400">Logout</span>
+                        </div>
+                        <i
+                            class="fas fa-chevron-right text-xs text-gray-400 group-hover:text-red-500 dark:group-hover:text-red-400"></i>
+                    </button>
+                </div>
+
+                <button id="closeProfileBtnBottom"
+                    class="w-full mt-6 text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- NOTIFICATION DROPDOWN -->
+    <div id="notificationDropdown"
+        class="fixed top-16 right-6 z-50 w-80 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 hidden animate-[fadeIn_0.1s_ease-out]">
+        <div class="p-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
+            <h3 class="font-semibold text-gray-800 dark:text-white">Recent Activity</h3>
+            <span class="text-xs text-primary-500 cursor-pointer hover:underline">Mark all read</span>
+        </div>
+        <div class="p-2">
+            <div class="p-3 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg cursor-pointer">
+                <p class="text-sm text-gray-800 dark:text-gray-200 font-medium">Contest Reminder</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400">Weekly contest starts in 1 hour.</p>
+            </div>
+            <div class="p-3 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg cursor-pointer">
+                <p class="text-sm text-gray-800 dark:text-gray-200 font-medium">New Student Joined</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400">Alex joined CS101.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="index1_logic.js"></script>
+</body>
+
+</html>

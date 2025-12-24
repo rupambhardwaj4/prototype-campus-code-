@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Community - Faculty Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="shared.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ["Poppins", "sans-serif"] },
+                    colors: {
+                        primary: { 50: "#E7F0FA", 100: "#D0E1F5", 200: "#7BA4D0", 300: "#4D84C0", 400: "#2E5E99", 500: "#1E4A7A", 600: "#0D2440" },
+                        dark: { bg: "#111827", card: "#1F2937", text: "#F9FAFB", border: "#374151" }
+                    }
+                }
+            }
+        };
+    </script>
+</head>
+
+<body
+    class="bg-gray-50 dark:bg-gray-900 min-h-screen font-sans transition-colors duration-200 text-gray-800 dark:text-gray-200">
+    <div class="flex h-screen overflow-hidden">
+        <aside id="mainSidebar"
+            class="sidebar w-64 bg-white dark:bg-gray-800 shadow-sm border-r border-gray-200 dark:border-gray-700 flex flex-col h-screen flex-shrink-0 transition-colors duration-200">
+            <div class="p-6 flex-shrink-0 flex items-center justify-between h-[88px]">
+                <h1
+                    class="text-2xl font-bold text-gray-800 dark:text-white flex items-center gap-2 overflow-hidden whitespace-nowrap">
+                    <i class="fas fa-code text-primary-500 text-2xl flex-shrink-0"></i>
+                    <span id="sidebarLogoText" class="transition-all duration-300 opacity-100 w-auto">CampusCode</span>
+                </h1>
+                <button id="sidebarToggleBtn"
+                    class="p-1.5 rounded-lg text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-primary-500 transition-colors focus:outline-none">
+                    <i class="fas fa-chevron-left transition-transform duration-300"></i>
+                </button>
+            </div>
+            <nav class="flex-1 px-4 space-y-1 overflow-y-auto mt-2">
+                <a href="dashboard.html"
+                    class="nav-item relative flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors"><i
+                        class="fas fa-home"></i><span>Dashboard</span></a>
+                <a href="problem.html"
+                    class="nav-item relative flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors"><i
+                        class="fas fa-tasks"></i><span>Problems</span></a>
+                <a href="contest.html"
+                    class="nav-item relative flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors"><i
+                        class="fas fa-trophy"></i><span>Contests</span></a>
+                <a href="community.html"
+                    class="nav-item active relative flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors"><i
+                        class="fas fa-comments"></i><span>Community</span></a>
+                <a href="student.html"
+                    class="nav-item relative flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors"><i
+                        class="fas fa-users"></i><span>Students</span></a>
+                <a href="report.html"
+                    class="nav-item relative flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors"><i
+                        class="fas fa-file-alt"></i><span>Reports</span></a>
+                <a href="profile.html"
+                    class="nav-item relative flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors"><i
+                        class="fas fa-user"></i><span>Profile</span></a>
+            </nav>
+            <div
+                class="p-4 space-y-1 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 flex-shrink-0 bottom-menu">
+                <a href="help.html"
+                    class="nav-item relative flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors"><i
+                        class="far fa-question-circle"></i><span>Help & Support</span></a>
+                <a href="settings.html"
+                    class="nav-item relative flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors"><i
+                        class="fas fa-cog"></i><span>Settings</span></a>
+            </div>
+        </aside>
+
+        <div class="flex-1 overflow-y-auto">
+            <header class="bg-white dark:bg-gray-800 shadow-sm transition-colors duration-200 sticky top-0 z-20">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
+                    <div class="flex items-center gap-4">
+                        <h1 id="headerLogoText"
+                            class="text-xl font-bold text-gray-800 dark:text-white hidden transition-all duration-300 opacity-0 transform -translate-x-2 whitespace-nowrap">
+                            CampusCode</h1>
+                        <h2 id="page-title" class="text-xl font-bold text-gray-800 dark:text-white ml-2">Community Forum
+                        </h2>
+                    </div>
+                    <div class="flex-1 max-w-lg ml-8 hidden md:block">
+                        <div class="relative flex items-center">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><i
+                                    class="fas fa-search text-gray-400"></i></div>
+                            <input type="text"
+                                class="block w-full pl-10 pr-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-400 focus:border-transparent placeholder-gray-500 dark:placeholder-gray-400"
+                                placeholder="Search..." />
+                        </div>
+                    </div>
+                    <div class="ml-4 flex items-center gap-3">
+                        <button id="themeToggleBtn"
+                            class="p-2 rounded-full text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 focus:outline-none transition-transform active:scale-95"><i
+                                class="fas fa-moon text-xl"></i></button>
+                        <div class="relative">
+                            <button id="notificationBtn"
+                                class="p-2 rounded-full text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 focus:outline-none"><i
+                                    class="fas fa-bell text-xl"></i><span
+                                    class="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500 border-2 border-white dark:border-gray-800"></span></button>
+                        </div>
+                        <button id="headerProfileBtn"
+                            class="ml-2 flex items-center gap-3 p-1 pr-3 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                            <div
+                                class="h-9 w-9 rounded-full bg-primary-500 flex items-center justify-center text-white font-bold text-sm">
+                                JD</div>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 relative">
+                <div id="section-forum" class="content-section">
+                    <div id="forum-list-view">
+                        <div class="mb-6 flex justify-end items-center">
+                            <button id="newPostBtn"
+                                class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm"><i
+                                    class="fas fa-plus mr-2"></i>New Post</button>
+                        </div>
+
+                        <div
+                            class="mb-8 bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700">
+                            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                <div class="relative flex-1 max-w-2xl">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><i
+                                            class="fas fa-search text-gray-400"></i></div>
+                                    <input type="text"
+                                        class="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-700 text-sm text-gray-900 dark:text-white"
+                                        placeholder="Search discussions...">
+                                </div>
+                                <div class="flex space-x-3">
+                                    <select
+                                        class="border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 focus:ring-primary-500">
+                                        <option>All Topics</option>
+                                        <option>Most Recent</option>
+                                        <option>Most Active</option>
+                                        <option>Unanswered</option>
+                                    </select>
+                                    <button
+                                        class="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-sm"><i
+                                            class="fas fa-filter mr-2"></i>Filters</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-8">
+                            <h3 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Browse by Topic</h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                                <div
+                                    class="topic-card bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700 hover:shadow-md transition-all cursor-pointer">
+                                    <div
+                                        class="w-12 h-12 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mb-4">
+                                        <i
+                                            class="fas fa-code text-blue-500 text-xl topic-icon transition-transform"></i>
+                                    </div>
+                                    <h3 class="font-semibold text-gray-800 dark:text-white mb-2">Web Development</h3>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">HTML, CSS, JavaScript,
+                                        Frameworks</p>
+                                    <div class="mt-3 text-xs text-gray-400">
+                                        <span>1,245 discussions</span>
+                                        <span class="mx-2">•</span>
+                                        <span>342 active</span>
+                                    </div>
+                                </div>
+                                <div
+                                    class="topic-card bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700 hover:shadow-md transition-transform duration-200 hover:scale-[1.02] cursor-pointer">
+                                    <div
+                                        class="w-12 h-12 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center mb-4">
+                                        <i
+                                            class="fas fa-server text-green-500 text-xl topic-icon transition-transform"></i>
+                                    </div>
+                                    <h3 class="font-semibold text-gray-800 dark:text-white mb-2">Backend</h3>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">Node.js, Python, Java, Databases
+                                    </p>
+                                    <div class="mt-3 text-xs text-gray-400">
+                                        <span>856 discussions</span>
+                                        <span class="mx-2">•</span>
+                                        <span>201 active</span>
+                                    </div>
+                                </div>
+                                <div
+                                    class="topic-card bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700 hover:shadow-md transition-transform duration-200 hover:scale-[1.02] cursor-pointer">
+                                    <div
+                                        class="w-12 h-12 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center mb-4">
+                                        <i
+                                            class="fas fa-mobile-alt text-purple-500 text-xl topic-icon transition-transform"></i>
+                                    </div>
+                                    <h3 class="font-semibold text-gray-800 dark:text-white mb-2">Mobile Development</h3>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">iOS, Android, React Native,
+                                        Flutter</p>
+                                    <div class="mt-3 text-xs text-gray-400">
+                                        <span>723 discussions</span>
+                                        <span class="mx-2">•</span>
+                                        <span>189 active</span>
+                                    </div>
+                                </div>
+                                <div
+                                    class="topic-card bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700 hover:shadow-md transition-transform duration-200 hover:scale-[1.02] cursor-pointer">
+                                    <div
+                                        class="w-12 h-12 rounded-lg bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center mb-4">
+                                        <i
+                                            class="fas fa-brain text-yellow-500 text-xl topic-icon transition-transform"></i>
+                                    </div>
+                                    <h3 class="font-semibold text-gray-800 dark:text-white mb-2">Algorithms</h3>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">Data Structures, Problem Solving
+                                    </p>
+                                    <div class="mt-3 text-xs text-gray-400">
+                                        <span>1,532 discussions</span>
+                                        <span class="mx-2">•</span>
+                                        <span>421 active</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-8">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-xl font-semibold text-gray-800 dark:text-white">Recent Discussions</h3>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-sm text-gray-500 dark:text-gray-400">Sort by:</span>
+                                    <select
+                                        class="border-0 bg-transparent text-gray-600 dark:text-gray-300 font-medium focus:ring-0 focus:outline-none text-sm">
+                                        <option>Most Recent</option>
+                                        <option>Most Viewed</option>
+                                        <option>Most Comments</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="space-y-4">
+                                <div
+                                    class="post-card bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden border border-gray-100 dark:border-gray-700 hover:shadow-md transition-transform duration-200 hover:scale-[1.01]">
+                                    <div class="p-6">
+                                        <div class="flex flex-col md:flex-row md:items-start">
+                                            <div class="flex-1">
+                                                <div class="flex items-center space-x-3 mb-2">
+                                                    <span
+                                                        class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">Web
+                                                        Development</span>
+                                                    <span class="text-sm text-gray-500 dark:text-gray-400"><i
+                                                            class="far fa-user mr-1"></i> Sarah Johnson</span>
+                                                    <span class="text-sm text-gray-400 dark:text-gray-500"><i
+                                                            class="far fa-clock mr-1"></i> 2 hours ago</span>
+                                                </div>
+                                                <h3
+                                                    class="text-lg font-semibold text-gray-800 dark:text-white mb-2 hover:text-primary-600 cursor-pointer">
+                                                    How to optimize React performance with large lists?</h3>
+                                                <p class="text-gray-600 dark:text-gray-300 mb-4">I'm working on a
+                                                    project with thousands of items in a list. What are the best
+                                                    practices for optimizing performance in React when dealing with
+                                                    large datasets?</p>
+                                                <div class="flex flex-wrap gap-3 text-sm">
+                                                    <span class="flex items-center text-gray-500 dark:text-gray-400"><i
+                                                            class="far fa-comment-alt mr-1"></i> 14 comments</span>
+                                                    <span class="flex items-center text-gray-500 dark:text-gray-400"><i
+                                                            class="far fa-eye mr-1"></i> 245 views</span>
+                                                    <span class="flex items-center text-green-500"><i
+                                                            class="fas fa-check-circle mr-1"></i> 5 solutions</span>
+                                                </div>
+                                            </div>
+                                            <div class="mt-4 md:mt-0 md:ml-6 flex items-start">
+                                                <div
+                                                    class="flex items-center bg-green-50 text-green-600 dark:bg-green-900/30 dark:text-green-400 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                                                    <i class="fas fa-check-circle mr-1"></i> Solved
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- NEW POST FORM -->
+                    <div id="forum-form-view" class="hidden">
+                        <div
+                            class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700">
+                            <div class="flex items-center gap-4 mb-6">
+                                <button id="cancelPostBtn"
+                                    class="text-gray-500 hover:text-primary-600 transition-colors">
+                                    <i class="fas fa-arrow-left"></i>
+                                </button>
+                                <h2 class="text-xl font-bold text-gray-800 dark:text-white">Create New Discussion</h2>
+                            </div>
+
+                            <form class="space-y-6">
+                                <div>
+                                    <label
+                                        class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Discussion
+                                        Title</label>
+                                    <input type="text"
+                                        class="w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm p-2.5 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-primary-500 transition-shadow"
+                                        placeholder="What's your question or topic?">
+                                </div>
+
+                                <div>
+                                    <label
+                                        class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Category</label>
+                                    <select
+                                        class="w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm p-2.5 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 transition-shadow">
+                                        <option value="">Select a category...</option>
+                                        <option value="web">Web Development</option>
+                                        <option value="backend">Backend</option>
+                                        <option value="mobile">Mobile Development</option>
+                                        <option value="algorithms">Algorithms</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label
+                                        class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Tags
+                                        (optional)</label>
+                                    <input type="text"
+                                        class="w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm p-2.5 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-primary-500 transition-shadow"
+                                        placeholder="e.g. react, performance, optimization">
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Separate tags with commas
+                                    </p>
+                                </div>
+
+                                <div>
+                                    <label
+                                        class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Description</label>
+                                    <div id="post-editor-wrapper"
+                                        class="rounded-lg overflow-hidden bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600">
+                                        <div id="post-editor-container" class="h-64 text-gray-800 dark:text-gray-200">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="flex justify-end gap-3 pt-4 border-t border-gray-100 dark:border-gray-700">
+                                    <button type="button" id="cancelPostBtnBottom"
+                                        class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg transition-colors">Cancel</button>
+                                    <button type="submit"
+                                        class="px-6 py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-lg transition-colors shadow-sm">Post
+                                        Discussion</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <div id="notificationDropdown"
+        class="fixed top-16 right-6 z-50 w-80 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 hidden animate-[fadeIn_0.1s_ease-out]">
+        <div class="p-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
+            <h3 class="font-semibold text-gray-800 dark:text-white">Recent Activity</h3>
+            <span class="text-xs text-primary-500 cursor-pointer hover:underline">Mark all read</span>
+        </div>
+        <div class="p-2">
+            <div class="p-3 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg cursor-pointer">
+                <p class="text-sm text-gray-800 dark:text-gray-200 font-medium">Contest Reminder</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400">Weekly contest starts in 1 hour.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="profileOverlay"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm hidden">
+        <div class="w-[380px] bg-white dark:bg-gray-800 rounded-3xl shadow-2xl overflow-hidden animate-fadeIn">
+            <div class="bg-gradient-to-br from-[#1E4A7A] to-[#153255] relative pt-12 pb-20 px-6 text-center">
+                <button id="closeProfileOverlay"
+                    class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white/90 transition-all flex items-center justify-center backdrop-blur-sm"><i
+                        class="fas fa-times text-sm"></i></button>
+                <div class="absolute left-1/2 bottom-[-48px] -translate-x-1/2">
+                    <div
+                        class="relative w-24 h-24 rounded-full p-1.5 bg-white dark:bg-gray-800 ring-4 ring-[#1E4A7A]/10 dark:ring-[#1E4A7A]/30">
+                        <div
+                            class="w-full h-full rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-3xl font-bold shadow-inner">
+                            JD</div>
+                        <div
+                            class="absolute bottom-0 right-0 w-6 h-6 bg-green-500 border-4 border-white dark:border-gray-800 rounded-full">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pt-16 pb-8 px-6">
+                <div class="text-center mb-8">
+                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-1">Dr. John Doe</h2>
+                    <p class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3">Senior Professor & Researcher
+                    </p>
+                    <div class="flex items-center justify-center gap-2 flex-wrap">
+                        <span
+                            class="px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 border border-blue-100 dark:border-blue-800">CSE
+                            Department</span>
+                        <span
+                            class="px-3 py-1 rounded-full text-xs font-semibold bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300 border border-purple-100 dark:border-purple-800">HOD</span>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 mb-8">
+                    <div
+                        class="p-3 rounded-2xl bg-gray-50 dark:bg-gray-700/30 border border-gray-100 dark:border-gray-700 group hover:border-blue-200 dark:hover:border-blue-800 transition-colors">
+                        <div class="flex items-center gap-3 mb-1">
+                            <div
+                                class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform">
+                                <i class="fas fa-id-badge text-xs"></i>
+                            </div>
+                            <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Faculty ID</span>
+                        </div>
+                        <p class="text-sm font-bold text-gray-800 dark:text-gray-200 pl-1">FAC-2023</p>
+                    </div>
+                    <div
+                        class="p-3 rounded-2xl bg-gray-50 dark:bg-gray-700/30 border border-gray-100 dark:border-gray-700 group hover:border-green-200 dark:hover:border-green-800 transition-colors">
+                        <div class="flex items-center gap-3 mb-1">
+                            <div
+                                class="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-600 dark:text-green-400 group-hover:scale-110 transition-transform">
+                                <i class="far fa-calendar-check text-xs"></i>
+                            </div>
+                            <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Joined</span>
+                        </div>
+                        <p class="text-sm font-bold text-gray-800 dark:text-gray-200 pl-1">Aug 2015</p>
+                    </div>
+                </div>
+                <div class="space-y-3">
+                    <button
+                        class="w-full flex items-center justify-center gap-2 p-3.5 rounded-xl bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 font-semibold transition-all group"><i
+                            class="fas fa-sign-out-alt group-hover:-translate-x-1 transition-transform"></i>Sign
+                        Out</button>
+                    <button id="closeProfileBtnBottom"
+                        class="w-full text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="index1_logic.js"></script>
+    <script>
+        // Forum post form toggle handlers
+        document.addEventListener('DOMContentLoaded', function () {
+            const newPostBtn = document.getElementById('newPostBtn');
+            const cancelPostBtn = document.getElementById('cancelPostBtn');
+            const cancelPostBtnBottom = document.getElementById('cancelPostBtnBottom');
+            const forumListView = document.getElementById('forum-list-view');
+            const forumFormView = document.getElementById('forum-form-view');
+
+            if (newPostBtn) {
+                newPostBtn.addEventListener('click', function () {
+                    forumListView.classList.add('hidden');
+                    forumFormView.classList.remove('hidden');
+                });
+            }
+
+            function showList() {
+                forumFormView.classList.add('hidden');
+                forumListView.classList.remove('hidden');
+            }
+
+            if (cancelPostBtn) {
+                cancelPostBtn.addEventListener('click', showList);
+            }
+
+            if (cancelPostBtnBottom) {
+                cancelPostBtnBottom.addEventListener('click', showList);
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CampusCode - Admin Master Report</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            fontFamily: { sans: ["Poppins", "sans-serif"], report: ["Roboto", "sans-serif"] },
+            colors: {
+              primary: { 50: "#E7F0FA", 100: "#D0E1F5", 200: "#7BA4D0", 300: "#4D84C0", 400: "#2E5E99", 500: "#1E4A7A", 600: "#0D2440" },
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .sidebar { width: 260px; }
+      .nav-item { 
+          display: flex; align-items: center; padding: 0.75rem 1.25rem; 
+          color: #64748b; font-size: 0.9rem; font-weight: 500;
+          border-radius: 0.5rem; transition: all 0.2s;
+      }
+      .nav-item:hover { background-color: #f1f5f9; color: #1e4a7a; }
+      .dark .nav-item:hover { background-color: #334155; color: #f8fafc; }
+      .nav-item.active { background-color: #e7f0fa; color: #1e4a7a; font-weight: 700; }
+      .dark .nav-item.active { background-color: #1e4a7a; color: #ffffff; }
+
+      .report-preview-container {
+          background: white; width: 210mm; min-height: 297mm;
+          margin: 2rem auto; padding: 20mm; box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+          font-family: 'Roboto', sans-serif;
+          display: flex;
+          flex-direction: column;
+      }
+      .dark .report-preview-container { background: #1f2937; color: #e5e7eb; }
+      .report-table { width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; font-size: 0.85rem; }
+      .report-table th, .report-table td { border: 1px solid #e5e7eb; padding: 0.8rem; text-align: left; }
+      .dark .report-table th, .dark .report-table td { border-color: #374151; }
+      .report-table th { background-color: #f8fafc; font-weight: 700; }
+      .dark .report-table th { background-color: #111827; }
+
+      @media print {
+        .sidebar, .config-panel, header, .no-print { display: none !important; }
+        .report-preview-container { margin: 0; border: none; box-shadow: none; width: 100%; }
+        body { background: white; }
+      }
+    </style>
+  </head>
+  <body class="bg-primary-50 dark:bg-gray-900 min-h-screen font-sans">
+    <div class="flex h-screen overflow-hidden">
+      
+      <aside class="sidebar bg-white dark:bg-gray-800 shadow-sm border-r border-gray-200 dark:border-gray-700 flex-shrink-0 overflow-y-auto transition-colors duration-200 no-print">
+            <div class="p-6">
+                <h1 class="text-2xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
+                    <i class="fas fa-code text-primary-500"></i>
+                    <span>CampusCode</span>
+                </h1>
+            </div>
+
+            <nav class="px-4 space-y-1">
+                <a href="dashboard.html" class="nav-item"><i class="fas fa-home mr-3"></i><span>Home</span></a>
+                <a href="program.html" class="nav-item"><i class="fa-solid fa-layer-group mr-3"></i><span>Programs</span></a>
+                <a href="contest.html" class="nav-item active"><i class="fas fa-trophy mr-3"></i><span>Contests</span></a>
+                <a href="events.html" class="nav-item"><i class="fa-solid fa-calendar-check mr-3"></i><span>Events</span></a>
+                <a href="manage_user.html" class="nav-item"><i class="fa-solid fa-users mr-3"></i><span>User</span></a>
+                <a href="contest-report.html" class="nav-item "><i class="fas fa-file-invoice mr-3"></i><span>Reports</span></a>
+                <button onclick="toggleProfile()" class="nav-item w-full text-left mt-4 border-t pt-4 dark:border-gray-700">
+                    <i class="fas fa-user mr-3"></i><span>Profile</span>
+                </button>
+            </nav>
+      </aside>
+
+      <div class="flex-1 overflow-y-auto">
+        <header class="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-50 px-8 py-3 flex justify-between items-center no-print">
+            <h2 class="text-lg font-semibold dark:text-white">Contest Analytics Report</h2>
+            <div class="flex items-center gap-6">
+                <button id="themeToggleBtn" class="p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-all"><i class="fas fa-moon"></i></button>
+                <div class="flex items-center gap-3 pl-6 border-l dark:border-gray-700">
+                   <button onclick="toggleProfile()" class="ml-2 flex items-center gap-3 p-1 pr-3 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <div class="h-9 w-9 rounded-full bg-primary-500 flex items-center justify-center text-white font-bold text-sm">RK</div>
+                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200 hidden sm:block">Raj Kumar</span>
+                   </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="p-8">
+            <div class="bg-white dark:bg-gray-800 rounded-xl p-6 mb-8 border border-gray-200 dark:border-gray-700 config-panel shadow-sm no-print">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-end">
+                    <div class="lg:col-span-3">
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-2 tracking-wider">College Name</label>
+                        <input type="text" id="collegeInput" oninput="updateCollegeName()" placeholder="Enter College Name..." 
+                            class="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-700 dark:text-white outline-none">
+                    </div>
+                    
+                    <div class="lg:col-span-2">
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-2 tracking-wider">Level</label>
+                        <select id="levelFilter" onchange="filterContests()" class="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 dark:text-white outline-none">
+                            <option value="">All Levels</option>
+                            <option value="Easy">Easy</option>
+                            <option value="Medium">Medium</option>
+                            <option value="Hard">Hard</option>
+                        </select>
+                    </div>
+
+                    <div class="lg:col-span-2">
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-2 tracking-wider">Time Period</label>
+                        <select id="timeFilter" onchange="filterContests()" class="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 dark:text-white outline-none">
+                            <option value="all">All Time</option>
+                            <option value="7">Last 7 Days</option>
+                            <option value="30">Last 30 Days</option>
+                            <option value="365">This Year</option>
+                        </select>
+                    </div>
+
+                    <div class="lg:col-span-2">
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-2 tracking-wider">Top Dept</label>
+                        <select id="deptFilter" onchange="filterContests()" class="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 dark:text-white outline-none">
+                            <option value="">All Depts</option>
+                            <option value="CSE">CSE</option>
+                            <option value="ECE">ECE</option>
+                            <option value="MECH">MECH</option>
+                        </select>
+                    </div>
+
+                    <div class="lg:col-span-3 flex gap-2">
+                        <div class="flex-1">
+                            <label class="block text-[10px] font-bold text-gray-400 uppercase mb-2 tracking-wider">Search</label>
+                            <input type="text" id="contestSearch" oninput="filterContests()" placeholder="Search..." class="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-700 dark:text-white outline-none">
+                        </div>
+                        <div class="flex items-end gap-2">
+                            <button onclick="downloadPDF()" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:opacity-90 transition-opacity"><i class="fas fa-file-pdf"></i></button>
+                            <button onclick="exportToExcel()" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:opacity-90 transition-opacity"><i class="fas fa-file-excel"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="report-content" class="report-preview-container">
+                <div class="flex justify-between items-start border-b-4 border-primary-600 pb-6 mb-8">
+                    <div class="flex gap-4">
+                        <div class="w-16 h-16 bg-primary-600 text-white flex items-center justify-center rounded-lg text-2xl font-black shadow-lg">CC</div>
+                        <div>
+                            <h1 id="displayCollegeName" class="text-2xl font-black text-gray-800 dark:text-white uppercase tracking-tight">Your College Name Here</h1>
+                            <p id="reportSubTitle" class="text-sm font-bold text-primary-600 tracking-widest">CONTEST PERFORMANCE REPORT</p>
+                        </div>
+                    </div>
+                    <div class="text-right text-xs">
+                        <p class="font-bold">GEN-ID: <span class="text-gray-400">RPT-2025-0042</span></p>
+                        <p class="font-bold">DATE: <span id="curDate" class="text-gray-400"></span></p>
+                    </div>
+                </div>
+
+                <section id="sec-contests" class="mb-12">
+                    <h3 class="text-md font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2 uppercase tracking-wide">
+                        <i class="fas fa-trophy text-primary-500"></i> Competitive Contest Analytics
+                    </h3>
+                    
+                    <div class="grid grid-cols-4 gap-4 mb-6">
+                        <div class="p-3 border border-primary-100 rounded bg-primary-50/30 dark:bg-gray-800/50 text-center">
+                            <p class="text-[9px] font-bold text-gray-400 mb-1 uppercase tracking-widest">Total Contests</p>
+                            <span class="text-xl font-black">24</span>
+                        </div>
+                        <div class="p-3 border border-green-100 rounded bg-green-50/30 dark:bg-gray-800/50 text-center">
+                            <p class="text-[9px] font-bold text-gray-400 mb-1 uppercase tracking-widest">Success Rate</p>
+                            <span class="text-xl font-black">78%</span>
+                        </div>
+                        <div class="p-3 border border-orange-100 rounded bg-orange-50/30 dark:bg-gray-800/50 text-center">
+                            <p class="text-[9px] font-bold text-gray-400 mb-1 uppercase tracking-widest">Avg Time</p>
+                            <span class="text-xl font-black">42m</span>
+                        </div>
+                        <div class="p-3 border border-purple-100 rounded bg-purple-50/30 dark:bg-gray-800/50 text-center">
+                            <p class="text-[9px] font-bold text-gray-400 mb-1 uppercase tracking-widest">Unique Solvers</p>
+                            <span class="text-xl font-black">1.2k</span>
+                        </div>
+                    </div>
+
+                    <p class="text-[11px] font-bold text-primary-600 mb-2 uppercase tracking-widest ml-1">Summary Table</p>
+                    <table class="report-table mb-6" id="contestSummaryTable">
+                        <thead>
+                            <tr><th>Contest Name</th><th>Level</th><th>Participants</th><th>Avg. Score</th><th>Top Dept</th><th>Date Held</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>CodeSprint 2024</td><td>Medium</td><td>450</td><td>62/100</td><td>CSE</td><td>12 Oct 2024</td></tr>
+                            <tr><td>Logic Hunter v2</td><td>Easy</td><td>310</td><td>78/100</td><td>ECE</td><td>05 Nov 2024</td></tr>
+                            <tr><td>Algorithm Master</td><td>Hard</td><td>120</td><td>41/100</td><td>CSE</td><td>20 Nov 2024</td></tr>
+                            <tr><td>Java Dev-Challenge</td><td>Medium</td><td>280</td><td>55/100</td><td>CSE</td><td>15 Dec 2024</td></tr>
+                            <tr><td>UI Design Sprint</td><td>Easy</td><td>190</td><td>85/100</td><td>MECH</td><td>10 Jan 2025</td></tr>
+                        </tbody>
+                    </table>
+
+                    <p class="text-[11px] font-bold text-primary-600 mb-2 uppercase tracking-widest ml-1">Rankings & Leaders</p>
+                    <table class="report-table">
+                        <thead>
+                            <tr><th>Student Name</th><th>Dept</th><th>Contests Won</th><th>Global Rank</th><th>Last Active</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td class="font-semibold">Rahul Singh</td><td>CSE</td><td>04</td><td>#124</td><td>2 days ago</td></tr>
+                            <tr><td class="font-semibold">Sneha Kapoor</td><td>CSE</td><td>03</td><td>#210</td><td>Today</td></tr>
+                            <tr><td class="font-semibold">Amit Verma</td><td>ECE</td><td>02</td><td>#452</td><td>1 week ago</td></tr>
+                            <tr><td class="font-semibold">Priya Das</td><td>MECH</td><td>02</td><td>#560</td><td>Yesterday</td></tr>
+                        </tbody>
+                    </table>
+                </section>
+
+                <div class="mt-auto pt-10 flex justify-between items-end border-t border-dashed border-gray-300">
+                    <div class="text-[10px] text-gray-400">
+                        <p>This is a system-generated document from CampusCode.</p>
+                        <p>Report status: <span class="text-green-600 font-bold">Verified Analytics</span></p>
+                    </div>
+                    <div class="text-center w-48">
+                        <div class="border-b border-gray-800 w-full mb-2"></div>
+                        <p class="text-[10px] font-bold">REGISTRAR SIGNATURE</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+      </div>
+    </div>
+
+    <div id="profileOverlay" class="fixed inset-0 z-[100] hidden flex items-center justify-center bg-black/50 backdrop-blur-sm">
+        <div class="bg-white dark:bg-gray-800 w-[320px] rounded-3xl overflow-hidden shadow-2xl transform transition-all">
+            <div class="bg-[#1e4a7a] p-6 text-center relative h-32">
+                <button onclick="toggleProfile()" class="absolute top-4 right-4 text-white/80 hover:text-white">
+                    <i class="fas fa-times text-lg"></i>
+                </button>
+                <div class="absolute -bottom-10 left-1/2 -translate-x-1/2">
+                    <div class="h-20 w-20 rounded-full border-4 border-white dark:border-gray-800 bg-[#1e4a7a] flex items-center justify-center text-white text-2xl font-bold">RK</div>
+                </div>
+            </div>
+            <div class="pt-12 pb-6 px-6 text-center">
+                <h3 class="text-xl font-bold text-gray-800 dark:text-white">Raj Kumar</h3>
+                <p class="text-xs text-gray-500 mb-6 flex items-center justify-center gap-1"><i class="fas fa-university"></i> XYZ Institute</p>
+                <button onclick="toggleProfile()" class="mt-4 text-[10px] font-bold text-gray-400 uppercase hover:text-gray-600 transition-colors">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+      function toggleProfile() {
+          document.getElementById('profileOverlay').classList.toggle('hidden');
+      }
+
+      window.addEventListener('DOMContentLoaded', () => {
+          const params = new URLSearchParams(window.location.search);
+          const title = params.get('title');
+          const date = params.get('date');
+          if (title) document.getElementById('reportSubTitle').textContent = "REPORT FOR: " + title.toUpperCase();
+          document.getElementById('curDate').textContent = (date || new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })).toUpperCase();
+      });
+
+      function updateCollegeName() {
+          const input = document.getElementById('collegeInput').value;
+          document.getElementById('displayCollegeName').textContent = input || "Your College Name Here";
+      }
+
+      function filterContests() {
+          const searchVal = document.getElementById('contestSearch').value.toLowerCase().trim();
+          const levelVal = document.getElementById('levelFilter').value;
+          const deptVal = document.getElementById('deptFilter').value;
+          const timeVal = document.getElementById('timeFilter').value;
+          
+          const rows = document.querySelectorAll('#contestSummaryTable tbody tr');
+          const now = new Date();
+
+          rows.forEach(row => {
+              const rowText = row.innerText.toLowerCase(); 
+              const rowLevel = row.cells[1].textContent;
+              const rowDept = row.cells[4].textContent;
+              const rowDateStr = row.cells[5].textContent;
+              const rowDate = new Date(rowDateStr);
+
+              const matchesSearch = searchVal === "" || rowText.includes(searchVal);
+              const matchesLevel = levelVal === "" || rowLevel === levelVal;
+              const matchesDept = deptVal === "" || rowDept === deptVal;
+              
+              let matchesTime = true;
+              if (timeVal !== "all") {
+                  const daysDiff = (now - rowDate) / (1000 * 60 * 60 * 24);
+                  matchesTime = daysDiff <= parseInt(timeVal);
+              }
+
+              row.style.display = (matchesSearch && matchesLevel && matchesDept && matchesTime) ? "" : "none";
+          });
+      }
+
+      /**
+       * FIXED: EXCEL DOWNLOAD LOGIC
+       * This version clones the table and removes hidden rows 
+       * so your Excel file only contains the filtered data.
+       */
+      function exportToExcel() {
+          const table = document.getElementById('contestSummaryTable');
+          
+          // 1. Create a clone of the table so we don't mess up the UI
+          const cloneTable = table.cloneNode(true);
+          
+          // 2. Remove rows that are hidden by the filter
+          const originalRows = table.querySelectorAll('tbody tr');
+          const cloneRows = cloneTable.querySelectorAll('tbody tr');
+          
+          originalRows.forEach((row, index) => {
+              if (row.style.display === 'none') {
+                  cloneRows[index].remove();
+              }
+          });
+
+          // 3. Convert the filtered clone to an Excel Workbook
+          const workbook = XLSX.utils.table_to_book(cloneTable, { sheet: "Contest Report" });
+          
+          // 4. Download the file
+          const dateStr = new Date().toISOString().split('T')[0];
+          XLSX.writeFile(workbook, `CampusCode_Contest_Report_${dateStr}.xlsx`);
+      }
+
+      function downloadPDF() {
+          const element = document.getElementById('report-content');
+          const opt = {
+              margin: 0,
+              filename: 'CampusCode_Report.pdf',
+              image: { type: 'jpeg', quality: 0.98 },
+              html2canvas: { scale: 2, useCORS: true },
+              jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+          };
+          html2pdf().set(opt).from(element).save();
+      }
+
+      const themeBtn = document.getElementById('themeToggleBtn');
+      themeBtn.onclick = () => {
+          document.documentElement.classList.toggle('dark');
+          themeBtn.innerHTML = document.documentElement.classList.contains('dark') ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+      };
+    </script>
+  </body>
+</html>

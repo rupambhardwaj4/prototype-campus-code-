@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CampusCode - Central Portal Gateway</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ["Poppins", "sans-serif"] },
+                    colors: {
+                        primary: { 50: "#E7F0FA", 100: "#D0E1F5", 200: "#7BA4D0", 300: "#4D84C0", 400: "#2E5E99", 500: "#1E4A7A", 600: "#0D2440" },
+                        dark: { bg: "#111827", card: "#1F2937", text: "#F9FAFB", border: "#374151" }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                },
+            },
+        };
+    </script>
+
+    <style>
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        .code-window {
+            background: #1e1e1e;
+            border-radius: 0.75rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            overflow: hidden;
+        }
+        .code-header { background: #2d2d2d; padding: 0.75rem 1rem; display: flex; gap: 0.5rem; align-items: center; }
+        .window-dot { width: 0.75rem; height: 0.75rem; border-radius: 50%; }
+        .red { background: #ff5f56; }
+        .yellow { background: #ffbd2e; }
+        .green { background: #27c93f; }
+        
+        .syntax-keyword { color: #569cd6; }
+        .syntax-string { color: #ce9178; }
+        .syntax-func { color: #dcdcaa; }
+        .syntax-comment { color: #6a9955; }
+        .line-num { color: #858585; margin-right: 1rem; user-select: none; }
+
+        /* Cursor blinking effect for typewriter */
+        .cursor-blink {
+            animation: blink 1s step-end infinite;
+        }
+        @keyframes blink {
+            0%, 100% { border-color: transparent; }
+            50% { border-color: #2E5E99; } /* match primary color */
+        }
+    </style>
+</head>
+
+<body class="bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 font-sans transition-colors duration-200 relative">
+
+    <nav class="fixed w-full z-40 bg-white/80 dark:bg-gray-900/90 backdrop-blur-md border-b border-gray-100 dark:border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex items-center gap-2 cursor-pointer" onclick="window.location.reload()">
+                    <i class="fas fa-code text-primary-500 text-3xl"></i>
+                    <span class="text-2xl font-bold text-gray-800 dark:text-white">CampusCode</span>
+                </div>
+
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#features" class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary-500 transition">Features</a>
+                    <a href="#contests" class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary-500 transition">Contests</a>
+                    
+                    <div class="h-6 w-px bg-gray-200 dark:bg-gray-700"></div>
+                    
+                    <button id="themeToggleBtn" class="text-gray-500 hover:text-primary-500 transition">
+                        <i class="fas fa-moon text-lg"></i>
+                    </button>
+                    <button onclick="openLoginModal()" class="text-sm font-semibold text-gray-800 dark:text-white hover:text-primary-500 transition">Log In</button>
+                    <button onclick="openLoginModal()" class="px-5 py-2.5 rounded-full bg-primary-500 hover:bg-primary-600 text-white text-sm font-semibold shadow-lg shadow-primary-500/30 transition-all transform hover:-translate-y-0.5">
+                        Get Started
+                    </button>
+                </div>
+
+                <button id="mobileMenuBtn" class="md:hidden p-2 text-gray-600 dark:text-gray-300">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div id="mobileMenu" class="hidden md:hidden bg-white dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700 p-4 space-y-4 shadow-lg">
+            <a href="#features" class="block text-gray-600 dark:text-gray-300 hover:text-primary-500 font-medium">Features</a>
+            <button onclick="openLoginModal()" class="block w-full text-center py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white font-semibold">Log In</button>
+            <button onclick="openLoginModal()" class="block w-full text-center py-2 rounded-lg bg-primary-500 text-white font-semibold">Sign Up</button>
+        </div>
+    </nav>
+
+    <section class="relative pt-32 pb-20 lg:pt-40 lg:pb-32 overflow-hidden">
+        <div class="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 bg-primary-100 dark:bg-primary-900/20 rounded-full blur-3xl opacity-50 -z-10"></div>
+        <div class="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 bg-blue-100 dark:bg-blue-900/20 rounded-full blur-3xl opacity-50 -z-10"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            
+            <div class="animate-fade-in-up">
+                <div class="inline-flex items-center px-3 py-1 rounded-full bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-300 text-xs font-bold uppercase tracking-wider mb-6 border border-primary-100 dark:border-primary-800">
+                    <span class="w-2 h-2 rounded-full bg-green-500 mr-2 animate-pulse"></span> New: Weekly College Battles
+                </div>
+                <h1 class="text-4xl lg:text-6xl font-extrabold leading-tight mb-6 text-gray-900 dark:text-white">
+                    Code Your Way To <br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-blue-400">The Top 1%</span>
+                </h1>
+                <p class="text-lg text-gray-600 dark:text-gray-400 mb-8 leading-relaxed max-w-lg">
+                    Access the integrated College Portal. Students, Faculty, HODs, and Admins collaborate in one unified space.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <button onclick="openLoginModal()" class="px-8 py-4 rounded-xl bg-primary-500 hover:bg-primary-600 text-white font-bold text-center shadow-xl shadow-primary-500/20 transition-all transform hover:-translate-y-1">
+                        Enter Portal <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                    <a href="#features" class="px-8 py-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 font-bold text-center hover:bg-gray-50 dark:hover:bg-gray-700 transition-all">
+                        Explore Features
+                    </a>
+                </div>
+            </div>
+
+            <div class="relative lg:h-[500px] flex items-center justify-center animate-float hidden lg:flex">
+                <div class="code-window w-full max-w-lg transform rotate-2 hover:rotate-0 transition-transform duration-500">
+                    <div class="code-header">
+                        <div class="window-dot red"></div>
+                        <div class="window-dot yellow"></div>
+                        <div class="window-dot green"></div>
+                        <span class="text-gray-400 text-xs ml-2 font-mono">auth.js</span>
+                    </div>
+                    <div class="p-6 text-sm">
+                        <div class="font-mono leading-relaxed">
+                            <div class="text-gray-400 mb-2"><span class="line-num">1</span><span class="syntax-comment">// Secure Login System</span></div>
+                            <div class="text-gray-100"><span class="line-num">2</span><span class="syntax-keyword">const</span> userRole = <span class="syntax-string">"Student"</span>;</div>
+                            <div class="text-gray-100"><span class="line-num">3</span></div>
+                            <div class="text-gray-100"><span class="line-num">4</span><span class="syntax-keyword">function</span> <span class="syntax-func">authenticate</span>(role) {</div>
+                            <div class="text-gray-100"><span class="line-num">5</span>&nbsp;&nbsp;<span class="syntax-keyword">if</span> (role === <span class="syntax-string">'admin'</span>) {</div>
+                            <div class="text-gray-100"><span class="line-num">6</span>&nbsp;&nbsp;&nbsp;&nbsp;return <span class="syntax-string">"/admin/dashboard"</span>;</div>
+                            <div class="text-gray-100"><span class="line-num">7</span>&nbsp;&nbsp;} <span class="syntax-keyword">else</span> {</div>
+                            <div class="text-gray-100"><span class="line-num">8</span>&nbsp;&nbsp;&nbsp;&nbsp;return <span class="syntax-string">"/student/home"</span>;</div>
+                            <div class="text-gray-100"><span class="line-num">9</span>&nbsp;&nbsp;}</div>
+                            <div class="text-gray-100"><span class="line-num">10</span>}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-16 bg-gray-50 dark:bg-gray-800/50 border-y border-gray-100 dark:border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h3 class="text-xs md:text-xl font-bold text-gray-900 dark:text-white leading-tight mr-4">
+                            Welcome to CampusCode <br>
+                            Ready to
+                        </h3>
+                    </div>
+                    <h3 class="text-2xl md:text-4xl font-bold text-gray-900 dark:text-white leading-tight mb-6">
+                        <span id="typewriter" class="text-primary-500 border-r-4 border-primary-500 pr-1 cursor-blink"></span>
+                    </h3>
+                    <p class="text-lg text-gray-600 dark:text-gray-400 mb-8 max-w-md">
+                        Join a thriving ecosystem designed to bridge the gap between academic theory and industry reality through continuous participation.
+                    </p>
+                    <div class="flex items-center gap-4 text-sm font-medium text-gray-500 dark:text-gray-400">
+                        <div class="flex items-center gap-2">
+                            <div class="w-2 h-2 rounded-full bg-green-500"></div> Real-time
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-2 h-2 rounded-full bg-blue-500"></div> Collaborative
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-2 h-2 rounded-full bg-purple-500"></div> Competitive
+                        </div>
+                    </div>
+                </div>
+
+                <div class="relative flex justify-center items-center h-[350px]">
+                    <div class="absolute w-72 h-72 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-full animate-spin-slow" style="animation-duration: 20s;"></div>
+
+                    <div class="absolute top-0 left-10 md:left-20 transform -translate-x-1/2 bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-xl shadow-blue-500/10 border border-gray-100 dark:border-gray-700 w-24 h-24 flex flex-col items-center justify-center z-10 animate-float" style="animation-delay: 0s;">
+                        <i class="fas fa-code text-2xl text-blue-500 mb-1"></i>
+                        <span class="text-xs font-bold text-gray-700 dark:text-gray-200">CODE</span>
+                    </div>
+
+                    <div class="absolute top-4 left-1/2 transform -translate-x-1/2 text-gray-300 dark:text-gray-600 text-2xl">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+
+                    <div class="absolute top-0 right-10 md:right-20 transform translate-x-1/2 bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-xl shadow-purple-500/10 border border-gray-100 dark:border-gray-700 w-24 h-24 flex flex-col items-center justify-center z-10 animate-float" style="animation-delay: 1s;">
+                        <i class="fas fa-trophy text-2xl text-purple-500 mb-1"></i>
+                        <span class="text-xs font-bold text-gray-700 dark:text-gray-200">COMPETE</span>
+                    </div>
+
+                    <div class="absolute right-16 md:right-24 top-1/2 text-gray-300 dark:text-gray-600 text-2xl rotate-45">
+                        <i class="fas fa-arrow-down"></i>
+                    </div>
+
+                    <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-xl shadow-green-500/10 border border-gray-100 dark:border-gray-700 w-28 h-28 flex flex-col items-center justify-center z-10 animate-float" style="animation-delay: 2s;">
+                        <i class="fas fa-handshake text-3xl text-green-500 mb-1"></i>
+                        <span class="text-xs font-bold text-gray-700 dark:text-gray-200">COLLABORATE</span>
+                    </div>
+
+                    <div class="absolute left-16 md:left-24 top-1/2 text-gray-300 dark:text-gray-600 text-2xl rotate-[260deg]">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="py-20 bg-white dark:bg-gray-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h3 class="text-primary-500 font-bold tracking-wide uppercase text-5xl mb-3">About Us</h3>
+                <p class="text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">Empowering the next generation of developers through innovative learning and collaboration</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <div class="space-y-6">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">Transforming Technical Education</h2>
+                    <p class="text-lg text-gray-600 dark:text-gray-400">
+                        At CampusCode, we're on a mission to bridge the gap between academic learning and real-world software development. Our platform provides a comprehensive ecosystem where students can hone their coding skills, faculty can enhance their teaching, and institutions can track progress effectively.
+                    </p>
+                    <div class="space-y-4">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 mt-1">
+                                <div class="flex items-center justify-center h-8 w-8 rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400">
+                                    <i class="fas fa-bolt"></i>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <h4 class="text-lg font-semibold text-gray-900 dark:text-white">Real-time Coding</h4>
+                                <p class="text-gray-600 dark:text-gray-400">Practice with our interactive coding environment that provides instant feedback.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 mt-1">
+                                <div class="flex items-center justify-center h-8 w-8 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <h4 class="text-lg font-semibold text-gray-900 dark:text-white">Community Driven</h4>
+                                <p class="text-gray-600 dark:text-gray-400">Join a growing community of passionate coders and educators.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="relative h-80 bg-gray-100 dark:bg-gray-800 rounded-2xl overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-br from-primary-500 to-blue-500 opacity-20"></div>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <i class="fas fa-code text-9xl text-primary-500 opacity-10"></i>
+                    </div>
+                    <div class="relative h-full flex flex-col items-center justify-center p-8 text-center">
+                        <div class="text-5xl font-bold text-primary-600 dark:text-primary-400 mb-4">5000+</div>
+                        <div class="text-xl font-semibold text-gray-800 dark:text-white mb-2">Active Students</div>
+                        <p class="text-gray-600 dark:text-gray-400">and counting across multiple institutions</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="features" class="py-20 bg-gray-50 dark:bg-gray-800/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h3 class="text-primary-500 font-bold tracking-wide uppercase text-5xl mb-3">Roles & Access</h3>
+                <p class="text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">Tailored experiences and permissions for every member of the academic community</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
+                <div class="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition-all">
+                    <div class="flex items-center mb-6">
+                        <div class="p-3 rounded-lg bg-primary-100 dark:bg-primary-900/30 mr-4">
+                            <i class="fas fa-user-graduate text-2xl text-primary-600 dark:text-primary-400"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white">Students</h3>
+                    </div>
+                    <p class="text-gray-600 dark:text-gray-400 mb-6">Empowering the next generation of developers with comprehensive learning tools and resources.</p>
+                    <div class="space-y-3">
+                        <div class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i>
+                            <span class="text-gray-700 dark:text-gray-300">Submit and track coding problems with real-time feedback</span>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i>
+                            <span class="text-gray-700 dark:text-gray-300">Access college contest, peer competition, and college ranks</span>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i>
+                            <span class="text-gray-700 dark:text-gray-300">Participate in coding battles and hackathons</span>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i>
+                            <span class="text-gray-700 dark:text-gray-300">View performance analytics and personalized learning paths</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition-all">
+                    <div class="flex items-center mb-6">
+                        <div class="p-3 rounded-lg bg-green-100 dark:bg-green-900/30 mr-4">
+                            <i class="fas fa-chalkboard-teacher text-2xl text-green-600 dark:text-green-400"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white">Faculty</h3>
+                    </div>
+                    <p class="text-gray-600 dark:text-gray-400 mb-6">Powerful tools for course management and student assessment by contests</p>
+                    <div class="space-y-3">
+                        <div class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i>
+                            <span class="text-gray-700 dark:text-gray-300">Create and manage course content, assignments, and assessments</span>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i>
+                            <span class="text-gray-700 dark:text-gray-300">Automated code evaluation with detailed feedback</span>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i>
+                            <span class="text-gray-700 dark:text-gray-300">Track student progress and identify learning gaps</span>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i>
+                            <span class="text-gray-700 dark:text-gray-300">Conduct calss contest and get detailed analysis</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition-all">
+                    <div class="flex items-center mb-6">
+                        <div class="p-3 rounded-lg bg-orange-100 dark:bg-orange-900/30 mr-4">
+                            <i class="fas fa-user-tie text-2xl text-orange-600 dark:text-orange-400"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white">Head of Department</h3>
+                    </div>
+                    <p class="text-gray-600 dark:text-gray-400 mb-6">Comprehensive oversight and management of academic programs and faculty.</p>
+                    <div class="space-y-3">
+                        <div class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i>
+                            <span class="text-gray-700 dark:text-gray-300">Monitor department-wide academic performance metrics</span>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i>
+                            <span class="text-gray-700 dark:text-gray-300">Generate detailed reports on faculty and student performance</span>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i>
+                            <span class="text-gray-700 dark:text-gray-300">Manage curriculum planning and resource allocation</span>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i>
+                            <span class="text-gray-700 dark:text-gray-300">Oversee faculty workload and teaching assignments</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition-all">
+                    <div class="flex items-center mb-6">
+                        <div class="p-3 rounded-lg bg-purple-100 dark:bg-purple-900/30 mr-4">
+                            <i class="fas fa-university text-2xl text-purple-600 dark:text-purple-400"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white">Administrator</h3>
+                    </div>
+                    <p class="text-gray-600 dark:text-gray-400 mb-6">Complete control and management of the institution's digital infrastructure.</p>
+                    <div class="space-y-3">
+                        <div class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i>
+                            <span class="text-gray-700 dark:text-gray-300">Manage user accounts, roles, and permissions</span>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i>
+                            <span class="text-gray-700 dark:text-gray-300">Configure system settings and integrations</span>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i>
+                            <span class="text-gray-700 dark:text-gray-300">Monitor system health and performance metrics</span>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i>
+                            <span class="text-gray-700 dark:text-gray-300">Generate institutional reports and analytics</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-16 text-center">
+                <button onclick="openLoginModal()" class="px-8 py-3 rounded-xl bg-primary-500 hover:bg-primary-600 text-white font-bold shadow-lg shadow-primary-500/20 transition-all transform hover:-translate-y-0.5">
+                    Explore Your Dashboard
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-gray-900 text-white pt-16 pb-8 border-t border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-12 mb-12">
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-4">Company</h3>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">About Us</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Careers</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Blog</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-4">Product</h3>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Features</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Pricing</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Documentation</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-4">Resources</h3>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Help Center</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Community</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Tutorials</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-4">Legal</h3>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Privacy Policy</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Terms of Service</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Cookie Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-800 pt-8">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <div class="flex items-center space-x-6 mb-6 md:mb-0">
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <span class="sr-only">Facebook</span>
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <span class="sr-only">Twitter</span>
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <span class="sr-only">GitHub</span>
+                            <i class="fab fa-github"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <span class="sr-only">LinkedIn</span>
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                    </div>
+                    <div class="text-gray-400 text-sm">
+                        © 2025 CampusCode. All rights reserved.
+                    </div>
+                </div>
+                <div class="mt-8 text-center text-gray-500 text-xs">
+                    <p>Made with <i class="fas fa-heart text-red-500"></i> for the College & Student community</p>
+                    <p class="mt-1">v1.0.0</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <div id="loginModal" class="fixed inset-0 z-50 hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="fixed inset-0 bg-gray-900/75 backdrop-blur-sm transition-opacity" onclick="closeLoginModal()"></div>
+
+        <div class="fixed inset-0 z-10 overflow-y-auto">
+            <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+                
+                <div class="relative transform overflow-hidden rounded-2xl bg-white dark:bg-gray-800 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-md border border-gray-200 dark:border-gray-700">
+                    
+                    <div class="bg-white dark:bg-gray-800 px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                        <div class="sm:flex sm:items-start">
+                            <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
+                                <h3 class="text-xl font-bold leading-6 text-gray-900 dark:text-white mb-2" id="modal-title">Select User Role</h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">
+                                    This is a prototype integration. Select a module to simulate the login process.
+                                </p>
+
+                                <div class="space-y-3">
+                                    <div class="relative">
+                                        <select id="roleSelector" class="block w-full rounded-lg border-0 py-3 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-primary-600 sm:text-sm sm:leading-6 dark:bg-gray-700 dark:text-white dark:ring-gray-600">
+                                            <option value="" disabled selected>Choose your role...</option>
+                                            <option value="student">Student</option>
+                                            <option value="faculty">Faculty</option>
+                                            <option value="hod">Head of Dept.</option>
+                                            <option value="admin">College Administrator</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <input type="password" placeholder="   Password (Any)" disabled class="block w-full rounded-lg border-0 py-2.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 bg-gray-100 dark:bg-gray-700 dark:text-gray-400 dark:ring-gray-600 cursor-not-allowed">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-50 dark:bg-gray-900/50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                        <button type="button" onclick="executeLogin()" class="inline-flex w-full justify-center rounded-md bg-primary-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary-500 sm:ml-3 sm:w-auto transition-colors">
+                            Login
+                        </button>
+                        <button type="button" onclick="closeLoginModal()" class="mt-3 inline-flex w-full justify-center rounded-md bg-white dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 sm:mt-0 sm:w-auto transition-colors">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Typewriter Effect Logic ---
+        const words = ["CODE", "COMPETE", "COLLABORATE"];
+        const typewriterElement = document.getElementById('typewriter');
+        let wordIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        let typeSpeed = 100;
+
+        function typeWriter() {
+            const currentWord = words[wordIndex];
+            
+            if (isDeleting) {
+                typewriterElement.textContent = currentWord.substring(0, charIndex - 1);
+                charIndex--;
+                typeSpeed = 50; // Faster when deleting
+            } else {
+                typewriterElement.textContent = currentWord.substring(0, charIndex + 1);
+                charIndex++;
+                typeSpeed = 150; // Standard typing speed
+            }
+
+            if (!isDeleting && charIndex === currentWord.length) {
+                isDeleting = true;
+                typeSpeed = 2000; // Pause at end of word
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                wordIndex = (wordIndex + 1) % words.length; // Loop back to start
+                typeSpeed = 500; // Pause before new word
+            }
+
+            setTimeout(typeWriter, typeSpeed);
+        }
+
+        // Start the typewriter when the page loads
+        document.addEventListener('DOMContentLoaded', typeWriter);
+
+        // --- Dark Mode Logic ---
+        const themeBtn = document.getElementById('themeToggleBtn');
+        const themeIcon = themeBtn.querySelector('i');
+        const html = document.documentElement;
+
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            html.classList.add('dark');
+            themeIcon.classList.replace('fa-moon', 'fa-sun');
+        }
+
+        themeBtn.addEventListener('click', () => {
+            html.classList.toggle('dark');
+            if (html.classList.contains('dark')) {
+                localStorage.theme = 'dark';
+                themeIcon.classList.replace('fa-moon', 'fa-sun');
+            } else {
+                localStorage.theme = 'light';
+                themeIcon.classList.replace('fa-sun', 'fa-moon');
+            }
+        });
+
+        // --- Mobile Menu Toggle ---
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // --- INTEGRATION LOGIC: Modal & Routing ---
+        const modal = document.getElementById('loginModal');
+
+        function openLoginModal() {
+            modal.classList.remove('hidden');
+        }
+
+        function closeLoginModal() {
+            modal.classList.add('hidden');
+        }
+
+        function executeLogin() {
+            const role = document.getElementById("roleSelector").value;
+            
+            // Set session storage to act as a fake backend session
+            sessionStorage.setItem("currentUserRole", role);
+
+            // Routing Logic based on Folder Structure
+            
+            switch(role) {
+                case "student":
+                    window.location.href = "/student/prototype/index.html"; 
+                    break;
+                case "faculty":
+                    window.location.href = "/faculty/dashboard.html";
+                    break;
+                case "hod":
+                    window.location.href = "/hod/dashboard.html";
+                    break;
+                case "admin":
+                    window.location.href = "/admin/dashboard.html";
+                    break;
+                default:
+                    alert("Please select a role to continue.");
+            }
+        }
+    </script>
+</body>
+</html>

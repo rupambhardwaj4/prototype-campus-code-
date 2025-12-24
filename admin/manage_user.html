@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>CampusCode – Manage Users</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { sans: ["Poppins", "sans-serif"] },
+          colors: {
+            primary: {
+              50: "#E7F0FA", 100: "#D0E1F5", 200: "#7BA4D0", 300: "#4D84C0",
+              400: "#2E5E99", 500: "#1E4A7A", 600: "#0D2440"
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .sidebar { width: 16rem; }
+    .nav-item { transition: all 0.2s ease; display: flex; align-items: center; padding: 0.75rem 1rem; margin-bottom: 0.25rem; color: #374151; border-radius: 0.5rem; cursor: pointer; font-size: 0.875rem; }
+    .dark .nav-item { color: #d1d5db; }
+    .nav-item:hover { background-color: #f3f4f6; }
+    .dark .nav-item:hover { background-color: #374151; }
+    .nav-item.active { background-color: #d0e1f5; color: #1e4a7a; font-weight: 600; }
+    .dark .nav-item.active { background-color: #1e4a7a; color: #ffffff; }
+
+    :root { --bg-color: #f9fafb; --bg-card: #ffffff; --bg-header: #ffffff; --border-color: #e5e7eb; }
+    .dark { --bg-color: #111827; --bg-card: #1f2937; --bg-header: #1f2937; --border-color: #374151; }
+
+    body { background-color: var(--bg-color); transition: all 0.3s ease; }
+    .bg-theme-card { background-color: var(--bg-card); }
+    .bg-theme-header { background-color: var(--bg-header); }
+    .border-theme-default { border-color: var(--border-color); }
+    .tab-active { background-color: #1E4A7A !important; color: white !important; }
+    .modal-tab-active { border-bottom: 3px solid #1E4A7A; color: #1E4A7A; font-weight: 700; background: rgba(30, 74, 122, 0.05); }
+
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    .dark ::-webkit-scrollbar-thumb { background: #4b5563; }
+    
+    .table-container { 
+        height: calc(100vh - 430px); 
+        min-height: 300px;
+        overflow-x: auto; 
+        position: relative;
+    }
+    
+    thead th { 
+        position: sticky; top: 0; z-index: 20; background-color: #f8fafc; 
+        color: #64748b; border-bottom: 2px solid #e2e8f0; white-space: nowrap;
+        font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    
+    .dark thead th { background-color: #1e293b; color: #94a3b8; border-bottom: 2px solid #334155; }
+    tbody tr { transition: background-color 0.2s; white-space: nowrap; }
+  </style>
+</head>
+
+<body class="font-sans min-h-screen overflow-hidden">
+
+<div class="flex h-screen overflow-hidden">
+  <aside class="sidebar bg-white dark:bg-gray-800 shadow-sm border-r border-gray-200 dark:border-gray-700 flex-shrink-0 transition-colors duration-200 flex flex-col">
+      <div class="p-6">
+          <h1 class="text-2xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
+              <i class="fas fa-code text-primary-500"></i>
+              <span>CampusCode</span>
+          </h1>
+      </div>
+      
+      <nav class="px-4 space-y-1 flex-1">
+          <a href="dashboard.html" class="nav-item"><i class="fas fa-home mr-3 w-5"></i><span>Home</span></a>
+          <a href="program.html" class="nav-item"><i class="fa-solid fa-layer-group mr-3 w-5"></i><span>Programs</span></a>
+          <a href="contest.html" class="nav-item"><i class="fas fa-trophy mr-3 w-5"></i><span>Contests</span></a>
+          <a href="events.html" class="nav-item"><i class="fa-solid fa-calendar-check mr-3 w-5"></i><span>Events</span></a>
+          <a href="manage_user.html" class="nav-item active"><i class="fa-solid fa-users mr-3 w-5"></i><span>User</span></a>
+          <a href="update-report.html" class="nav-item"><i class="fas fa-file-invoice mr-3 w-5"></i><span>Reports</span></a>
+          <button onclick="toggleProfile()" class="nav-item w-full text-left"><i class="fas fa-user mr-3 w-5"></i><span>Profile</span></button>
+      </nav>
+  </aside>
+
+  <div class="flex-1 flex flex-col overflow-hidden">
+    <header class="bg-theme-header border-b border-theme-default px-8 py-4 flex justify-between items-center z-10">
+        <div class="relative w-1/3">
+            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+            <input id="searchInput" oninput="render()" class="w-full pl-10 py-2.5 border border-theme-default rounded-xl text-sm bg-transparent outline-none focus:border-primary-400 dark:text-white" placeholder="Search by name, ID or email..." />
+        </div>
+        <div class="flex items-center gap-5">
+            <button id="themeToggleBtn" class="w-10 h-10 flex items-center justify-center text-gray-500 hover:text-primary-400">
+                <i id="themeIcon" class="fas fa-moon text-xl"></i>
+            </button>
+            <button onclick="toggleProfile()" class="ml-2 flex items-center gap-3 p-1 pr-3 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                <div class="h-9 w-9 rounded-full bg-primary-500 flex items-center justify-center text-white font-bold text-sm">RK</div>
+                <span class="text-sm font-medium text-gray-700 dark:text-gray-200 hidden sm:block">Raj Kumar</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-1 p-8 space-y-6 overflow-y-auto">
+        <div class="flex justify-between items-end">
+            <div>
+                <h2 class="text-3xl font-bold tracking-tight dark:text-white">User Directory</h2>
+                <p class="text-sm text-gray-500 mt-1 font-medium">Manage students, faculty, and enrollment requests.</p>
+            </div>
+            <div class="flex gap-3">
+                <button onclick="exportToExcel()" class="px-6 py-3 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 text-sm font-bold rounded-2xl shadow-sm hover:bg-gray-50 transition-all flex items-center gap-2">
+                    <i class="fas fa-download text-primary-500"></i> Export List
+                </button>
+                <button onclick="openAddModal()" class="px-7 py-3 bg-primary-500 hover:bg-primary-600 text-white text-sm font-bold rounded-2xl shadow-lg transition-all">+ Onboard Member</button>
+            </div>
+        </div>
+
+        <div class="flex bg-theme-card p-1.5 rounded-2xl border border-theme-default shadow-sm w-fit">
+            <button onclick="setTab('student')" id="tabStudent" class="px-10 py-3 rounded-xl text-sm font-bold transition-all tab-active">Students</button>
+            <button onclick="setTab('faculty')" id="tabFaculty" class="px-10 py-3 rounded-xl text-sm font-bold text-gray-500 transition-all">Faculty</button>
+            <button onclick="setTab('requests')" id="tabRequests" class="px-10 py-3 rounded-xl text-sm font-bold text-gray-500 transition-all flex items-center gap-3">
+                Requests <span id="requestBadge" class="bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full">0</span>
+            </button>
+        </div>
+
+        <div id="bulkInviteSection" class="bg-theme-card rounded-3xl border border-theme-default shadow-sm p-6">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h3 class="text-lg font-bold dark:text-white">Batch Onboarding</h3>
+                    <p class="text-xs text-gray-500 font-medium">Upload Excel file to populate current tab.</p>
+                </div>
+                <label class="px-6 py-2.5 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:border-primary-400 text-gray-700 dark:text-gray-200 rounded-xl text-xs font-bold cursor-pointer transition-all flex items-center gap-2">
+                    <i class="fas fa-file-excel text-green-600"></i>
+                    <span>Upload Spreadsheet</span>
+                    <input type="file" id="excelUpload" class="hidden" accept=".xlsx, .xls, .csv" onchange="handleExcelUpload(event)">
+                </label>
+            </div>
+        </div>
+
+        <div class="bg-theme-card rounded-3xl border border-theme-default shadow-md overflow-hidden">
+            <div class="table-container">
+                <table class="w-full text-left" id="mainTable">
+                    <thead id="tableHead"></thead>
+                    <tbody id="userTableBody" class="divide-y border-theme-default"></tbody>
+                </table>
+            </div>
+            <div id="emptyState" class="p-20 text-center hidden"><p class="font-bold text-gray-500">No records found.</p></div>
+        </div>
+    </main>
+  </div>
+</div>
+
+<div id="addModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden items-center justify-center z-[200]">
+    <div class="bg-theme-card rounded-[2.5rem] w-full max-w-2xl p-8 border border-theme-default shadow-2xl overflow-y-auto max-h-[90vh]">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-2xl font-bold dark:text-white">Onboard Member</h3>
+            <button onclick="closeAddModal()" class="text-gray-400 hover:text-red-500 transition-colors"><i class="fas fa-times text-xl"></i></button>
+        </div>
+        <div class="space-y-4">
+            <div class="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-xl mb-4">
+                <button onclick="setModalUserType('student')" id="modalTabStudent" class="flex-1 py-2 text-xs font-bold rounded-lg modal-tab-active">Student</button>
+                <button onclick="setModalUserType('faculty')" id="modalTabFaculty" class="flex-1 py-2 text-xs font-bold rounded-lg text-gray-500">Faculty</button>
+            </div>
+            <div class="grid grid-cols-2 gap-4" id="modalFields"></div>
+            <div class="flex gap-3 pt-4">
+                <button onclick="closeAddModal()" class="flex-1 py-3 bg-gray-100 dark:bg-gray-700 rounded-xl text-xs font-black uppercase text-gray-500">Cancel</button>
+                <button onclick="saveUser()" class="flex-1 py-3 bg-primary-500 text-white rounded-xl text-xs font-black uppercase shadow-lg">Save User</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let activeTab = 'student';
+let modalUserType = 'student';
+
+let users = JSON.parse(localStorage.getItem('campusUsers')) || [
+    { 
+        id: "S-2024-001", name: "Rahul Singh", email: "rahul@xyz.edu", type: "student", 
+        program: "B.Tech", year: "3", branch: "CSE", sec: "A", 
+        streak: 15, contest: 12, solved: 145, won: 2,
+        collegeRank: 5, globalRank: 1204, level: 12, accuracy: "88%", lastActive: "2 hours ago"
+    },
+    { 
+        id: "F-1005", name: "Dr. Vikram Seth", email: "vikram@xyz.edu", type: "faculty", 
+        designation: "Professor", dept: "CSE", 
+        contestCreate: 5, problemCreate: 42, rating: "4.8", status: "Active", role: "HOD",
+        lastActive: "Now"
+    }
+];
+
+let requests = JSON.parse(localStorage.getItem('campusRequests')) || [
+    { id: "REQ-F-001", name: "Dr. Anjali Verma", email: "anjali@xyz.edu", type: "faculty", designation: "Asst. Prof", dept: "IT", role: "Instructor", date: "2025-05-15" }
+];
+
+function updateData() {
+    localStorage.setItem('campusUsers', JSON.stringify(users));
+    localStorage.setItem('campusRequests', JSON.stringify(requests));
+    const badge = document.getElementById('requestBadge');
+    badge.innerText = requests.length;
+    badge.style.display = requests.length > 0 ? 'inline-block' : 'none';
+    render();
+}
+
+function setTab(tab) {
+    activeTab = tab;
+    ['tabStudent', 'tabFaculty', 'tabRequests'].forEach(id => {
+        document.getElementById(id).className = id.toLowerCase().includes(tab) ? 
+        'px-10 py-3 rounded-xl text-sm font-bold transition-all tab-active' : 'px-10 py-3 rounded-xl text-sm font-bold text-gray-500 transition-all';
+    });
+    render();
+}
+
+function updateModalFields() {
+    const container = document.getElementById('modalFields');
+    if (modalUserType === 'student') {
+        container.innerHTML = `
+            <input id="newName" type="text" placeholder="Full Name" class="p-3 rounded-xl border border-theme-default bg-transparent text-sm dark:text-white outline-none">
+            <input id="newEmail" type="email" placeholder="Email" class="p-3 rounded-xl border border-theme-default bg-transparent text-sm dark:text-white outline-none">
+            <input id="newId" type="text" placeholder="ID Number" class="p-3 rounded-xl border border-theme-default bg-transparent text-sm dark:text-white outline-none">
+            <input id="newProgram" type="text" placeholder="Program" class="p-3 rounded-xl border border-theme-default bg-transparent text-sm dark:text-white outline-none">
+            <input id="newYear" type="text" placeholder="Year" class="p-3 rounded-xl border border-theme-default bg-transparent text-sm dark:text-white outline-none">
+            <input id="newBranch" type="text" placeholder="Branch" class="p-3 rounded-xl border border-theme-default bg-transparent text-sm dark:text-white outline-none">
+            <input id="newSec" type="text" placeholder="Section" class="p-3 rounded-xl border border-theme-default bg-transparent text-sm dark:text-white outline-none">
+            <input id="newContest" type="number" placeholder="Contests" class="p-3 rounded-xl border border-theme-default bg-transparent text-sm dark:text-white outline-none">
+            <input id="newSolved" type="number" placeholder="Solved" class="p-3 rounded-xl border border-theme-default bg-transparent text-sm dark:text-white outline-none">
+            <input id="newWon" type="number" placeholder="Won" class="p-3 rounded-xl border border-theme-default bg-transparent text-sm dark:text-white outline-none">
+        `;
+    } else {
+        container.innerHTML = `
+            <input id="newName" type="text" placeholder="Full Name" class="p-3 rounded-xl border border-theme-default bg-transparent text-sm dark:text-white outline-none">
+            <input id="newEmail" type="email" placeholder="Email" class="p-3 rounded-xl border border-theme-default bg-transparent text-sm dark:text-white outline-none">
+            <input id="newId" type="text" placeholder="Faculty ID" class="p-3 rounded-xl border border-theme-default bg-transparent text-sm dark:text-white outline-none">
+            <input id="newDesig" type="text" placeholder="Designation" class="p-3 rounded-xl border border-theme-default bg-transparent text-sm dark:text-white outline-none">
+            <input id="newDept" type="text" placeholder="Department" class="p-3 rounded-xl border border-theme-default bg-transparent text-sm dark:text-white outline-none">
+            <input id="newRating" type="text" placeholder="Initial Rating" class="p-3 rounded-xl border border-theme-default bg-transparent text-sm dark:text-white outline-none">
+            <input id="newRole" type="text" placeholder="Role (HOD/Prof/Admin)" class="p-3 rounded-xl border border-theme-default bg-transparent text-sm dark:text-white outline-none">
+        `;
+    }
+}
+
+function saveUser() {
+    let data = { type: modalUserType, id: document.getElementById('newId').value, name: document.getElementById('newName').value, email: document.getElementById('newEmail').value, lastActive: "Just now" };
+    if(!data.name || !data.id) return alert("Missing ID or Name");
+    
+    if (modalUserType === 'student') {
+        Object.assign(data, {
+            program: document.getElementById('newProgram').value, year: document.getElementById('newYear').value, 
+            branch: document.getElementById('newBranch').value, sec: document.getElementById('newSec').value,
+            contest: document.getElementById('newContest').value || 0, solved: document.getElementById('newSolved').value || 0, 
+            won: document.getElementById('newWon').value || 0, streak: 0, collegeRank: '-', globalRank: '-', level: 1, accuracy: '0%'
+        });
+    } else {
+        Object.assign(data, {
+            designation: document.getElementById('newDesig').value, dept: document.getElementById('newDept').value,
+            contestCreate: 0, problemCreate: 0, rating: document.getElementById('newRating').value || "0.0", status: "Active", role: document.getElementById('newRole').value
+        });
+    }
+    users.push(data);
+    updateData();
+    closeAddModal();
+}
+
+function render() {
+    const thead = document.getElementById('tableHead');
+    const tbody = document.getElementById('userTableBody');
+    const search = document.getElementById('searchInput').value.toLowerCase();
+    
+    if (activeTab === 'student') {
+        thead.innerHTML = `<tr><th class="px-8 py-4">Student Info</th><th class="px-4 py-4">Email</th><th class="px-4 py-4">Academic</th><th class="px-4 py-4 text-center">Contests</th><th class="px-4 py-4 text-center">Solved</th><th class="px-4 py-4 text-center">Won</th><th class="px-4 py-4 text-center text-orange-500">Streak</th><th class="px-4 py-4">College Rank</th><th class="px-4 py-4">Global Rank</th><th class="px-4 py-4 text-center">Level</th><th class="px-4 py-4">Active</th><th class="px-8 py-4 text-right">Actions</th></tr>`;
+    } else if (activeTab === 'faculty') {
+        thead.innerHTML = `<tr><th class="px-8 py-4">Faculty Info</th><th class="px-4 py-4">Email</th><th class="px-4 py-4">Designation</th><th class="px-4 py-4">Dept</th><th class="px-4 py-4 text-center">Contest Create</th><th class="px-4 py-4 text-center">Problem Create</th><th class="px-4 py-4 text-center">Rating</th><th class="px-4 py-4">Status</th><th class="px-4 py-4">Role</th><th class="px-4 py-4">Active</th><th class="px-8 py-4 text-right">Actions</th></tr>`;
+    } else {
+        thead.innerHTML = `<tr><th class="px-8 py-4">Applicant</th><th class="px-4 py-4">Email</th><th class="px-4 py-4">Type</th><th class="px-4 py-4">Professional Details</th><th class="px-4 py-4">Req. Date</th><th class="px-8 py-4 text-right">Action</th></tr>`;
+    }
+
+    let list = activeTab === 'requests' ? requests : users.filter(u => u.type === activeTab);
+    let filtered = list.filter(u => (u.name || "").toLowerCase().includes(search) || (u.id || "").toLowerCase().includes(search));
+    
+    tbody.innerHTML = '';
+    if(filtered.length === 0) { document.getElementById('emptyState').classList.remove('hidden'); return; }
+    document.getElementById('emptyState').classList.add('hidden');
+
+    filtered.forEach((u, i) => {
+        let nameIcon = (u.name && u.name.length > 0) ? u.name[0] : '?';
+        let row = `<tr class="hover:bg-blue-50/50 dark:hover:bg-blue-900/10 border-b border-theme-default text-xs">
+            <td class="px-8 py-4 flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-primary-500 text-white flex items-center justify-center font-bold text-[10px]">${nameIcon}</div>
+                <div><p class="font-bold dark:text-white">${u.name || 'Unknown'}</p><p class="text-[9px] text-primary-500 font-bold uppercase">${u.id || 'N/A'}</p></div>
+            </td>
+            <td class="px-4 py-4 text-gray-500">${u.email || 'N/A'}</td>`;
+
+        if (activeTab === 'student') {
+            row += `<td class="px-4 py-4 dark:text-gray-300 font-medium">${u.program || ''} • ${u.branch || ''}<br><span class="text-[9px] text-gray-400">Yr ${u.year || ''} • Sec ${u.sec || ''}</span></td>
+                    <td class="px-4 py-4 text-center font-bold">${u.contest || 0}</td>
+                    <td class="px-4 py-4 text-center font-bold">${u.solved || 0}</td>
+                    <td class="px-4 py-4 text-center font-bold">${u.won || 0}</td>
+                    <td class="px-4 py-4 text-center font-bold text-orange-500"><i class="fas fa-fire mr-1"></i>${u.streak || 0}</td>
+                    <td class="px-4 py-4 font-bold">#${u.collegeRank || '-'}</td>
+                    <td class="px-4 py-4 font-bold text-gray-400">#${u.globalRank || '-'}</td>
+                    <td class="px-4 py-4 text-center"><span class="px-2 py-0.5 bg-primary-100 text-primary-700 rounded text-[9px] font-black">LVL ${u.level || 1}</span></td>
+                    <td class="px-4 py-4 text-gray-400 text-[10px]">${u.lastActive || 'Just now'}</td>
+                    <td class="px-8 py-4 text-right"><button onclick="deleteUser(${i})" class="text-gray-300 hover:text-red-500"><i class="fas fa-trash-alt"></i></button></td>`;
+        } else if (activeTab === 'faculty') {
+            row += `<td class="px-4 py-4 dark:text-gray-300 font-bold">${u.designation || 'Faculty'}</td>
+                    <td class="px-4 py-4 dark:text-gray-300">${u.dept || 'N/A'}</td>
+                    <td class="px-4 py-4 text-center font-bold text-blue-500">${u.contestCreate || 0}</td>
+                    <td class="px-4 py-4 text-center font-bold text-green-500">${u.problemCreate || 0}</td>
+                    <td class="px-4 py-4 text-center text-orange-500 font-bold"><i class="fas fa-star mr-1"></i>${u.rating || '0.0'}</td>
+                    <td class="px-4 py-4"><span class="px-2 py-0.5 bg-green-100 text-green-700 rounded text-[9px] font-bold uppercase">${u.status || 'Active'}</span></td>
+                    <td class="px-4 py-4 font-bold text-primary-500">${u.role || 'Instructor'}</td>
+                    <td class="px-4 py-4 text-gray-400 text-[10px]">${u.lastActive || 'Just now'}</td>
+                    <td class="px-8 py-4 text-right"><button onclick="deleteUser(${i})" class="text-gray-300 hover:text-red-500"><i class="fas fa-trash-alt"></i></button></td>`;
+        } else {
+            let detailLine = u.type === 'student' ? `${u.program} | ${u.branch}` : `${u.designation} | ${u.dept}`;
+            row += `<td class="px-4 py-4"><span class="px-2 py-1 ${u.type === 'faculty' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'} rounded font-black uppercase text-[8px]">${u.type}</span></td>
+                    <td class="px-4 py-4 dark:text-gray-300 font-medium italic">${detailLine}</td>
+                    <td class="px-4 py-4 text-gray-400">${u.date || 'N/A'}</td>
+                    <td class="px-8 py-4 text-right flex justify-end gap-2">
+                        <button onclick="handleRequest(${i}, 'approve')" class="px-4 py-1.5 bg-primary-500 text-white rounded-xl text-[10px] font-bold shadow-md hover:bg-primary-600">Approve</button>
+                        <button onclick="handleRequest(${i}, 'reject')" class="px-4 py-1.5 bg-gray-100 text-red-600 rounded-xl text-[10px] font-bold hover:bg-red-50 transition-all">Reject</button>
+                    </td>`;
+        }
+        row += `</tr>`;
+        tbody.innerHTML += row;
+    });
+}
+
+function handleRequest(idx, action) {
+    if(action === 'approve') {
+        let req = requests[idx];
+        let approvedUser = { ...req, lastActive: "Just now", status: "Active" };
+        if(req.type === 'faculty') {
+            Object.assign(approvedUser, { 
+                contestCreate: 0, 
+                problemCreate: 0, 
+                rating: req.rating || "0.0", 
+                role: req.role || "Faculty" 
+            });
+        } else {
+            Object.assign(approvedUser, { contest:0, solved:0, won:0, level:1, streak:0, collegeRank:'-', globalRank:'-', accuracy:'0%' });
+        }
+        users.push(approvedUser);
+    }
+    requests.splice(idx, 1);
+    updateData();
+}
+
+function deleteUser(idx) {
+    if(!confirm("Delete user?")) return;
+    const filtered = users.filter(u => u.type === activeTab);
+    const actualIdx = users.indexOf(filtered[idx]);
+    users.splice(actualIdx, 1);
+    updateData();
+}
+
+function handleExcelUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+        try {
+            const data = new Uint8Array(event.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+            const sheetName = workbook.SheetNames[0];
+            const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+
+            if (jsonData.length === 0) {
+                alert("The file is empty or has no data rows.");
+                return;
+            }
+
+            jsonData.forEach(row => {
+                // Robust mapping for header variations (supports: id, ID, Name, Full Name, Email, etc.)
+                let idValue = row.id || row.ID || row["ID Number"] || row["Student ID"] || row["Faculty ID"] || ("AUTO-"+Math.floor(Math.random()*9000));
+                let nameValue = row.name || row.Name || row["Full Name"] || "New User";
+                let emailValue = row.email || row.Email || "N/A";
+
+                let newUser = {
+                    type: activeTab, 
+                    id: idValue,
+                    name: nameValue,
+                    email: emailValue,
+                    lastActive: "Just now"
+                };
+
+                if (activeTab === 'student') {
+                    Object.assign(newUser, {
+                        program: row.program || row.Program || "B.Tech",
+                        branch: row.branch || row.Branch || "CSE",
+                        year: row.year || row.Year || "1",
+                        sec: row.sec || row.Section || "A",
+                        streak: row.streak || row.Streak || 0,
+                        contest: row.contest || row.Contests || row.Contest || 0,
+                        solved: row.solved || row.Solved || 0,
+                        won: row.won || row.Won || 0,
+                        collegeRank: row.collegeRank || row["College Rank"] || '-',
+                        globalRank: row.globalRank || row["Global Rank"] || '-',
+                        level: row.level || row.Level || 1,
+                        accuracy: row.accuracy || row.Accuracy || '0%'
+                    });
+                } else if (activeTab === 'faculty') {
+                    Object.assign(newUser, {
+                        designation: row.designation || row.Designation || row.role || row.Role || "Faculty",
+                        dept: row.dept || row.Department || "General",
+                        contestCreate: row.contestCreate || row["Contest create"] || row["Contests"] || 0,
+                        problemCreate: row.problemCreate || row["Problem create"] || row["Problems"] || 0,
+                        rating: row.rating || row.Rating || "0.0",
+                        status: row.status || row.Status || "Active",
+                        role: row.role || row.Role || "Instructor"
+                    });
+                }
+                users.push(newUser);
+            });
+
+            updateData();
+            alert("Success! Added " + jsonData.length + " users to the " + activeTab + " list.");
+            e.target.value = ""; 
+        } catch (error) {
+            console.error("Upload error:", error);
+            alert("Error reading file. Make sure it's a valid Excel or CSV.");
+        }
+    };
+    reader.readAsArrayBuffer(file);
+}
+
+function exportToExcel() {
+    let list = activeTab === 'requests' ? requests : users.filter(u => u.type === activeTab);
+    const ws = XLSX.utils.json_to_sheet(list);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, activeTab.toUpperCase());
+    XLSX.writeFile(wb, `CampusCode_${activeTab}_Data.xlsx`);
+}
+
+function openAddModal() { updateModalFields(); document.getElementById("addModal").classList.replace("hidden", "flex"); }
+function closeAddModal() { document.getElementById("addModal").classList.replace("flex", "hidden"); }
+function setModalUserType(t) { 
+    modalUserType = t; 
+    document.getElementById('modalTabStudent').className = t === 'student' ? 'flex-1 py-2 text-xs font-bold rounded-lg modal-tab-active' : 'flex-1 py-2 text-xs font-bold rounded-lg text-gray-500';
+    document.getElementById('modalTabFaculty').className = t === 'faculty' ? 'flex-1 py-2 text-xs font-bold rounded-lg modal-tab-active' : 'flex-1 py-2 text-xs font-bold rounded-lg text-gray-500';
+    updateModalFields();
+}
+document.getElementById("themeToggleBtn").onclick = () => document.documentElement.classList.toggle('dark');
+function toggleProfile() { alert("Profile view"); }
+document.addEventListener('DOMContentLoaded', updateData);
+</script>
+</body>
+</html>

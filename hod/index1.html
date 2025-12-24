@@ -1,0 +1,2700 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HOD2 Dashboard</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- SheetJS for Excel Export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- jsPDF for PDF Export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- Quill Rich Text Editor Theme -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ["Poppins", "sans-serif"],
+                    },
+                    colors: {
+                        primary: {
+                            50: "#E7F0FA",
+                            100: "#D0E1F5",
+                            200: "#7BA4D0",
+                            300: "#4D84C0",
+                            400: "#2E5E99",
+                            500: "#1E4A7A",
+                            600: "#0D2440",
+                        },
+                        dark: {
+                            bg: "#111827",
+                            card: "#1F2937",
+                            text: "#F9FAFB",
+                            border: "#374151"
+                        }
+                    },
+                },
+            },
+        };
+    </script>
+    <style>
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .dark ::-webkit-scrollbar-track {
+            background: #111827;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #7ba4d0;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #2e5e99;
+        }
+
+        .nav-item {
+            cursor: pointer;
+            color: #4b5563;
+        }
+
+        .dark .nav-item {
+            color: #9ca3af;
+        }
+
+        .nav-item:hover {
+            background-color: #f3f4f6;
+        }
+
+        .dark .nav-item:hover {
+            background-color: #374151;
+            color: #e5e7eb;
+        }
+
+        .nav-item.active {
+            background-color: #d0e1f5;
+            color: #1e4a7a;
+        }
+
+        .dark .nav-item.active {
+            background-color: #1e4a7a;
+            color: #ffffff;
+        }
+
+        .nav-item.active::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 60%;
+            width: 4px;
+            background-color: #2e5e99;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .dark .nav-item.active::before {
+            background-color: #60a5fa;
+        }
+
+        /* Reports Styles */
+        .report-preview-container {
+            background: white;
+            width: 100%;
+            max-width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto;
+            padding: 20mm;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            position: relative;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 7rem;
+            font-weight: 800;
+            color: rgba(0, 0, 0, 0.02);
+            pointer-events: none;
+        }
+
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+            font-size: 0.8rem;
+        }
+
+        .report-table th,
+        .report-table td {
+            border: 1px solid #e5e7eb;
+            padding: 0.75rem;
+            text-align: left;
+        }
+
+        .report-table th {
+            background: #f9fafb;
+            font-weight: 700;
+            color: #374151;
+        }
+    </style>
+</head>
+
+<body
+    class="bg-gray-50 dark:bg-gray-900 min-h-screen font-sans transition-colors duration-200 text-gray-800 dark:text-gray-200">
+    <div class="flex h-screen overflow-hidden">
+        <!-- SIDEBAR -->
+        <aside
+            class="sidebar w-64 bg-white dark:bg-gray-800 shadow-sm border-r border-gray-200 dark:border-gray-700 flex-shrink-0 flex flex-col transition-colors duration-200">
+            <div class="p-6">
+                <h1 class="text-2xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
+                    <i class="fas fa-code text-primary-500"></i>
+                    <span>CampusCode</span>
+                </h1>
+            </div>
+
+            <nav class="px-4 space-y-1 flex-1 overflow-y-auto">
+                <div data-target="section-dashboard"
+                    class="nav-item active relative flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors">
+                    <i class="fas fa-home w-6 text-center mr-3"></i>
+                    <span>Dashboard</span>
+                </div>
+                <div data-target="section-manage-problems"
+                    class="nav-item relative flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors">
+                    <i class="fas fa-tasks w-6 text-center mr-3"></i>
+                    <span>Problems</span>
+                </div>
+                <div data-target="section-manage-contests"
+                    class="nav-item relative flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors">
+                    <i class="fas fa-trophy w-6 text-center mr-3"></i>
+                    <span>Contests</span>
+                </div>
+                <div data-target="section-forum"
+                    class="nav-item relative flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors">
+                    <i class="fas fa-comments w-6 text-center mr-3"></i>
+                    <span>Community</span>
+                </div>
+                <div data-target="section-reports"
+                    class="nav-item relative flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors">
+                    <i class="fas fa-file-alt w-6 text-center mr-3"></i>
+                    <span>Reports</span>
+                </div>
+                <!-- Users Dropdown -->
+                <div class="nav-group">
+                    <button id="navUsersBtn"
+                        class="w-full flex items-center justify-between px-4 py-3 text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg transition-colors group">
+                        <div class="flex items-center">
+                            <i
+                                class="fas fa-users-cog w-6 text-center mr-3 group-hover:text-primary-600 transition-colors"></i>
+                            <span
+                                class="group-hover:text-gray-900 dark:group-hover:text-white transition-colors">Users</span>
+                        </div>
+                        <i id="navUsersIcon"
+                            class="fas fa-chevron-right text-xs text-gray-400 transition-transform duration-200"></i>
+                    </button>
+                    <!-- Submenu -->
+                    <div id="navUsersMenu" class="hidden pl-4 pr-2 space-y-1 mt-1">
+                        <div data-target="section-manage-class"
+                            class="nav-item relative flex items-center px-4 py-2.5 text-sm font-medium rounded-lg transition-colors text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
+                            <i class="fas fa-user-graduate w-6 text-center mr-3 text-xs"></i>
+                            <span>Students</span>
+                        </div>
+                        <div data-target="section-manage-faculty"
+                            class="nav-item relative flex items-center px-4 py-2.5 text-sm font-medium rounded-lg transition-colors text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
+                            <i class="fas fa-chalkboard-teacher w-6 text-center mr-3 text-xs"></i>
+                            <span>Faculty</span>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Footer Items (Sticky) -->
+            <div class="p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+                <a href="x.html"
+                    class="flex items-center px-4 py-3 text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg transition-colors">
+                    <i class="fas fa-question-circle w-6 text-center mr-3"></i>
+                    <span>Help & Support</span>
+                </a>
+                <a href="#"
+                    class="flex items-center px-4 py-3 text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg transition-colors">
+                    <i class="fas fa-cog w-6 text-center mr-3"></i>
+                    <span>Settings</span>
+                </a>
+            </div>
+
+
+        </aside>
+
+        <!-- MAIN CONTENT AREA -->
+        <div class="flex-1 overflow-y-auto">
+            <!-- HEADER -->
+            <header class="bg-white dark:bg-gray-800 shadow-sm transition-colors duration-200 sticky top-0 z-20">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
+
+                    <h2 id="page-title" class="text-xl font-bold text-gray-800 dark:text-white ml-2">Dashboard</h2>
+
+                    <div class="flex-1 max-w-lg ml-8 hidden md:block">
+                        <div class="relative flex items-center">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-search text-gray-400"></i>
+                            </div>
+                            <input type="text"
+                                class="block w-full pl-10 pr-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-400 focus:border-transparent placeholder-gray-500 dark:placeholder-gray-400"
+                                placeholder="Search..." />
+                        </div>
+                    </div>
+
+                    <div class="ml-4 flex items-center gap-3">
+                        <button id="themeToggleBtn"
+                            class="p-2 rounded-full text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 focus:outline-none transition-transform active:scale-95">
+                            <i class="fas fa-moon text-xl"></i>
+                        </button>
+
+                        <div class="relative">
+                            <button id="notificationBtn"
+                                class="p-2 rounded-full text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 focus:outline-none">
+                                <i class="fas fa-bell text-xl"></i>
+                                <span
+                                    class="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500 border-2 border-white dark:border-gray-800"></span>
+                            </button>
+                        </div>
+
+                        <button id="headerProfileBtn"
+                            class="ml-2 flex items-center gap-3 p-1 pr-3 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                            <div
+                                class="h-9 w-9 rounded-full bg-primary-500 flex items-center justify-center text-white font-bold text-sm">
+                                JD</div>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 relative">
+
+                <!-- SECTION: DASHBOARD -->
+                <div id="section-dashboard" class="content-section">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                        <!-- LEFT COLUMN (Stats & Quick Actions) -->
+                        <div class="lg:col-span-2 space-y-6">
+                            <!-- Stats Row -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                <!-- Card 1 -->
+                                <div
+                                    class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-lg relative overflow-hidden group hover:scale-[1.02] transition-transform duration-200">
+                                    <div class="relative z-10 flex justify-between items-start">
+                                        <div>
+                                            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Problems
+                                                Created</p>
+                                            <h3 class="text-3xl font-bold text-gray-900 dark:text-white mt-2">24</h3>
+                                        </div>
+                                        <div class="p-3 bg-blue-500/10 rounded-lg text-blue-500 dark:text-blue-400">
+                                            <i class="fas fa-code text-xl"></i>
+                                        </div>
+                                    </div>
+                                    <!-- Decorative gradient blob -->
+                                    <div
+                                        class="absolute -bottom-4 -right-4 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl group-hover:bg-blue-500/20 transition-colors">
+                                    </div>
+                                </div>
+
+                                <!-- Card 2 -->
+                                <div
+                                    class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-lg relative overflow-hidden group hover:scale-[1.02] transition-transform duration-200">
+                                    <div class="relative z-10 flex justify-between items-start">
+                                        <div>
+                                            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Active
+                                                Contests</p>
+                                            <h3 class="text-3xl font-bold text-gray-900 dark:text-white mt-2">8</h3>
+                                        </div>
+                                        <div
+                                            class="p-3 bg-purple-500/10 rounded-lg text-purple-500 dark:text-purple-400">
+                                            <i class="fas fa-trophy text-xl"></i>
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="absolute -bottom-4 -right-4 w-24 h-24 bg-purple-500/10 rounded-full blur-2xl group-hover:bg-purple-500/20 transition-colors">
+                                    </div>
+                                </div>
+
+                                <!-- Card 3: Total Faculty -->
+                                <div
+                                    class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-lg relative overflow-hidden group hover:scale-[1.02] transition-transform duration-200">
+                                    <div class="relative z-10 flex justify-between items-start">
+                                        <div>
+                                            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total
+                                                Faculty
+                                            </p>
+                                            <h3 class="text-3xl font-bold text-gray-900 dark:text-white mt-2">45</h3>
+                                        </div>
+                                        <div
+                                            class="p-3 bg-orange-500/10 rounded-lg text-orange-500 dark:text-orange-400">
+                                            <i class="fas fa-chalkboard-teacher text-xl"></i>
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="absolute -bottom-4 -right-4 w-24 h-24 bg-orange-500/10 rounded-full blur-2xl group-hover:bg-orange-500/20 transition-colors">
+                                    </div>
+                                </div>
+
+                                <!-- Card 4: Total Student -->
+                                <div
+                                    class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-lg relative overflow-hidden group hover:scale-[1.02] transition-transform duration-200">
+                                    <div class="relative z-10 flex justify-between items-start">
+                                        <div>
+                                            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total
+                                                Student</p>
+                                            <h3 class="text-3xl font-bold text-gray-900 dark:text-white mt-2">1,200</h3>
+                                        </div>
+                                        <div class="p-3 bg-green-500/10 rounded-lg text-green-500 dark:text-green-400">
+                                            <i class="fas fa-user-graduate text-xl"></i>
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="absolute -bottom-4 -right-4 w-24 h-24 bg-green-500/10 rounded-full blur-2xl group-hover:bg-green-500/20 transition-colors">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Quick Actions -->
+                            <div
+                                class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg p-6">
+                                <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Quick Actions</h3>
+                                <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                                    <button
+                                        onclick="document.querySelector('[data-target=section-manage-problems]').click();"
+                                        class="flex flex-col items-center justify-center p-4 rounded-xl bg-gray-50 hover:bg-gray-100 dark:bg-gray-700/50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-600 transition-all hover:scale-105 group">
+                                        <div
+                                            class="w-12 h-12 rounded-full bg-white flex items-center justify-center text-gray-900 text-xl mb-3 shadow-md group-hover:shadow-lg transition-shadow">
+                                            <i class="fas fa-plus"></i>
+                                        </div>
+                                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Create
+                                            Problem</span>
+                                    </button>
+
+                                    <button
+                                        onclick="document.querySelector('[data-target=section-manage-contests]').click();"
+                                        class="flex flex-col items-center justify-center p-4 rounded-xl bg-gray-50 hover:bg-gray-100 dark:bg-gray-700/50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-600 transition-all hover:scale-105 group">
+                                        <div
+                                            class="w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-600 dark:text-purple-400 text-xl mb-3 shadow-sm">
+                                            <i class="fas fa-calendar-plus"></i>
+                                        </div>
+                                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">New
+                                            Contest</span>
+                                    </button>
+
+                                    <button
+                                        onclick="document.querySelector('[data-target=section-manage-problems]').click();"
+                                        class="flex flex-col items-center justify-center p-4 rounded-xl bg-gray-50 hover:bg-gray-100 dark:bg-gray-700/50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-600 transition-all hover:scale-105 group">
+                                        <div
+                                            class="w-12 h-12 rounded-full bg-orange-500/20 flex items-center justify-center text-orange-600 dark:text-orange-400 text-xl mb-3 shadow-sm">
+                                            <i class="fas fa-code"></i>
+                                        </div>
+                                        <span
+                                            class="text-sm font-medium text-gray-700 dark:text-gray-300">Problems</span>
+                                    </button>
+
+                                    <button
+                                        onclick="document.querySelector('[data-target=section-manage-class]').click();"
+                                        class="flex flex-col items-center justify-center p-4 rounded-xl bg-gray-50 hover:bg-gray-100 dark:bg-gray-700/50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-600 transition-all hover:scale-105 group">
+                                        <div
+                                            class="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center text-green-600 dark:text-green-400 text-xl mb-3 shadow-sm">
+                                            <i class="fas fa-user-graduate"></i>
+                                        </div>
+                                        <span
+                                            class="text-sm font-medium text-gray-700 dark:text-gray-300">Students</span>
+                                    </button>
+
+                                    <button onclick="document.querySelector('[data-target=section-tasks]').click();"
+                                        class="flex flex-col items-center justify-center p-4 rounded-xl bg-gray-50 hover:bg-gray-100 dark:bg-gray-700/50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-600 transition-all hover:scale-105 group">
+                                        <div
+                                            class="w-12 h-12 rounded-full bg-yellow-500/20 flex items-center justify-center text-yellow-600 dark:text-yellow-400 text-xl mb-3 shadow-sm">
+                                            <i class="fas fa-tasks"></i>
+                                        </div>
+                                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Tasks</span>
+                                    </button>
+
+                                    <!-- Reports Quick Link -->
+                                    <button id="btn-dashboard-reports"
+                                        class="flex flex-col items-center justify-center p-4 rounded-xl bg-gray-50 hover:bg-gray-100 dark:bg-gray-700/50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-600 transition-all hover:scale-105 group">
+                                        <div
+                                            class="w-12 h-12 rounded-full bg-teal-500/20 flex items-center justify-center text-teal-600 dark:text-teal-400 text-xl mb-3 shadow-sm">
+                                            <i class="fas fa-file-alt"></i>
+                                        </div>
+                                        <span
+                                            class="text-sm font-medium text-gray-700 dark:text-gray-300">Reports</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Draft Problems List -->
+                            <div
+                                class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg p-6">
+                                <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Draft Problems List
+                                </h3>
+                                <div class="space-y-4">
+                                    <!-- Item 1 -->
+                                    <div
+                                        class="flex items-center justify-between group hover:bg-gray-50 dark:hover:bg-gray-700/30 p-2 rounded-lg transition-colors cursor-pointer">
+                                        <div class="flex items-center gap-4">
+                                            <div
+                                                class="w-10 h-10 rounded-full bg-red-500/20 text-red-600 dark:text-red-500 flex items-center justify-center">
+                                                <i class="fas fa-edit"></i>
+                                            </div>
+                                            <div>
+                                                <p
+                                                    class="text-sm font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                                                    Binary Search - Edge Cases</p>
+                                                <p class="text-xs text-gray-500">Last Edited: 2h ago</p>
+                                            </div>
+                                        </div>
+                                        <div class="text-right">
+                                            <span class="text-xs font-medium text-red-500 dark:text-red-400">Status:
+                                                Missing Test
+                                                Cases</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Item 2 -->
+                                    <div
+                                        class="flex items-center justify-between group hover:bg-gray-50 dark:hover:bg-gray-700/30 p-2 rounded-lg transition-colors cursor-pointer">
+                                        <div class="flex items-center gap-4">
+                                            <div
+                                                class="w-10 h-10 rounded-full bg-yellow-500/20 text-yellow-600 dark:text-yellow-500 flex items-center justify-center">
+                                                <i class="fas fa-share-alt"></i>
+                                            </div>
+                                            <div>
+                                                <p
+                                                    class="text-sm font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                                                    Graph Traversal (DFS)</p>
+                                                <p class="text-xs text-gray-500">Last Edited: 1d ago</p>
+                                            </div>
+                                        </div>
+                                        <div class="text-right">
+                                            <span
+                                                class="text-xs font-medium text-yellow-600 dark:text-yellow-400">Status:
+                                                Needs
+                                                Description</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Item 3 -->
+                                    <div
+                                        class="flex items-center justify-between group hover:bg-gray-50 dark:hover:bg-gray-700/30 p-2 rounded-lg transition-colors cursor-pointer">
+                                        <div class="flex items-center gap-4">
+                                            <div
+                                                class="w-10 h-10 rounded-full bg-blue-500/20 text-blue-600 dark:text-blue-500 flex items-center justify-center">
+                                                <i class="fab fa-python"></i>
+                                            </div>
+                                            <div>
+                                                <p
+                                                    class="text-sm font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                                                    Dynamic Programming Intro</p>
+                                                <p class="text-xs text-gray-500">Last Edited: 3d ago</p>
+                                            </div>
+                                        </div>
+                                        <div class="text-right">
+                                            <span class="text-xs font-medium text-blue-600 dark:text-blue-400">Status:
+                                                Review
+                                                Pending</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- RIGHT COLUMN (Analytics & Activity) -->
+                        <div class="space-y-6">
+                            <!-- Analytics -->
+                            <div
+                                class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg p-6">
+                                <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Contest Analytics</h3>
+                                <div class="space-y-6">
+                                    <div>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">Student Performance
+                                            Distribution</p>
+                                        <div class="relative h-40 w-full">
+                                            <canvas id="performanceChart"></canvas>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">Problem Difficulty vs.
+                                            Solve Rate</p>
+                                        <div class="relative h-40 w-full">
+                                            <canvas id="difficultyChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Recent Activity -->
+                            <div
+                                class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg p-6">
+                                <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Recent Activity</h3>
+                                <div class="space-y-4">
+                                    <!-- Item 1 -->
+                                    <div class="flex gap-3">
+                                        <div class="flex-shrink-0">
+                                            <div class="w-2 h-2 rounded-full bg-blue-500 mt-2"></div>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm text-gray-700 dark:text-gray-300">Dr. Smith created "Data
+                                                Structures
+                                                Mid-term"</p>
+                                            <span class="text-xs text-gray-500">2h ago</span>
+                                        </div>
+                                    </div>
+                                    <!-- Item 2 -->
+                                    <div class="flex gap-3">
+                                        <div class="flex-shrink-0">
+                                            <div class="w-2 h-2 rounded-full bg-green-500 mt-2"></div>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm text-gray-700 dark:text-gray-300">New problem "Binary Tree
+                                                Traversal" added
+                                            </p>
+                                            <span class="text-xs text-gray-500">4h ago</span>
+                                        </div>
+                                    </div>
+                                    <!-- Item 3 -->
+                                    <div class="flex gap-3">
+                                        <div class="flex-shrink-0">
+                                            <div class="w-2 h-2 rounded-full bg-purple-500 mt-2"></div>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm text-gray-700 dark:text-gray-300">Contest "Intro to
+                                                Python" ended</p>
+                                            <span class="text-xs text-gray-500">1d ago</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- SECTION: MANAGE PROBLEMS -->
+                <div id="section-manage-problems" class="content-section hidden">
+                    <div id="problems-list-container">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-lg font-bold text-gray-800 dark:text-white">Problem Library</h2>
+                            <button id="btn-create-problem"
+                                class="btn-primary bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm">
+                                <i class="fas fa-plus mr-2"></i> Create Problem
+                            </button>
+                        </div>
+
+                        <div
+                            class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden flex flex-col md:flex-row min-h-[500px]">
+
+                            <!-- Filters Sidebar (Similar to problems.html) -->
+                            <aside
+                                class="w-full md:w-64 border-r border-gray-200 dark:border-gray-700 p-4 bg-gray-50 dark:bg-gray-800/50">
+                                <div class="mb-4">
+                                    <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+                                        Filters</h3>
+                                    <input type="text" placeholder="Filter..."
+                                        class="w-full text-sm border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 focus:ring-1 focus:ring-primary-500 mb-4">
+                                </div>
+                                <div class="space-y-4">
+                                    <div>
+                                        <h4 class="text-xs font-semibold text-gray-500 uppercase mb-2">Subjects</h4>
+                                        <div class="space-y-1">
+                                            <label
+                                                class="flex items-center text-sm text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-700 p-1 rounded cursor-pointer">
+                                                <input type="checkbox"
+                                                    class="mr-2 rounded border-gray-300 text-primary-600">
+                                                DSA
+                                            </label>
+                                            <label
+                                                class="flex items-center text-sm text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-700 p-1 rounded cursor-pointer">
+                                                <input type="checkbox"
+                                                    class="mr-2 rounded border-gray-300 text-primary-600">
+                                                OOPS
+                                            </label>
+                                            <label
+                                                class="flex items-center text-sm text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-700 p-1 rounded cursor-pointer">
+                                                <input type="checkbox"
+                                                    class="mr-2 rounded border-gray-300 text-primary-600">
+                                                DBMS
+                                            </label>
+                                            <label
+                                                class="flex items-center text-sm text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-700 p-1 rounded cursor-pointer">
+                                                <input type="checkbox"
+                                                    class="mr-2 rounded border-gray-300 text-primary-600"> CN
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-xs font-semibold text-gray-500 uppercase mb-2">Difficulty</h4>
+                                        <div class="space-y-1">
+                                            <label
+                                                class="flex items-center text-sm text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-700 p-1 rounded cursor-pointer">
+                                                <input type="checkbox"
+                                                    class="mr-2 rounded border-gray-300 text-primary-600">
+                                                Easy
+                                            </label>
+                                            <label
+                                                class="flex items-center text-sm text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-700 p-1 rounded cursor-pointer">
+                                                <input type="checkbox"
+                                                    class="mr-2 rounded border-gray-300 text-primary-600">
+                                                Medium
+                                            </label>
+                                            <label
+                                                class="flex items-center text-sm text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-700 p-1 rounded cursor-pointer">
+                                                <input type="checkbox"
+                                                    class="mr-2 rounded border-gray-300 text-primary-600">
+                                                Hard
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-xs font-semibold text-gray-500 uppercase mb-2">Tags</h4>
+                                        <div class="space-y-1">
+                                            <label
+                                                class="flex items-center text-sm text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-700 p-1 rounded cursor-pointer">
+                                                <input type="checkbox"
+                                                    class="mr-2 rounded border-gray-300 text-primary-600">
+                                                Arrays
+                                            </label>
+                                            <label
+                                                class="flex items-center text-sm text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-700 p-1 rounded cursor-pointer">
+                                                <input type="checkbox"
+                                                    class="mr-2 rounded border-gray-300 text-primary-600"> DP
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </aside>
+
+                            <!-- Main Content Area -->
+                            <div class="flex-1 flex flex-col">
+                                <!-- Tabs -->
+                                <div class="flex border-b border-gray-200 dark:border-gray-700 overflow-x-auto">
+                                    <button
+                                        class="problem-tab active px-6 py-4 text-sm font-medium text-primary-600 border-b-2 border-primary-500 focus:outline-none whitespace-nowrap"
+                                        data-tab="all-problems">All Problems</button>
+                                    <button
+                                        class="problem-tab px-6 py-4 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 focus:outline-none whitespace-nowrap"
+                                        data-tab="created-problems">Created Problems</button>
+                                    <button
+                                        class="problem-tab px-6 py-4 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 focus:outline-none whitespace-nowrap"
+                                        data-tab="bookmarked-problems">Bookmarked Problems</button>
+                                </div>
+
+                                <!-- Tab Content: All Problems -->
+                                <div id="all-problems" class="problem-tab-content p-0 flex-1">
+                                    <div class="overflow-x-auto">
+                                        <table class="w-full text-left border-collapse">
+                                            <thead>
+                                                <tr
+                                                    class="text-xs font-semibold text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-700/50 uppercase tracking-wider">
+                                                    <th class="px-6 py-3">Status</th>
+                                                    <th class="px-6 py-3">Title</th>
+                                                    <th class="px-6 py-3">Difficulty</th>
+                                                    <th class="px-6 py-3 text-right">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                                                <tr
+                                                    class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors group">
+                                                    <td class="px-6 py-4"><i
+                                                            class="fas fa-check-circle text-green-500"></i>
+                                                    </td>
+                                                    <td class="px-6 py-4 py-3">
+                                                        <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                                            Maximum Subarray</div>
+                                                        <div class="text-xs text-gray-500">Arrays, DP</div>
+                                                    </td>
+                                                    <td class="px-6 py-4">
+                                                        <span
+                                                            class="px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400">Medium</span>
+                                                    </td>
+                                                    <td class="px-6 py-4 text-right">
+                                                        <div class="flex justify-end items-center">
+                                                            <button
+                                                                class="bg-primary-50 text-primary-600 hover:bg-primary-100 px-3 py-1 rounded-md text-xs font-medium transition-colors">Solve</button>
+                                                            <button
+                                                                class="text-gray-400 hover:text-yellow-400 transition-colors mx-2 bookmark-btn"
+                                                                title="Bookmark"><i
+                                                                    class="far fa-bookmark"></i></button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <tr
+                                                    class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors group">
+                                                    <td class="px-6 py-4"><i class="far fa-circle text-gray-300"></i>
+                                                    </td>
+                                                    <td class="px-6 py-4">
+                                                        <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                                            Add Two Numbers</div>
+                                                        <div class="text-xs text-gray-500">Linked List, Math</div>
+                                                    </td>
+                                                    <td class="px-6 py-4">
+                                                        <span
+                                                            class="px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400">Medium</span>
+                                                    </td>
+                                                    <td class="px-6 py-4 text-right">
+                                                        <div class="flex justify-end items-center">
+                                                            <button
+                                                                class="bg-primary-50 text-primary-600 hover:bg-primary-100 px-3 py-1 rounded-md text-xs font-medium transition-colors">Solve</button>
+                                                            <button
+                                                                class="text-gray-400 hover:text-yellow-400 transition-colors mx-2 bookmark-btn"
+                                                                title="Bookmark"><i
+                                                                    class="far fa-bookmark"></i></button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <!-- Tab Content: Created Problems (With Delete/Edit/Bookmark) -->
+                                <div id="created-problems" class="problem-tab-content hidden p-0 flex-1">
+                                    <!-- Header with Export -->
+                                    <div class="flex justify-between items-center mb-4 px-1">
+                                        <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Your Problem
+                                            Bank</h3>
+                                        <button id="btn-export-problems"
+                                            class="bg-primary-600 hover:bg-primary-700 text-white px-3 py-1.5 rounded-lg text-sm font-medium transition-colors shadow-sm flex items-center">
+                                            <i class="fas fa-file-pdf mr-2"></i> Download PDF
+                                        </button>
+                                    </div>
+                                    <div class="overflow-x-auto">
+                                        <table class="w-full text-left border-collapse">
+                                            <thead>
+                                                <tr
+                                                    class="text-xs font-semibold text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-700/50 uppercase tracking-wider">
+                                                    <th class="px-6 py-3">Title</th>
+                                                    <th class="px-6 py-3">Difficulty</th>
+                                                    <th class="px-6 py-3 text-right">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                                                <tr
+                                                    class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors group">
+                                                    <td class="px-6 py-4">
+                                                        <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                                            Custom Graph Problem</div>
+                                                        <div class="text-xs text-gray-500">Graphs, BFS</div>
+                                                    </td>
+                                                    <td class="px-6 py-4">
+                                                        <span
+                                                            class="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">Hard</span>
+                                                    </td>
+                                                    <td class="px-6 py-4 text-right">
+                                                        <div class="flex justify-end items-center gap-2">
+                                                            <button
+                                                                class="bg-primary-50 text-primary-600 hover:bg-primary-100 px-3 py-1 rounded-md text-xs font-medium transition-colors">Solve</button>
+                                                            <button
+                                                                class="text-blue-500 hover:text-blue-700 transition-colors"
+                                                                title="Edit"><i class="fas fa-edit"></i></button>
+                                                            <button
+                                                                class="text-red-500 hover:text-red-700 transition-colors"
+                                                                title="Delete"><i class="fas fa-trash-alt"></i></button>
+                                                            <button
+                                                                class="text-gray-400 hover:text-yellow-400 transform hover:scale-110 transition-all bookmark-btn"
+                                                                title="Bookmark"><i
+                                                                    class="far fa-bookmark"></i></button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <!-- Tab Content: Bookmarked Problems (With Remove) -->
+                                <div id="bookmarked-problems" class="problem-tab-content hidden p-0 flex-1">
+                                    <div class="overflow-x-auto">
+                                        <table class="w-full text-left border-collapse">
+                                            <thead>
+                                                <tr
+                                                    class="text-xs font-semibold text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-700/50 uppercase tracking-wider">
+                                                    <th class="px-6 py-3">Title</th>
+                                                    <th class="px-6 py-3">Difficulty</th>
+                                                    <th class="px-6 py-3 text-right">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                                                <tr
+                                                    class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors group">
+                                                    <td class="px-6 py-4">
+                                                        <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                                            Maximum Subarray</div>
+                                                        <div class="text-xs text-gray-500">Arrays, DP</div>
+                                                    </td>
+                                                    <td class="px-6 py-4">
+                                                        <span
+                                                            class="px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400">Medium</span>
+                                                    </td>
+                                                    <td class="px-6 py-4 text-right">
+                                                        <div class="flex justify-end items-center">
+                                                            <button
+                                                                class="bg-primary-50 text-primary-600 hover:bg-primary-100 px-3 py-1 rounded-md text-xs font-medium transition-colors">Solve</button>
+                                                            <button
+                                                                class="text-red-500 hover:text-red-700 transition-colors flex items-center gap-1 text-xs font-medium bg-red-50 dark:bg-red-900/20 px-2 py-1 rounded ml-2"
+                                                                title="Remove Bookmark">
+                                                                <i class="fas fa-times"></i> Remove
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Create Problem Form (Revised) -->
+                    <div id="problem-form-view"
+                        class="hidden bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700">
+                        <div class="flex items-center gap-4 mb-6">
+                            <button id="btn-back-to-list"
+                                class="text-gray-500 hover:text-primary-600 transition-colors">
+                                <i class="fas fa-arrow-left"></i>
+                            </button>
+                            <h2 class="text-xl font-bold text-gray-800 dark:text-white">Create New Problem</h2>
+                        </div>
+
+                        <form class="space-y-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label
+                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Problem
+                                        Title</label>
+                                    <input type="text"
+                                        class="w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm p-2.5 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-primary-500 transition-shadow"
+                                        placeholder="e.g. Binary Tree Inversion">
+                                </div>
+                                <div>
+                                    <label
+                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Subject</label>
+                                    <select
+                                        class="w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm p-2.5 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 transition-shadow">
+                                        <option>Data Structures</option>
+                                        <option>Algorithms</option>
+                                        <option>Database Systems</option>
+                                        <option>Operating Systems</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label
+                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Difficulty</label>
+                                    <select
+                                        class="w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm p-2.5 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 transition-shadow">
+                                        <option>Easy</option>
+                                        <option>Medium</option>
+                                        <option>Hard</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label
+                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Attach
+                                        Hidden Tests</label>
+                                    <div class="flex items-center justify-center w-full">
+                                        <label for="hidden-tests-file"
+                                            class="flex flex-col items-center justify-center w-full h-10 border-2 border-gray-300 dark:border-gray-600 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600">
+                                            <div class="flex items-center gap-2 pt-1">
+                                                <i class="fas fa-cloud-upload-alt text-gray-500"></i>
+                                                <p class="text-xs text-gray-500 dark:text-gray-400">Click to upload .zip
+                                                    or .txt</p>
+                                            </div>
+                                            <input id="hidden-tests-file" type="file" class="hidden" />
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
+                                <div
+                                    class="h-[300px] bg-white dark:bg-gray-700 rounded-lg overflow-hidden border border-gray-300 dark:border-gray-600">
+                                    <div id="editor-container"></div>
+                                </div>
+                            </div>
+
+                            <div class="flex justify-end gap-3">
+                                <button type="button"
+                                    class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">Cancel</button>
+                                <button type="submit"
+                                    class="px-4 py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-lg transition-colors">Save
+                                    Problem</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- SECTION: MANAGE CONTESTS (List View) -->
+                <div id="section-manage-contests" class="content-section hidden">
+                    <!-- Page header (title + create) -->
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800 dark:text-white">Contests</h2>
+                        <button id="btn-create-contest"
+                            class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm">
+                            <i class="fas fa-plus mr-2"></i>Create Contest
+                        </button>
+                    </div>
+
+                    <!-- Tabs -->
+                    <div class="border-b border-gray-200 dark:border-gray-700 mb-6">
+                        <nav class="-mb-px flex space-x-8">
+                            <button id="contest-tab-upcoming"
+                                class="contest-tab active border-b-2 border-primary-500 text-primary-600 dark:text-primary-400 px-1 py-4 text-sm font-medium">
+                                Upcoming Contests
+                            </button>
+                            <button id="contest-tab-past"
+                                class="contest-tab border-b-2 border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 px-1 py-4 text-sm font-medium">
+                                Past Contests
+                            </button>
+                        </nav>
+                    </div>
+
+                    <!-- Search and Filter -->
+                    <div class="mb-6 flex flex-col sm:flex-row justify-between gap-4">
+                        <div class="relative flex-1 max-w-md">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-search text-gray-400"></i>
+                            </div>
+                            <input type="text"
+                                class="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-700 text-sm text-gray-900 dark:text-white"
+                                placeholder="Search contests...">
+                        </div>
+                        <div class="flex space-x-3">
+                            <select
+                                class="border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 focus:ring-primary-500">
+                                <option>All Contests</option>
+                                <option>Ongoing</option>
+                                <option>Upcoming</option>
+                                <option>Past</option>
+                            </select>
+                            <select
+                                class="border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 focus:ring-primary-500">
+                                <option>Sort by: Newest</option>
+                                <option>Sort by: Oldest</option>
+                                <option>Sort by: Most Popular</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Upcoming Contests List -->
+                    <div id="contest-list-upcoming" class="space-y-4">
+                        <!-- Contest Card 1 -->
+                        <div
+                            class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 hover:shadow-md transition-all duration-200 hover:scale-[1.01]">
+                            <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+                                <div class="flex-1">
+                                    <div class="flex items-center space-x-3 mb-2">
+                                        <span
+                                            class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">Upcoming</span>
+                                        <span class="text-sm text-gray-500 dark:text-gray-400"><i
+                                                class="far fa-calendar-alt mr-1"></i> Starts in 2 days</span>
+                                    </div>
+                                    <h3 class="text-xl font-bold text-gray-800 dark:text-white">Weekly Coding Challenge
+                                        #42</h3>
+                                    <p class="text-gray-600 dark:text-gray-300 mt-1 text-sm">Solve 5 problems in 3
+                                        hours!</p>
+                                    <div class="mt-4 flex gap-4 text-sm text-gray-500 dark:text-gray-400">
+                                        <span><i class="far fa-clock mr-1"></i> 3 hours</span>
+                                        <span><i class="fas fa-users mr-1"></i> 1,245 participants</span>
+                                    </div>
+                                </div>
+                                <div class="mt-4 md:mt-0 md:ml-6 text-right flex flex-col items-end gap-2">
+                                    <button
+                                        class="bg-primary-600 hover:bg-primary-700 text-white px-6 py-2 rounded-lg text-sm font-medium transition-colors">Register
+                                        Now</button>
+                                    <p class="text-xs text-red-500">Ends in 1 day 12h</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Past Contests List (Hidden) -->
+                    <div id="contest-list-past" class="space-y-4 hidden">
+                        <div
+                            class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 hover:shadow-md transition-shadow opacity-75">
+                            <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+                                <div class="flex-1">
+                                    <div class="flex items-center space-x-3 mb-2">
+                                        <span
+                                            class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">Completed</span>
+                                        <span class="text-sm text-gray-500"><i class="far fa-calendar-alt mr-1"></i>
+                                            Ended 3 days ago</span>
+                                    </div>
+                                    <h3 class="text-xl font-bold text-gray-800 dark:text-white">Weekly Coding Challenge
+                                        #41</h3>
+                                    <div class="mt-4 flex gap-4 text-sm text-gray-500">
+                                        <span><i class="fas fa-medal mr-1 text-yellow-500"></i> Winner:
+                                            student_123</span>
+                                    </div>
+                                </div>
+                                <div class="mt-4 md:mt-0 md:ml-6 text-right flex flex-col items-end gap-2">
+                                    <button
+                                        class="text-primary-600 dark:text-primary-400 hover:underline text-sm font-medium">View
+                                        Leaderboard</button>
+                                    <button
+                                        class="text-primary-600 dark:text-primary-400 hover:underline text-sm font-medium">View
+                                        Problems</button>
+                                    <button id="btn-download-contest-report"
+                                        class="text-green-600 dark:text-green-400 hover:underline text-sm font-medium">
+                                        <i class="fas fa-file-pdf mr-1"></i> Download Report
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION: CREATE CONTEST FORM (Hidden) -->
+                <div id="contest-form-view"
+                    class="hidden bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700 max-w-4xl mx-auto mt-6">
+                    <div class="flex items-center gap-4 mb-6">
+                        <button id="btn-back-to-contest-list"
+                            class="text-gray-500 hover:text-primary-600 transition-colors">
+                            <i class="fas fa-arrow-left"></i>
+                        </button>
+                        <h2 class="text-xl font-bold text-gray-800 dark:text-white">Create New Contest</h2>
+                    </div>
+
+                    <form class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Contest
+                                    Title</label>
+                                <input type="text"
+                                    class="w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm p-2.5 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-primary-500 transition-shadow"
+                                    placeholder="e.g. Midterm 1 - Data Structures">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Date
+                                    &
+                                    Time</label>
+                                <input type="datetime-local"
+                                    class="w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm p-2.5 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 transition-shadow">
+                            </div>
+                            <!-- NEW: Year Dropdown -->
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Target
+                                    Year</label>
+                                <select
+                                    class="w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm p-2.5 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 transition-shadow">
+                                    <option>All Years</option>
+                                    <option>1st Year</option>
+                                    <option>2nd Year</option>
+                                    <option>3rd Year</option>
+                                    <option>4th Year</option>
+                                </select>
+                            </div>
+                            <!-- NEW: Class Dropdown -->
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Choose
+                                    Class</label>
+                                <select
+                                    class="w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm p-2.5 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 transition-shadow">
+                                    <option>Select Class...</option>
+                                    <option>All</option>
+                                    <option>CS101 - Intro to CS</option>
+                                    <option>CS202 - Data Structures</option>
+                                    <option>CS301 - Algorithms</option>
+                                    <option>SE404 - Software Eng</option>
+                                </select>
+                            </div>
+                            <!-- NEW: Language Dropdown -->
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Allowed
+                                    Languages</label>
+                                <select
+                                    class="w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm p-2.5 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 transition-shadow">
+                                    <option>All Languages</option>
+                                    <option>C++ Only</option>
+                                    <option>Python Only</option>
+                                    <option>Java Only</option>
+                                    <option>C++ & Java</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- NEW: Add Problem Section -->
+                        <div
+                            class="border border-gray-200 dark:border-gray-700 rounded-xl p-5 bg-gray-50 dark:bg-gray-700/30">
+                            <h3 class="text-sm font-bold text-gray-800 dark:text-white mb-3">Add Problems
+                            </h3>
+                            <div class="flex flex-col sm:flex-row gap-3 mb-4">
+                                <select id="contest-problem-select"
+                                    class="flex-1 rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm p-2.5 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 transition-shadow">
+                                    <option value="">Select a problem to add...</option>
+                                    <option value="Two Sum">Two Sum (Easy)</option>
+                                    <option value="Maximum Subarray">Maximum Subarray (Medium)</option>
+                                    <option value="Sudoku Solver">Sudoku Solver (Hard)</option>
+                                    <option value="Reverse Linked List">Reverse Linked List (Easy)</option>
+                                </select>
+                                <button type="button" id="btn-add-problem-to-contest"
+                                    class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap shadow-sm">
+                                    <i class="fas fa-plus mr-2"></i> Add Problem
+                                </button>
+                            </div>
+
+                            <!-- Added Problems List -->
+                            <div
+                                class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600 overflow-hidden">
+                                <table class="w-full text-left text-sm">
+                                    <thead class="bg-gray-50 dark:bg-gray-700/50 text-gray-500 dark:text-gray-400">
+                                        <tr>
+                                            <th class="px-4 py-2 font-medium">Problem Title</th>
+                                            <th class="px-4 py-2 font-medium text-right">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="added-problems-list"
+                                        class="divide-y divide-gray-200 dark:divide-gray-700">
+                                        <!-- Sample Added Problem -->
+                                        <tr class="group">
+                                            <td class="px-4 py-2 text-gray-800 dark:text-gray-200">Binary
+                                                Search</td>
+                                            <td class="px-4 py-2 text-right">
+                                                <button type="button" class="text-red-500 hover:text-red-700"><i
+                                                        class="fas fa-times"></i></button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-end gap-3 pt-4 border-t border-gray-100 dark:border-gray-700">
+                            <button type="button"
+                                class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">Cancel</button>
+                            <button type="submit"
+                                class="px-6 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors shadow-sm">
+                                Publish Contest
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- SECTION: FORUM -->
+                <div id="section-forum" class="content-section hidden">
+                    <div id="forum-list-view">
+                        <!-- Forum Header (title + new post) -->
+                        <div class="mb-6 flex justify-end items-center">
+
+                            <button id="newPostBtn"
+                                class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm">
+                                <i class="fas fa-plus mr-2"></i>New Post
+                            </button>
+                        </div>
+
+                        <!-- Search and Filter -->
+                        <div
+                            class="mb-8 bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700">
+                            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                <div class="relative flex-1 max-w-2xl">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class="fas fa-search text-gray-400"></i>
+                                    </div>
+                                    <input type="text"
+                                        class="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-700 text-sm text-gray-900 dark:text-white"
+                                        placeholder="Search discussions...">
+                                </div>
+                                <div class="flex space-x-3">
+                                    <select
+                                        class="border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 focus:ring-primary-500">
+                                        <option>All Topics</option>
+                                        <option>Most Recent</option>
+                                        <option>Most Active</option>
+                                        <option>Unanswered</option>
+                                    </select>
+                                    <button
+                                        class="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-sm">
+                                        <i class="fas fa-filter mr-2"></i>Filters
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Popular Topics -->
+                        <div class="mb-8">
+                            <h3 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Browse by Topic</h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                                <!-- Topic 1 -->
+                                <div
+                                    class="topic-card bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700 hover:shadow-md transition-all cursor-pointer">
+                                    <div
+                                        class="w-12 h-12 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mb-4">
+                                        <i
+                                            class="fas fa-code text-blue-500 text-xl topic-icon transition-transform"></i>
+                                    </div>
+                                    <h3 class="font-semibold text-gray-800 dark:text-white mb-2">Web Development</h3>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">HTML, CSS, JavaScript,
+                                        Frameworks
+                                    </p>
+                                    <div class="mt-3 text-xs text-gray-400">
+                                        <span>1,245 discussions</span>
+                                        <span class="mx-2">•</span>
+                                        <span>342 active</span>
+                                    </div>
+                                </div>
+                                <!-- Topic 2 -->
+                                <div
+                                    class="topic-card bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700 hover:shadow-md transition-transform duration-200 hover:scale-[1.02] cursor-pointer">
+                                    <div
+                                        class="w-12 h-12 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center mb-4">
+                                        <i
+                                            class="fas fa-server text-green-500 text-xl topic-icon transition-transform"></i>
+                                    </div>
+                                    <h3 class="font-semibold text-gray-800 dark:text-white mb-2">Backend</h3>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">Node.js, Python, Java, Databases
+                                    </p>
+                                    <div class="mt-3 text-xs text-gray-400">
+                                        <span>856 discussions</span>
+                                        <span class="mx-2">•</span>
+                                        <span>201 active</span>
+                                    </div>
+                                </div>
+                                <!-- Topic 3 -->
+                                <div
+                                    class="topic-card bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700 hover:shadow-md transition-transform duration-200 hover:scale-[1.02] cursor-pointer">
+                                    <div
+                                        class="w-12 h-12 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center mb-4">
+                                        <i
+                                            class="fas fa-mobile-alt text-purple-500 text-xl topic-icon transition-transform"></i>
+                                    </div>
+                                    <h3 class="font-semibold text-gray-800 dark:text-white mb-2">Mobile Development</h3>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">iOS, Android, React Native,
+                                        Flutter
+                                    </p>
+                                    <div class="mt-3 text-xs text-gray-400">
+                                        <span>723 discussions</span>
+                                        <span class="mx-2">•</span>
+                                        <span>189 active</span>
+                                    </div>
+                                </div>
+                                <!-- Topic 4 -->
+                                <div
+                                    class="topic-card bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700 hover:shadow-md transition-transform duration-200 hover:scale-[1.02] cursor-pointer">
+                                    <div
+                                        class="w-12 h-12 rounded-lg bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center mb-4">
+                                        <i
+                                            class="fas fa-brain text-yellow-500 text-xl topic-icon transition-transform"></i>
+                                    </div>
+                                    <h3 class="font-semibold text-gray-800 dark:text-white mb-2">Algorithms</h3>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">Data Structures, Problem Solving
+                                    </p>
+                                    <div class="mt-3 text-xs text-gray-400">
+                                        <span>1,532 discussions</span>
+                                        <span class="mx-2">•</span>
+                                        <span>421 active</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recent Discussions -->
+                        <div class="mb-8">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-xl font-semibold text-gray-800 dark:text-white">Recent Discussions</h3>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-sm text-gray-500 dark:text-gray-400">Sort by:</span>
+                                    <select
+                                        class="border-0 bg-transparent text-gray-600 dark:text-gray-300 font-medium focus:ring-0 focus:outline-none text-sm">
+                                        <option>Most Recent</option>
+                                        <option>Most Viewed</option>
+                                        <option>Most Comments</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Discussion List -->
+                            <div class="space-y-4">
+                                <!-- Discussion 1 -->
+                                <div
+                                    class="post-card bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden border border-gray-100 dark:border-gray-700 hover:shadow-md transition-transform duration-200 hover:scale-[1.01]">
+                                    <div class="p-6">
+                                        <div class="flex flex-col md:flex-row md:items-start">
+                                            <div class="flex-1">
+                                                <div class="flex items-center space-x-3 mb-2">
+                                                    <span
+                                                        class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">Web
+                                                        Development</span>
+                                                    <span class="text-sm text-gray-500 dark:text-gray-400"><i
+                                                            class="far fa-user mr-1"></i> Sarah Johnson</span>
+                                                    <span class="text-sm text-gray-400 dark:text-gray-500"><i
+                                                            class="far fa-clock mr-1"></i> 2 hours ago</span>
+                                                </div>
+                                                <h3
+                                                    class="text-lg font-semibold text-gray-800 dark:text-white mb-2 hover:text-primary-600 cursor-pointer">
+                                                    How to optimize React performance with large lists?</h3>
+                                                <p class="text-gray-600 dark:text-gray-300 mb-4">I'm working on a
+                                                    project
+                                                    with thousands of items in a list. What are the best practices for
+                                                    optimizing performance in React when dealing with large datasets?
+                                                </p>
+                                                <div class="flex flex-wrap gap-3 text-sm">
+                                                    <span class="flex items-center text-gray-500 dark:text-gray-400"><i
+                                                            class="far fa-comment-alt mr-1"></i> 14 comments</span>
+                                                    <span class="flex items-center text-gray-500 dark:text-gray-400"><i
+                                                            class="far fa-eye mr-1"></i> 245 views</span>
+                                                    <span class="flex items-center text-green-500"><i
+                                                            class="fas fa-check-circle mr-1"></i> 5 solutions</span>
+                                                </div>
+                                            </div>
+                                            <div class="mt-4 md:mt-0 md:ml-6 flex items-start">
+                                                <div
+                                                    class="flex items-center bg-green-50 text-green-600 dark:bg-green-900/30 dark:text-green-400 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                                                    <i class="fas fa-check-circle mr-1"></i> Solved
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Discussion 2 -->
+                                <div
+                                    class="post-card bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden border border-gray-100 dark:border-gray-700 hover:shadow-md transition-transform duration-200 hover:scale-[1.01]">
+                                    <div class="p-6">
+                                        <div class="flex flex-col md:flex-row md:items-start">
+                                            <div class="flex-1">
+                                                <div class="flex items-center space-x-3 mb-2">
+                                                    <span
+                                                        class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400">Algorithms</span>
+                                                    <span class="text-sm text-gray-500 dark:text-gray-400"><i
+                                                            class="far fa-user mr-1"></i> Alex Chen</span>
+                                                    <span class="text-sm text-gray-400 dark:text-gray-500"><i
+                                                            class="far fa-clock mr-1"></i> 5 hours ago</span>
+                                                </div>
+                                                <h3
+                                                    class="text-lg font-semibold text-gray-800 dark:text-white mb-2 hover:text-primary-600 cursor-pointer">
+                                                    Understanding Time Complexity in Graph Algorithms</h3>
+                                                <p class="text-gray-600 dark:text-gray-300 mb-4">Can someone explain why
+                                                    Dijkstra's algorithm has a time complexity of O((V+E)logV) with a
+                                                    min-heap? I'm having trouble understanding the logV part.</p>
+                                                <div class="flex flex-wrap gap-3 text-sm">
+                                                    <span class="flex items-center text-gray-500 dark:text-gray-400"><i
+                                                            class="far fa-comment-alt mr-1"></i> 8 comments</span>
+                                                    <span class="flex items-center text-gray-500 dark:text-gray-400"><i
+                                                            class="far fa-eye mr-1"></i> 189 views</span>
+                                                    <span class="flex items-center text-yellow-500"><i
+                                                            class="fas fa-comment-dots mr-1"></i> 2 solutions</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pagination -->
+                        <div class="flex items-center justify-between mt-8 mb-4">
+                            <button
+                                class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50"
+                                disabled>Previous</button>
+                            <div class="flex items-center space-x-1">
+                                <button class="w-10 h-10 rounded-lg bg-primary-600 text-white">1</button>
+                                <button
+                                    class="w-10 h-10 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">2</button>
+                                <span class="px-2 text-gray-500">...</span>
+                                <button
+                                    class="w-10 h-10 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">5</button>
+                            </div>
+                            <button
+                                class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">Next</button>
+                        </div>
+                    </div>
+                    <!-- New Discussion Form -->
+                    <div id="forum-post-form" class="hidden">
+                        <div class="mb-6 flex items-center gap-4">
+                            <button id="btn-back-to-forum"
+                                class="w-8 h-8 rounded-full bg-white dark:bg-gray-600 shadow-sm flex items-center justify-center text-gray-500 hover:text-primary-600 transition-colors">
+                                <i class="fas fa-arrow-left text-sm"></i>
+                            </button>
+                            <h2 class="text-xl font-bold text-gray-800 dark:text-white">Create New Discussion</h2>
+                        </div>
+
+                        <div
+                            class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-8 border border-gray-100 dark:border-gray-700">
+                            <form id="new-discussion-form" class="space-y-6">
+                                <!-- Title -->
+                                <div>
+                                    <label
+                                        class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Title</label>
+                                    <input type="text" id="post-title" required
+                                        class="w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm p-2.5 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-primary-500 transition-shadow"
+                                        placeholder="Enter a descriptive title...">
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <!-- Category -->
+                                    <div>
+                                        <label
+                                            class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Category</label>
+                                        <select id="post-category" required
+                                            class="w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm p-2.5 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 transition-shadow">
+                                            <option value="">Select Category...</option>
+                                            <option value="General Discussion">General Discussion</option>
+                                            <option value="Web Development">Web Development</option>
+                                            <option value="Algorithms">Algorithms</option>
+                                            <option value="Backend">Backend</option>
+                                            <option value="Mobile Development">Mobile Development</option>
+                                            <option value="Career Advice">Career Advice</option>
+                                        </select>
+                                    </div>
+                                    <!-- Tags -->
+                                    <div>
+                                        <label
+                                            class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Tags</label>
+                                        <input type="text" id="post-tags"
+                                            class="w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm p-2.5 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-primary-500 transition-shadow"
+                                            placeholder="Comma separated tags (e.g. react, hooks)">
+                                    </div>
+                                </div>
+
+                                <!-- Description (Rich Text Simulator) -->
+                                <div>
+                                    <label
+                                        class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Description</label>
+                                    <div
+                                        class="border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden bg-white dark:bg-gray-700 focus-within:ring-2 focus-within:ring-primary-500 focus-within:border-primary-500 transition-shadow">
+                                        <!-- Toolbar -->
+                                        <div
+                                            class="flex items-center gap-2 p-2 border-b border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800/50">
+                                            <button type="button"
+                                                class="p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 rounded hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"><i
+                                                    class="fas fa-bold"></i></button>
+                                            <button type="button"
+                                                class="p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 rounded hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"><i
+                                                    class="fas fa-italic"></i></button>
+                                            <button type="button"
+                                                class="p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 rounded hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"><i
+                                                    class="fas fa-underline"></i></button>
+                                            <span class="w-px h-4 bg-gray-300 dark:bg-gray-600 mx-1"></span>
+                                            <button type="button"
+                                                class="p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 rounded hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"><i
+                                                    class="fas fa-list-ul"></i></button>
+                                            <button type="button"
+                                                class="p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 rounded hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"><i
+                                                    class="fas fa-list-ol"></i></button>
+                                            <span class="w-px h-4 bg-gray-300 dark:bg-gray-600 mx-1"></span>
+                                            <button type="button"
+                                                class="p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 rounded hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"><i
+                                                    class="fas fa-link"></i></button>
+                                            <button type="button"
+                                                class="p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 rounded hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"><i
+                                                    class="fas fa-image"></i></button>
+                                        </div>
+                                        <!-- Textarea -->
+                                        <textarea id="post-description" required rows="8"
+                                            class="w-full p-4 bg-transparent border-0 focus:ring-0 text-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 resize-y outline-none"
+                                            placeholder="Write your discussion post here..."></textarea>
+                                    </div>
+                                </div>
+
+                                <!-- Actions -->
+                                <div
+                                    class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100 dark:border-gray-700">
+                                    <button type="button" id="btn-cancel-post"
+                                        class="px-5 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors shadow-sm">
+                                        Cancel
+                                    </button>
+                                    <button type="submit"
+                                        class="px-6 py-2.5 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-lg transition-colors shadow-md hover:shadow-lg flex items-center">
+                                        <i class="fas fa-paper-plane mr-2"></i> Post Discussion
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION: REPORTS -->
+                <div id="section-reports" class="content-section hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                        <div class="lg:col-span-1">
+                            <div
+                                class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 sticky top-24">
+                                <label class="text-xs font-bold text-gray-400 uppercase block mb-2">Report Type</label>
+                                <select id="reportType" onchange="initReportUI()"
+                                    class="w-full border border-gray-200 dark:border-gray-600 rounded-xl p-3 text-sm mb-6 outline-none bg-gray-50 dark:bg-gray-700 dark:text-gray-200 focus:ring-2 focus:ring-primary-200">
+                                    <option value="Students">Student Records (XLSX)</option>
+                                    <option value="Contests" selected>Contest Analytics (PDF)</option>
+                                    <option value="Problems">Problem Bank (XLSX)</option>
+                                </select>
+
+                                <div id="filterContainer" class="space-y-2 mb-8">
+                                </div>
+
+                                <button id="actionBtn" onclick="handleReportDownload()"
+                                    class="w-full py-4 rounded-xl font-bold text-white shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2">
+                                    <i class="fas fa-download"></i> Download
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="lg:col-span-3">
+                            <div class="flex justify-between items-center mb-4">
+                                <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">A4 Live
+                                    Preview</span>
+                                <span id="formatBadge"
+                                    class="px-3 py-1 bg-primary-50 text-primary-600 rounded-full text-[10px] font-bold uppercase"></span>
+                            </div>
+
+                            <div id="report-content" class="report-preview-container rounded-xl">
+                                <div class="watermark">CampusCode</div>
+                                <div class="flex justify-between border-b-2 border-primary-500 pb-6 mb-8">
+                                    <div>
+                                        <h1 id="previewTitle" class="text-2xl font-bold text-gray-900 uppercase"></h1>
+                                        <p class="text-primary-500 text-sm font-medium">Platform Activity Report</p>
+                                    </div>
+                                    <div class="text-right text-[10px] text-gray-400">
+                                        <p class="font-bold text-gray-700">DATE: <span id="currentDate"></span></p>
+                                        <p>REF: #CC-2025-001</p>
+                                    </div>
+                                </div>
+
+                                <div id="previewTableContainer"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- SECTION: MANAGE CLASS -->
+                <div id="section-manage-class" class="content-section hidden">
+                    <!-- List View -->
+                    <div id="students-list-view">
+                        <div
+                            class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700 mb-6">
+                            <!-- Header: Search & Add Button -->
+                            <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                                <!-- Search Bar -->
+                                <div class="relative w-full md:w-64">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class="fas fa-search text-gray-400"></i>
+                                    </div>
+                                    <input type="text"
+                                        class="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-700 text-sm text-gray-900 dark:text-white"
+                                        placeholder="Search Students...">
+                                </div>
+
+
+                                <!-- Buttons -->
+                                <div class="flex gap-2 w-full md:w-auto ml-auto">
+                                    <button id="btn-export-student"
+                                        class="bg-green-600 hover:bg-green-700 text-white px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors shadow-sm flex items-center">
+                                        <i class="fas fa-file-excel mr-2"></i> Export
+                                    </button>
+                                    <button id="btn-add-student"
+                                        class="flex-1 md:flex-none bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg text-sm font-semibold transition-colors shadow-sm">
+                                        <i class="fas fa-plus mr-2"></i> Add Student
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Filters Grid -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                                <div>
+                                    <label
+                                        class="block text-xs font-semibold text-gray-500 uppercase mb-1">Section</label>
+                                    <select
+                                        class="w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm p-2.5 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500">
+                                        <option>All Sections</option>
+                                        <option>Section A</option>
+                                        <option>Section B</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Year</label>
+                                    <select
+                                        class="w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm p-2.5 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500">
+                                        <option>All Years</option>
+                                        <option>1st Year</option>
+                                        <option>2nd Year</option>
+                                        <option>3rd Year</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label
+                                        class="block text-xs font-semibold text-gray-500 uppercase mb-1">Subject</label>
+                                    <select
+                                        class="w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm p-2.5 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500">
+                                        <option>All Subjects</option>
+                                        <option>Data Structures</option>
+                                        <option>Algorithms</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Sort
+                                        By</label>
+                                    <select
+                                        class="w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm p-2.5 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500">
+                                        <option>Recent</option>
+                                        <option>Name</option>
+                                        <option>Rank</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Students Table -->
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left text-sm">
+                                    <thead class="bg-gray-50 dark:bg-gray-700/50 text-gray-500 dark:text-gray-400">
+                                        <tr>
+                                            <th class="px-6 py-3 font-semibold uppercase tracking-wider text-xs">ID</th>
+                                            <th class="px-6 py-3 font-semibold uppercase tracking-wider text-xs">Name
+                                            </th>
+                                            <th class="px-6 py-3 font-semibold uppercase tracking-wider text-xs">Section
+                                            </th>
+                                            <th class="px-6 py-3 font-semibold uppercase tracking-wider text-xs">Year
+                                            </th>
+                                            <th class="px-6 py-3 font-semibold uppercase tracking-wider text-xs">Email
+                                            </th>
+                                            <th class="px-6 py-3 font-semibold uppercase tracking-wider text-xs">Global
+                                                Rank
+                                            </th>
+                                            <th class="px-6 py-3 font-semibold uppercase tracking-wider text-xs">College
+                                                Rank</th>
+                                            <th
+                                                class="px-6 py-3 font-semibold uppercase tracking-wider text-xs text-center">
+                                                Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody
+                                        class="divide-y divide-gray-100 dark:divide-gray-700 border-t border-gray-100 dark:border-gray-700">
+                                        <!-- Student 1 -->
+                                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                                            <td class="px-6 py-4 text-gray-600 dark:text-gray-300">2302920100126</td>
+                                            <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">
+                                                <div>Sagar Kumar</div>
+                                            </td>
+                                            <td class="px-6 py-4 text-gray-600 dark:text-gray-300">A</td>
+                                            <td class="px-6 py-4 text-gray-600 dark:text-gray-300">2nd Year</td>
+                                            <td class="px-6 py-4 text-gray-600 dark:text-gray-300">
+                                                sagar.kumar.cs.2023@mitmeerut.ac.in</td>
+                                            <td class="px-6 py-4">
+                                                <span
+                                                    class="inline-flex items-center px-2.5 py-1 rounded bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-xs font-medium">
+                                                    1,245
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                <span
+                                                    class="inline-flex items-center px-2.5 py-1 rounded bg-green-500 text-white text-xs font-medium shadow-sm">
+                                                    12
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-4 text-center">
+                                                <select
+                                                    class="rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-xs p-1.5 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500">
+                                                    <option value="active" selected>Active</option>
+                                                    <option value="inactive">Inactive</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <!-- Student 2 -->
+                                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                                            <td class="px-6 py-4 text-gray-600 dark:text-gray-300">2302920100127</td>
+                                            <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">
+                                                <div>Priya Sharma</div>
+                                            </td>
+                                            <td class="px-6 py-4 text-gray-600 dark:text-gray-300">B</td>
+                                            <td class="px-6 py-4 text-gray-600 dark:text-gray-300">3rd Year</td>
+                                            <td class="px-6 py-4 text-gray-600 dark:text-gray-300">
+                                                priya.sharma.cs.2023@mitmeerut.ac.in</td>
+                                            <td class="px-6 py-4">
+                                                <span
+                                                    class="inline-flex items-center px-2.5 py-1 rounded bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-xs font-medium">
+                                                    892
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                <span
+                                                    class="inline-flex items-center px-2.5 py-1 rounded bg-green-500 text-white text-xs font-medium shadow-sm">
+                                                    5
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-4 text-center">
+                                                <select
+                                                    class="rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-xs p-1.5 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500">
+                                                    <option value="active" selected>Active</option>
+                                                    <option value="inactive">Inactive</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <!-- Student 3 -->
+                                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                                            <td class="px-6 py-4 text-gray-600 dark:text-gray-300">2302920100128</td>
+                                            <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">
+                                                <div>Rahul Verma</div>
+                                            </td>
+                                            <td class="px-6 py-4 text-gray-600 dark:text-gray-300">A</td>
+                                            <td class="px-6 py-4 text-gray-600 dark:text-gray-300">2nd Year</td>
+                                            <td class="px-6 py-4 text-gray-600 dark:text-gray-300">
+                                                rahul.verma.cs.2023@mitmeerut.ac.in</td>
+                                            <td class="px-6 py-4">
+                                                <span
+                                                    class="inline-flex items-center px-2.5 py-1 rounded bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-xs font-medium">
+                                                    2,156
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                <span
+                                                    class="inline-flex items-center px-2.5 py-1 rounded bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 text-xs font-medium shadow-sm">
+                                                    28
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-4 text-center">
+                                                <select
+                                                    class="rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-xs p-1.5 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500">
+                                                    <option value="active" selected>Active</option>
+                                                    <option value="inactive">Inactive</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Create Student Form (Hidden) -->
+                    <div id="student-form-view" class="hidden">
+                        <div class="max-w-3xl mx-auto">
+                            <div
+                                class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden">
+                                <!-- Form Header -->
+                                <div
+                                    class="px-8 py-6 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between bg-gray-50/50 dark:bg-gray-700/30">
+                                    <div class="flex items-center gap-4">
+                                        <button id="btn-back-to-student-list"
+                                            class="w-8 h-8 rounded-full bg-white dark:bg-gray-600 shadow-sm flex items-center justify-center text-gray-500 hover:text-primary-600 transition-colors">
+                                            <i class="fas fa-arrow-left text-sm"></i>
+                                        </button>
+                                        <div>
+                                            <h2 class="text-xl font-bold text-gray-800 dark:text-white">Add New Student
+                                            </h2>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">Enter student details to
+                                                register</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="p-8">
+                                    <form class="space-y-8">
+                                        <!-- Personal Info Section -->
+                                        <div>
+                                            <h3
+                                                class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4 border-b border-gray-100 dark:border-gray-700 pb-2">
+                                                Personal Information
+                                            </h3>
+                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                <div class="md:col-span-2">
+                                                    <label
+                                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Full
+                                                        Name</label>
+                                                    <div class="relative">
+                                                        <div
+                                                            class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                            <i class="fas fa-user text-gray-400"></i>
+                                                        </div>
+                                                        <input type="text"
+                                                            class="pl-10 w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm p-2.5 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 transition-shadow"
+                                                            placeholder="e.g. John Doe">
+                                                    </div>
+                                                </div>
+
+
+
+                                                <div>
+                                                    <label
+                                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Student
+                                                        ID</label>
+                                                    <div class="relative">
+                                                        <div
+                                                            class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                            <i class="fas fa-id-card text-gray-400"></i>
+                                                        </div>
+                                                        <input type="text"
+                                                            class="pl-10 w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm p-2.5 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 transition-shadow"
+                                                            placeholder="e.g. 2302920100xxx">
+                                                    </div>
+                                                </div>
+
+                                                <div>
+                                                    <label
+                                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Email
+                                                        Address</label>
+                                                    <div class="relative">
+                                                        <div
+                                                            class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                            <i class="fas fa-envelope text-gray-400"></i>
+                                                        </div>
+                                                        <input type="email"
+                                                            class="pl-10 w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm p-2.5 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 transition-shadow"
+                                                            placeholder="e.g. john@college.edu">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Academic Info Section -->
+                                        <div>
+                                            <h3
+                                                class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4 border-b border-gray-100 dark:border-gray-700 pb-2">
+                                                Academic Details
+                                            </h3>
+                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                <div>
+                                                    <label
+                                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Year</label>
+                                                    <div class="relative">
+                                                        <div
+                                                            class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                            <i class="fas fa-graduation-cap text-gray-400"></i>
+                                                        </div>
+                                                        <select
+                                                            class="pl-10 w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm p-2.5 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 transition-shadow appearance-none">
+                                                            <option>1st Year</option>
+                                                            <option>2nd Year</option>
+                                                            <option>3rd Year</option>
+                                                            <option>4th Year</option>
+                                                        </select>
+                                                        <div
+                                                            class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                                            <i class="fas fa-chevron-down text-gray-400 text-xs"></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div>
+                                                    <label
+                                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Section</label>
+                                                    <div class="relative">
+                                                        <div
+                                                            class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                            <i class="fas fa-layer-group text-gray-400"></i>
+                                                        </div>
+                                                        <select
+                                                            class="pl-10 w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm p-2.5 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 transition-shadow appearance-none">
+                                                            <option>Section A</option>
+                                                            <option>Section B</option>
+                                                            <option>Section C</option>
+                                                            <option>Section D</option>
+                                                        </select>
+                                                        <div
+                                                            class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                                            <i class="fas fa-chevron-down text-gray-400 text-xs"></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Actions -->
+                                        <div
+                                            class="flex items-center justify-end gap-3 pt-6 border-t border-gray-100 dark:border-gray-700">
+                                            <button type="button" id="btn-cancel-add-student"
+                                                class="px-5 py-2.5 text-sm font-medium text-red-600 dark:text-red-400 bg-white dark:bg-gray-800 border border-red-200 dark:border-red-900/30 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-lg transition-colors shadow-sm">
+                                                Cancel
+                                            </button>
+                                            <button type="submit"
+                                                class="px-5 py-2.5 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-lg transition-colors shadow-md hover:shadow-lg flex items-center">
+                                                <i class="fas fa-check mr-2"></i> Register Student
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION: FACULTY MANAGEMENT (NEW) -->
+                <div id="section-manage-faculty" class="content-section hidden">
+                    <div
+                        class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700 mb-6">
+                        <!-- Header with Add Button -->
+                        <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                            <!-- Search & Filter Placeholder (simulated for now based on image context) -->
+                            <div class="relative w-full md:w-64">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="fas fa-search text-gray-400"></i>
+                                </div>
+                                <input type="text"
+                                    class="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-700 text-sm text-gray-900 dark:text-white"
+                                    placeholder="Search Faculty...">
+                            </div>
+
+                            <div class="w-full md:w-auto">
+                                <select
+                                    class="w-full md:w-auto rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm p-2.5 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500">
+                                    <option>All Subjects</option>
+                                    <option>Data Structures</option>
+                                    <option>Algorithms</option>
+                                    <option>Operating Systems</option>
+                                    <option>DBMS</option>
+                                </select>
+                            </div>
+
+                            <div class="w-full md:w-auto flex gap-3 ml-auto">
+                                <button id="btn-export-faculty"
+                                    class="flex-1 md:flex-none bg-primary-600 hover:bg-primary-700 text-white px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors shadow-sm">
+                                    <i class="fas fa-download mr-2"></i> Download
+                                </button>
+                                <button id="btn-add-faculty"
+                                    class="flex-1 md:flex-none bg-primary-600 hover:bg-primary-700 text-white px-6 py-2.5 rounded-lg text-sm font-semibold transition-colors shadow-sm">
+                                    <i class="fas fa-plus mr-2"></i> Add Faculty
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Faculty Table -->
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm">
+                                <thead class="bg-gray-50 dark:bg-gray-700/50 text-gray-500 dark:text-gray-400">
+                                    <tr>
+                                        <th class="px-6 py-3 font-semibold uppercase tracking-wider text-xs">Photo</th>
+                                        <th class="px-6 py-3 font-semibold uppercase tracking-wider text-xs">Name</th>
+                                        <th class="px-6 py-3 font-semibold uppercase tracking-wider text-xs">Email</th>
+                                        <th class="px-6 py-3 font-semibold uppercase tracking-wider text-xs">Subject
+                                        </th>
+                                        <th class="px-6 py-3 font-semibold uppercase tracking-wider text-xs text-right">
+                                            Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody
+                                    class="divide-y divide-gray-100 dark:divide-gray-700 border-t border-gray-100 dark:border-gray-700">
+                                    <!-- Faculty 1 -->
+                                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                                        <td class="px-6 py-4">
+                                            <div
+                                                class="w-10 h-10 rounded-lg bg-blue-300 dark:bg-blue-700 flex-shrink-0">
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">
+                                            Dr. Vishnu Gupta
+                                        </td>
+                                        <td class="px-6 py-4 text-gray-600 dark:text-gray-300">
+                                            vishnu.gupta@example.com
+                                        </td>
+                                        <td class="px-6 py-4 text-gray-600 dark:text-gray-300">
+                                            3
+                                        </td>
+                                        <td class="px-6 py-4 text-right">
+                                            <div class="flex justify-end gap-2">
+                                                <button
+                                                    class="bg-gray-500 hover:bg-gray-600 text-white px-3 py-1.5 rounded text-xs font-medium transition-colors">Edit</button>
+                                                <button
+                                                    class="bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded text-xs font-medium transition-colors">Delete</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <!-- Faculty 2 -->
+                                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                                        <td class="px-6 py-4">
+                                            <div
+                                                class="w-10 h-10 rounded-lg bg-blue-300 dark:bg-blue-700 flex-shrink-0">
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">
+                                            Neha Singh
+                                        </td>
+                                        <td class="px-6 py-4 text-gray-600 dark:text-gray-300">
+                                            neha.singh@example.com
+                                        </td>
+                                        <td class="px-6 py-4 text-gray-600 dark:text-gray-300">
+                                            2
+                                        </td>
+                                        <td class="px-6 py-4 text-right">
+                                            <div class="flex justify-end gap-2">
+                                                <button
+                                                    class="bg-gray-500 hover:bg-gray-600 text-white px-3 py-1.5 rounded text-xs font-medium transition-colors">Edit</button>
+                                                <button
+                                                    class="bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded text-xs font-medium transition-colors">Delete</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <!-- Faculty 3 -->
+                                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                                        <td class="px-6 py-4">
+                                            <div
+                                                class="w-10 h-10 rounded-lg bg-blue-300 dark:bg-blue-700 flex-shrink-0">
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">
+                                            Rahul Verma
+                                        </td>
+                                        <td class="px-6 py-4 text-gray-600 dark:text-gray-300">
+                                            rahul.verma@example.com
+                                        </td>
+                                        <td class="px-6 py-4 text-gray-600 dark:text-gray-300">
+                                            1
+                                        </td>
+                                        <td class="px-6 py-4 text-right">
+                                            <div class="flex justify-end gap-2">
+                                                <button
+                                                    class="bg-gray-500 hover:bg-gray-600 text-white px-3 py-1.5 rounded text-xs font-medium transition-colors">Edit</button>
+                                                <button
+                                                    class="bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded text-xs font-medium transition-colors">Delete</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <!-- Faculty 4 -->
+                                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                                        <td class="px-6 py-4">
+                                            <div
+                                                class="w-10 h-10 rounded-lg bg-blue-300 dark:bg-blue-700 flex-shrink-0">
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">
+                                            Priya Sharma
+                                        </td>
+                                        <td class="px-6 py-4 text-gray-600 dark:text-gray-300">
+                                            priya.sharma@example.com
+                                        </td>
+                                        <td class="px-6 py-4 text-gray-600 dark:text-gray-300">
+                                            2
+                                        </td>
+                                        <td class="px-6 py-4 text-right">
+                                            <div class="flex justify-end gap-2">
+                                                <button
+                                                    class="bg-gray-500 hover:bg-gray-600 text-white px-3 py-1.5 rounded text-xs font-medium transition-colors">Edit</button>
+                                                <button
+                                                    class="bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded text-xs font-medium transition-colors">Delete</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <!-- Faculty 5 -->
+                                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                                        <td class="px-6 py-4">
+                                            <div
+                                                class="w-10 h-10 rounded-lg bg-blue-300 dark:bg-blue-700 flex-shrink-0">
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">
+                                            Amit Kumar
+                                        </td>
+                                        <td class="px-6 py-4 text-gray-600 dark:text-gray-300">
+                                            amit.kumar@example.com
+                                        </td>
+                                        <td class="px-6 py-4 text-gray-600 dark:text-gray-300">
+                                            1
+                                        </td>
+                                        <td class="px-6 py-4 text-right">
+                                            <div class="flex justify-end gap-2">
+                                                <button
+                                                    class="bg-gray-500 hover:bg-gray-600 text-white px-3 py-1.5 rounded text-xs font-medium transition-colors">Edit</button>
+                                                <button
+                                                    class="bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded text-xs font-medium transition-colors">Delete</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Faculty Form (Hidden) -->
+                <div id="faculty-form-view" class="hidden">
+                    <div class="max-w-3xl mx-auto">
+                        <div
+                            class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden">
+                            <!-- Form Header -->
+                            <div
+                                class="px-8 py-6 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between bg-gray-50/50 dark:bg-gray-700/30">
+                                <div class="flex items-center gap-4">
+                                    <button id="btn-back-to-faculty-list"
+                                        class="w-8 h-8 rounded-full bg-white dark:bg-gray-600 shadow-sm flex items-center justify-center text-gray-500 hover:text-primary-600 transition-colors">
+                                        <i class="fas fa-arrow-left text-sm"></i>
+                                    </button>
+                                    <div>
+                                        <h2 class="text-xl font-bold text-gray-800 dark:text-white">Add New Faculty</h2>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">Enter faculty details to
+                                            register</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="p-8">
+                                <form class="space-y-8">
+                                    <!-- Personal Info Section -->
+                                    <div>
+                                        <h3
+                                            class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4 border-b border-gray-100 dark:border-gray-700 pb-2">
+                                            Personal Information
+                                        </h3>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div class="md:col-span-2">
+                                                <label
+                                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Full
+                                                    Name</label>
+                                                <div class="relative">
+                                                    <div
+                                                        class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                        <i class="fas fa-user text-gray-400"></i>
+                                                    </div>
+                                                    <input type="text"
+                                                        class="pl-10 w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm p-2.5 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 transition-shadow"
+                                                        placeholder="e.g. Dr. Vishnu Gupta">
+                                                </div>
+                                            </div>
+
+                                            <div>
+                                                <label
+                                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Email
+                                                    Address</label>
+                                                <div class="relative">
+                                                    <div
+                                                        class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                        <i class="fas fa-envelope text-gray-400"></i>
+                                                    </div>
+                                                    <input type="email"
+                                                        class="pl-10 w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm p-2.5 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 transition-shadow"
+                                                        placeholder="e.g. vishnu.gupta@college.edu">
+                                                </div>
+                                            </div>
+
+                                            <div>
+                                                <label
+                                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Phone
+                                                    Number</label>
+                                                <div class="relative">
+                                                    <div
+                                                        class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                        <i class="fas fa-phone text-gray-400"></i>
+                                                    </div>
+                                                    <input type="text"
+                                                        class="pl-10 w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm p-2.5 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 transition-shadow"
+                                                        placeholder="e.g. +91 98765 43210">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Professional Info Section -->
+                                    <div>
+                                        <h3
+                                            class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4 border-b border-gray-100 dark:border-gray-700 pb-2">
+                                            Professional Details
+                                        </h3>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div>
+                                                <label
+                                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Department</label>
+                                                <div class="relative">
+                                                    <div
+                                                        class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                        <i class="fas fa-building text-gray-400"></i>
+                                                    </div>
+                                                    <select
+                                                        class="pl-10 w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm p-2.5 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 transition-shadow appearance-none">
+                                                        <option>Computer Science</option>
+                                                        <option>Information Technology</option>
+                                                        <option>Electronics</option>
+                                                        <option>Mechanical</option>
+                                                    </select>
+                                                    <div
+                                                        class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                                        <i class="fas fa-chevron-down text-gray-400 text-xs"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div>
+                                                <label
+                                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Designation</label>
+                                                <div class="relative">
+                                                    <div
+                                                        class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                        <i class="fas fa-user-tie text-gray-400"></i>
+                                                    </div>
+                                                    <select
+                                                        class="pl-10 w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm p-2.5 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 transition-shadow appearance-none">
+                                                        <option>Professor</option>
+                                                        <option>Associate Professor</option>
+                                                        <option>Assistant Professor</option>
+                                                        <option>Lecturer</option>
+                                                    </select>
+                                                    <div
+                                                        class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                                        <i class="fas fa-chevron-down text-gray-400 text-xs"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="md:col-span-2">
+                                                <label
+                                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Assigned
+                                                    Subject</label>
+                                                <div class="relative">
+                                                    <div
+                                                        class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                        <i class="fas fa-book text-gray-400"></i>
+                                                    </div>
+                                                    <select
+                                                        class="pl-10 w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm p-2.5 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 transition-shadow appearance-none">
+                                                        <option>Data Structures (CS-102)</option>
+                                                        <option>Algorithms (CS-103)</option>
+                                                        <option>DBMS (CS-201)</option>
+                                                        <option>Operating Systems (CS-202)</option>
+                                                        <option>Computer Networks (CS-301)</option>
+                                                    </select>
+                                                    <div
+                                                        class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                                        <i class="fas fa-chevron-down text-gray-400 text-xs"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Actions -->
+                                    <div
+                                        class="flex items-center justify-end gap-3 pt-6 border-t border-gray-100 dark:border-gray-700">
+                                        <button type="button" id="btn-cancel-faculty-edit"
+                                            class="px-5 py-2.5 text-sm font-medium text-red-600 dark:text-red-400 bg-white dark:bg-gray-800 border border-red-200 dark:border-red-900/30 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-lg transition-colors shadow-sm">
+                                            Cancel
+                                        </button>
+                                        <button type="submit"
+                                            class="px-5 py-2.5 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-lg transition-colors shadow-md hover:shadow-lg flex items-center">
+                                            <i class="fas fa-check mr-2"></i> Register Faculty
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION: TASKS -->
+                <div id="section-tasks" class="content-section hidden">
+                    <!-- ... existing content ... -->
+                    <div class="max-w-4xl mx-auto">
+                        <div
+                            class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+                            <div
+                                class="p-6 border-b border-gray-100 dark:border-gray-700 bg-primary-50/50 dark:bg-gray-800">
+                                <h2 class="text-xl font-bold text-gray-800 dark:text-white mb-2">My Tasks
+                                </h2>
+                                <div class="mt-6 flex gap-2">
+                                    <input type="text" id="newTaskInput"
+                                        class="flex-1 rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:ring-primary-500"
+                                        placeholder="Add a new task...">
+                                    <button id="addTaskBtn"
+                                        class="bg-primary-600 hover:bg-primary-700 text-white px-6 py-2 rounded-lg font-medium transition-colors">Add</button>
+                                </div>
+                            </div>
+                            <ul id="taskList" class="p-6 space-y-2">
+                                <!-- ... -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- NOTIFICATION DROPDOWN (NEW) -->
+    <div id="notificationDropdown"
+        class="fixed top-16 right-6 z-50 w-80 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 hidden animate-[fadeIn_0.1s_ease-out]">
+        <div class="p-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
+            <h3 class="font-semibold text-gray-800 dark:text-white">Recent Activity</h3>
+            <span class="text-xs text-primary-500 cursor-pointer hover:underline">Mark all read</span>
+        </div>
+        <div class="p-2">
+            <div class="p-3 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg cursor-pointer">
+                <p class="text-sm text-gray-800 dark:text-gray-200 font-medium">Contest Reminder</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400">Weekly contest starts in 1 hour.</p>
+            </div>
+            <div class="p-3 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg cursor-pointer">
+                <p class="text-sm text-gray-800 dark:text-gray-200 font-medium">New Student Joined</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400">Alex joined CS101.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- PROFILE OVERLAY -->
+    <div id="profileOverlay"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm hidden">
+        <!-- ... existing ... -->
+        <div
+            class="w-[340px] bg-white dark:bg-gray-800 rounded-3xl shadow-2xl overflow-hidden animate-[fadeIn_0.2s_ease-out]">
+            <div class="bg-[#1E4A7A] dark:bg-[#0f2a4a] relative pt-10 pb-16 px-6 text-center">
+                <button id="closeProfileOverlay"
+                    class="absolute top-4 right-4 text-white/70 hover:text-white transition-colors">
+                    <i class="fas fa-times text-lg"></i>
+                </button>
+                <button class="absolute top-4 right-12 text-white/70 hover:text-white transition-colors">
+                    <i class="fas fa-qrcode text-lg"></i>
+                </button>
+
+                <div class="absolute left-1/2 bottom-[-45px] -translate-x-1/2">
+                    <div class="w-24 h-24 rounded-full bg-[#1E4A7A] dark:bg-[#0f2a4a] p-1.5">
+                        <div
+                            class="w-full h-full rounded-full bg-[#1E4A7A] flex items-center justify-center text-white text-4xl font-normal border-4 border-white dark:border-gray-800 shadow-md">
+                            JD
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-14 pb-6 px-6">
+                <div class="text-center mb-6">
+                    <h2 class="text-xl font-bold text-gray-900 dark:text-white">John Doe</h2>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 font-medium">
+                        <i class="fas fa-university mr-1 text-xs"></i> XYZ college
+                    </p>
+                    <div class="mt-3 flex flex-wrap justify-center gap-2">
+                        <span
+                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
+                            <i class="fas fa-building mr-1.5"></i> CSE Department
+                        </span>
+                        <span
+                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300">
+                            <i class="fas fa-user-tie mr-1.5"></i> HOD
+                        </span>
+                    </div>
+                </div>
+
+                <div class="px-4 mb-6 border-b border-gray-100 dark:border-gray-700 pb-6">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div
+                            class="p-3 rounded-2xl bg-gradient-to-br from-blue-50 to-white dark:from-gray-700 dark:to-gray-800 border border-blue-100 dark:border-gray-600 shadow-sm flex flex-col items-center justify-center text-center group hover:shadow-md transition-all">
+                            <div
+                                class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                                <i class="fas fa-id-badge text-xs"></i>
+                            </div>
+                            <p
+                                class="text-[10px] uppercase tracking-wider font-bold text-gray-400 dark:text-gray-500 mb-0.5">
+                                Faculty ID</p>
+                            <p class="text-xs font-bold text-gray-800 dark:text-white">FAC-001</p>
+                        </div>
+                        <div
+                            class="p-3 rounded-2xl bg-gradient-to-br from-purple-50 to-white dark:from-gray-700 dark:to-gray-800 border border-purple-100 dark:border-gray-600 shadow-sm flex flex-col items-center justify-center text-center group hover:shadow-md transition-all">
+                            <div
+                                class="w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                                <i class="fas fa-calendar-alt text-xs"></i>
+                            </div>
+                            <p
+                                class="text-[10px] uppercase tracking-wider font-bold text-gray-400 dark:text-gray-500 mb-0.5">
+                                Joined</p>
+                            <p class="text-xs font-bold text-gray-800 dark:text-white">Aug 2018</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Menu List -->
+                <div class="space-y-1">
+                    <button id="btnLogout"
+                        class="w-full flex items-center justify-between p-3 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 group transition-all duration-200 hover:scale-[1.02]">
+                        <div class="flex items-center gap-3">
+                            <div
+                                class="w-8 h-8 rounded-full bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 flex items-center justify-center">
+                                <i class="fas fa-sign-out-alt text-sm"></i>
+                            </div>
+                            <span
+                                class="text-sm font-medium text-gray-700 dark:text-gray-200 group-hover:text-red-600 dark:group-hover:text-red-400">Logout</span>
+                        </div>
+                        <i
+                            class="fas fa-chevron-right text-xs text-gray-400 group-hover:text-red-500 dark:group-hover:text-red-400"></i>
+                    </button>
+                </div>
+
+                <button id="closeProfileBtnBottom"
+                    class="w-full mt-6 text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- EXPORT PREVIEW MODAL -->
+    <div id="exportPreviewModal"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm hidden">
+        <div
+            class="bg-white dark:bg-gray-800 w-[95%] h-[90%] max-w-7xl rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-[fadeIn_0.2s_ease-out]">
+            <!-- Modal Header -->
+            <div
+                class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-700/30">
+                <div>
+                    <h2 class="text-xl font-bold text-gray-800 dark:text-white">Export Faculty Report</h2>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Customize your report before downloading</p>
+                </div>
+                <button id="closeExportModal"
+                    class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="flex-1 flex overflow-hidden">
+                <!-- Left Sidebar: Column Selection -->
+                <aside
+                    class="w-64 bg-gray-50 dark:bg-gray-800/50 border-r border-gray-200 dark:border-gray-700 p-5 overflow-y-auto">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Columns
+                        </h3>
+                        <button id="selectAllColumns"
+                            class="text-xs text-primary-600 hover:underline font-medium">Select All</button>
+                    </div>
+
+                    <div class="space-y-3" id="columnSelectionList">
+                        <!-- Checkboxes will be injected by JS -->
+                        <!-- Example Structure -->
+                        <!-- 
+                        <label class="flex items-center space-x-3 cursor-pointer group">
+                            <input type="checkbox" class="rounded border-gray-300 text-primary-600 focus:ring-primary-500 transition-all">
+                            <span class="text-sm text-gray-600 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white">Full Name</span>
+                        </label> 
+                        -->
+                    </div>
+                </aside>
+
+                <!-- Main Preview Area -->
+                <main class="flex-1 flex flex-col min-w-0 bg-white dark:bg-gray-800">
+                    <!-- Filters Toolbar -->
+                    <div
+                        class="p-4 border-b border-gray-200 dark:border-gray-700 flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
+
+                        <!-- Search -->
+                        <div class="w-full sm:w-auto flex-1 min-w-[200px] max-w-xs">
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="fas fa-search text-gray-400"></i>
+                                </div>
+                                <input type="text" id="exportSearchInput"
+                                    class="block w-full pl-10 pr-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 placeholder-gray-500"
+                                    placeholder="Search Name/ID...">
+                            </div>
+                        </div>
+
+                        <!-- Filters & Sort -->
+                        <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+
+                            <!-- Year Filter -->
+                            <select id="exportFilterYear"
+                                class="rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm py-2 pl-3 pr-8 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500">
+                                <option value="all">Year: All</option>
+                                <!-- Populated by JS -->
+                            </select>
+
+                            <!-- Section Filter -->
+                            <select id="exportFilterSection"
+                                class="rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm py-2 pl-3 pr-8 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500">
+                                <option value="all">Sec: All</option>
+                                <!-- Populated by JS -->
+                            </select>
+
+                            <!-- Subject Filter -->
+                            <select id="exportFilterSubject"
+                                class="rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm py-2 pl-3 pr-8 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 max-w-[150px]">
+                                <option value="all">Sub: All</option>
+                                <!-- Populated by JS -->
+                            </select>
+
+                            <div class="h-6 w-px bg-gray-300 dark:bg-gray-700 mx-1 hidden sm:block"></div>
+
+                            <!-- Sort -->
+                            <select id="exportSortSelect"
+                                class="rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm py-2 pl-3 pr-8 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500">
+                                <option value="name_asc">Name (A-Z)</option>
+                                <option value="name_desc">Name (Z-A)</option>
+                                <option value="date_new">Join Date (Newest)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Table Preview -->
+                    <div class="flex-1 overflow-auto p-4 bg-gray-50/50 dark:bg-gray-900/10">
+                        <div
+                            class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 inline-block min-w-full align-middle">
+                            <table class="min-w-full text-left text-sm" id="exportPreviewTable">
+                                <thead
+                                    class="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-semibold uppercase tracking-wider text-xs sticky top-0 z-10">
+                                    <tr id="exportTableHeadRow">
+                                        <!-- Headers injected by JS -->
+                                    </tr>
+                                </thead>
+                                <tbody id="exportTableBody" class="divide-y divide-gray-200 dark:divide-gray-700">
+                                    <!-- Rows injected by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Preview Status Bar -->
+                    <div
+                        class="px-4 py-2 bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 text-xs text-gray-500 flex justify-between">
+                        <span id="previewCount">Showing 0 records</span>
+                        <span>Previewing first 50 rows only</span>
+                    </div>
+                </main>
+            </div>
+
+            <!-- Modal Footer -->
+            <div
+                class="px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 flex justify-between items-center">
+                <div class="text-sm text-gray-500 italic">
+                    <i class="fas fa-info-circle mr-1"></i> Data selected here will be included in the report.
+                </div>
+                <div class="flex gap-3">
+                    <button id="btnFinalDownloadPDF"
+                        class="flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors shadow-sm">
+                        <i class="fas fa-print mr-2"></i> Print Report
+                    </button>
+                    <button id="btnFinalDownloadExcel"
+                        class="flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors shadow-sm">
+                        <i class="fas fa-file-excel mr-2"></i> Download Excel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- EXPORT PROBLEMS PREVIEW MODAL -->
+    <div id="exportProblemsModal" class="hidden fixed inset-0 z-[60] overflow-y-auto" aria-modal="true">
+        <!-- Backdrop -->
+        <div class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm transition-opacity"></div>
+
+        <!-- Modal Panel -->
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div
+                class="relative bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-7xl h-[90vh] flex flex-col overflow-hidden animate-[scaleIn_0.2s_ease-out]">
+
+                <!-- Modal Header -->
+                <div
+                    class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-white dark:bg-gray-800 z-10">
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white">Export Problems Preview</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Customize your report before downloading</p>
+                    </div>
+                    <button id="closeProblemsModal"
+                        class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+
+                <!-- Modal Body -->
+                <div class="flex-1 flex overflow-hidden">
+
+                    <!-- Left Sidebar: Columns -->
+                    <div
+                        class="w-64 bg-gray-50 dark:bg-gray-900/50 border-r border-gray-200 dark:border-gray-700 p-4 flex flex-col overflow-y-auto">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                Select Columns</h4>
+                            <button id="selectAllProbColumns"
+                                class="text-xs text-primary-600 hover:text-primary-700 font-medium">Select All</button>
+                        </div>
+                        <div class="space-y-2" id="probColumnSelectionList">
+                            <!-- Injected by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Main Preview Area -->
+                    <main class="flex-1 flex flex-col min-w-0 bg-white dark:bg-gray-800">
+                        <!-- Filters Toolbar -->
+                        <div
+                            class="p-4 border-b border-gray-200 dark:border-gray-700 flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
+
+                            <!-- Search -->
+                            <div class="w-full sm:w-auto flex-1 min-w-[200px] max-w-xs">
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class="fas fa-search text-gray-400"></i>
+                                    </div>
+                                    <input type="text" id="probSearchInput"
+                                        class="block w-full pl-10 pr-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 placeholder-gray-500"
+                                        placeholder="Search Description/Tags...">
+                                </div>
+                            </div>
+
+                            <!-- Filters -->
+                            <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+                                <select id="probFilterSubject"
+                                    class="rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm py-2 pl-3 pr-8 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500">
+                                    <option value="all">Subject: All</option>
+                                    <!-- JS -->
+                                </select>
+
+                                <select id="probFilterDifficulty"
+                                    class="rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm py-2 pl-3 pr-8 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500">
+                                    <option value="all">Difficulty: All</option>
+                                    <option value="Easy">Easy</option>
+                                    <option value="Medium">Medium</option>
+                                    <option value="Hard">Hard</option>
+                                </select>
+
+                                <div class="flex items-center gap-1">
+                                    <input type="date" id="probStartDate"
+                                        class="rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm py-1.5 px-2 text-gray-900 dark:text-white">
+                                    <span class="text-gray-400">-</span>
+                                    <input type="date" id="probEndDate"
+                                        class="rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm py-1.5 px-2 text-gray-900 dark:text-white">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Table Preview -->
+                        <div class="flex-1 overflow-auto p-4 bg-gray-50/50 dark:bg-gray-900/10">
+                            <div
+                                class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 inline-block min-w-full align-middle">
+                                <table class="min-w-full text-left text-sm" id="probPreviewTable">
+                                    <thead
+                                        class="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-semibold uppercase tracking-wider text-xs sticky top-0 z-10">
+                                        <tr id="probTableHeadRow">
+                                            <!-- Headers injected by JS -->
+                                        </tr>
+                                    </thead>
+                                    <tbody id="probTableBody" class="divide-y divide-gray-200 dark:divide-gray-700">
+                                        <!-- Rows injected by JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </main>
+                </div>
+
+                <!-- Modal Footer -->
+                <div
+                    class="px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 flex justify-between items-center">
+                    <div class="text-sm text-gray-500 dark:text-gray-400">
+                        Showing <span id="probPreviewCount" class="font-medium text-gray-900 dark:text-white">0</span>
+                        records
+                    </div>
+                    <div class="flex gap-3">
+                        <button id="btnDownloadProblemsPDF"
+                            class="bg-primary-600 hover:bg-primary-700 text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition-all shadow-md hover:shadow-lg flex items-center">
+                            <i class="fas fa-print mr-2"></i> Print Report
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="index1_logic.js"></script>
+</body>
+
+</html>

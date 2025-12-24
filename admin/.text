@@ -1,0 +1,145 @@
+1. Dashboard
+- No of student and faculty
+- No of program
+- No of courses
+- No of departments
+- Recent activities/users 
+- Notifications
+- Calendar view of events
+- pie chart of student performance
+- Bar chart of faculty publications
+- Line chart of course enrollments over time
+- Pending requests
+-top scoring students
+
+2. Student Management
+- Add/Edit/Delete student profiles
+- View student details
+- Search and filter students
+- Import/Export student data
+- View student attendance records
+- Student performance analytics
+- Student disciplinary records
+- Communication tools (email/SMS) for students
+
+3. Faculty Management
+- Add/Edit/Delete faculty profiles
+- View faculty details
+- Search and filter faculty
+- Import/Export faculty data
+- View faculty schedules
+- Faculty performance analytics
+- Communication tools (email/SMS) for faculty   
+- Faculty research/publication tracking
+- Faculty leave management
+4. Course Management
+- Add/Edit/Delete courses
+- Assign faculty to courses
+- View course details
+- Search and filter courses
+- Import/Export course data
+- Course enrollment management
+- Course scheduling
+- Course performance analytics
+- Course materials management
+- Prerequisite management 
+5. Department Management
+- Add/Edit/Delete departments 
+- View department details 
+- Search and filter departments
+- Import/Export department data
+- Department performance analytics
+- Department budget management
+- Department faculty management
+- Department course management
+
+6. Program Management
+- Add/Edit/Delete programs
+- View program details
+- Search and filter programs
+- Create course
+- Import/Export program data
+- add subject
+- add section 
+- add student
+- Program curriculum management
+- Program enrollment management
+- Program performance analytics
+- Program accreditation tracking
+
+
+
+
+-- profile overlay
+1. Add this HTML (Before the closing </body> tag)
+<div id="profileOverlay" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/50 backdrop-blur-sm">
+    <div class="bg-white dark:bg-gray-800 w-[320px] rounded-3xl overflow-hidden shadow-2xl transform transition-all">
+        <div class="bg-[#1e4a7a] p-6 text-center relative h-32">
+            <button onclick="toggleProfile()" class="absolute top-4 right-4 text-white/80 hover:text-white">
+                <i class="fas fa-times text-lg"></i>
+            </button>
+            <div class="absolute -bottom-10 left-1/2 -translate-x-1/2">
+                <div class="h-20 w-20 rounded-full border-4 border-white dark:border-gray-800 bg-[#1e4a7a] flex items-center justify-center text-white text-2xl font-bold">
+                    RK
+                </div>
+            </div>
+        </div>
+
+        <div class="pt-12 pb-6 px-6 text-center">
+            <h3 class="text-xl font-bold text-gray-800 dark:text-white">Nisha Kumari</h3>
+            <p class="text-xs text-gray-500 mb-6 flex items-center justify-center gap-1">
+                <i class="fas fa-university"></i> XYZ Institute
+            </p>
+
+            <div class="flex justify-between border-y border-gray-100 dark:border-gray-700 py-4 mb-6">
+                <div>
+                    <p class="text-[10px] font-bold text-primary-400 uppercase">Solved <i class="fas fa-check-circle"></i></p>
+                    <p class="text-lg font-bold dark:text-white">124</p>
+                </div>
+                <div class="border-x border-gray-100 dark:border-gray-700 px-6">
+                    <p class="text-[10px] font-bold text-primary-400 uppercase">Rank <i class="fas fa-trophy"></i></p>
+                    <p class="text-lg font-bold dark:text-white">42</p>
+                </div>
+                <div>
+                    <p class="text-[10px] font-bold text-primary-400 uppercase">Points <i class="fas fa-star"></i></p>
+                    <p class="text-lg font-bold dark:text-white">1.2k</p>
+                </div>
+            </div>
+
+            <div class="space-y-1">
+                <button class="w-full flex items-center justify-between p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors group">
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-question-circle text-primary-400"></i>
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Help & Support</span>
+                    </div>
+                    <i class="fas fa-chevron-right text-[10px] text-gray-400 group-hover:translate-x-1 transition-transform"></i>
+                </button>
+                
+                <button class="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 text-red-500 transition-colors">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span class="text-sm font-bold">Log out</span>
+                </button>
+            </div>
+
+            <button onclick="toggleProfile()" class="mt-4 text-[10px] font-bold text-gray-400 uppercase hover:text-gray-600 transition-colors">Close</button>
+        </div>
+    </div>
+</div>
+
+2. Add this JavaScript Function (In your <script> section)
+function toggleProfile() {
+    const overlay = document.getElementById('profileOverlay');
+    overlay.classList.toggle('hidden');
+}
+
+3. Final Step: Update your Header Button
+
+
+<button onclick="toggleProfile()" class="ml-2 flex items-center gap-3 p-1 pr-3 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+    <div class="h-9 w-9 rounded-full bg-primary-500 flex items-center justify-center text-white font-bold text-sm">RK</div>
+    <span class="text-sm font-medium text-gray-700 dark:text-gray-200 hidden sm:block">Raj Kumar</span>
+</button>
+
+
+
+

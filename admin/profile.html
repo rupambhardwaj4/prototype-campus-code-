@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CampusCode • Admin Profile</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Poppins', 'sans-serif'] },
+          colors: {
+            primary: {
+              50: '#E7F0FA',
+              200: '#7BA4D0',
+              400: '#2E5E99',
+              500: '#2E5E99',
+              600: '#0D2440'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .nav-item {
+      display: flex;
+      align-items: center;
+      padding: 0.5rem 1rem;
+      border-radius: 0.375rem;
+      color: #4b5563;
+      transition: all 0.2s;
+    }
+    .nav-item:hover { background-color: #f3f4f6; }
+    .nav-item.active {
+      background-color: #E7F0FA;
+      color: #2E5E99;
+      font-weight: 500;
+    }
+    .dark .nav-item { color: #d1d5db; }
+    .dark .nav-item:hover { background-color: #374151; }
+    .dark .nav-item.active { background-color: #2E5E99; color: white; }
+    
+    /* Smooth transition for theme switching */
+    body { transition: background-color 0.3s, color 0.3s; }
+  </style>
+</head>
+
+<body class="bg-gray-50 dark:bg-gray-900 font-sans overflow-hidden">
+
+<div class="flex h-screen">
+
+  <aside class="sidebar bg-white dark:bg-gray-800 shadow-sm border-r border-gray-200 dark:border-gray-700 flex-shrink-0 overflow-y-auto transition-colors duration-200 no-print w-64">
+      <div class="p-6">
+          <h1 class="text-2xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
+              <i class="fas fa-code text-primary-500"></i>
+              <span>CampusCode</span>
+          </h1>
+      </div>
+
+      <nav class="px-4 space-y-1">
+          <a href="dashboard.html" class="nav-item"><i class="fas fa-home mr-3"></i><span>Home</span></a>
+          <a href="program.html" class="nav-item"><i class="fa-solid fa-layer-group mr-3"></i><span>Programs</span></a>
+          <a href="contest.html" class="nav-item active"><i class="fas fa-trophy mr-3"></i><span>Contests</span></a>
+          <a href="events.html" class="nav-item"><i class="fa-solid fa-calendar-check mr-3"></i><span>Events</span></a>
+          <a href="manage_user.html" class="nav-item"><i class="fa-solid fa-users mr-3"></i><span>User</span></a>
+          <a href="update-report.html" class="nav-item "><i class="fas fa-file-invoice mr-3"></i><span>Reports</span></a>
+          <button onclick="toggleProfile()" class="nav-item w-full text-left mt-4 border-t pt-4 dark:border-gray-700">
+              <i class="fas fa-user mr-3"></i><span>Profile</span>
+          </button>
+      </nav>
+  </aside>
+
+  <div class="flex-1 flex flex-col">
+
+    <header class="bg-white dark:bg-gray-800 border-b dark:border-gray-700 px-8 py-4 flex justify-between items-center transition-colors">
+      <h1 class="text-lg font-semibold dark:text-white">User Profile</h1>
+      <div class="flex items-center gap-6">
+        <button onclick="toggleTheme()" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:ring-2 ring-primary-400 transition-all">
+          <i id="themeIcon" class="fas fa-moon"></i>
+        </button>
+        
+        <div class="flex items-center gap-3">
+          <div class="h-9 w-9 rounded-full bg-primary-400 text-white flex items-center justify-center font-bold">AD</div>
+          <span class="text-sm font-medium dark:text-gray-200">Dr. John Doe</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="flex-1 px-8 py-6">
+      <div class="grid grid-cols-12 gap-6 h-full">
+
+        <div class="col-span-3 bg-white dark:bg-gray-800 rounded-2xl border dark:border-gray-700 p-6 flex flex-col items-center">
+          <img class="w-28 h-28 rounded-2xl border-4 border-primary-50 dark:border-gray-700" src="https://ui-avatars.com/api/?name=John+Doe&background=2E5E99&color=fff" />
+          <h2 class="mt-4 text-xl font-bold dark:text-white">Dr. John Doe</h2>
+          <p class="text-sm text-gray-500 dark:text-gray-400">College Admin</p>
+
+          <div class="flex gap-2 mt-3">
+            <span class="px-3 py-1 text-xs rounded-full bg-primary-50 dark:bg-primary-900 dark:text-primary-200 text-primary-600 font-semibold">Super Admin</span>
+          </div>
+
+          <div class="mt-6 w-full space-y-3 text-sm text-gray-600 dark:text-gray-400">
+            <div class="flex items-center gap-2"><i class="fas fa-university text-primary-400"></i> XYZ Institute of Tech</div>
+            <div class="flex items-center gap-2"><i class="fas fa-id-badge text-primary-400"></i> ADM-2025-001</div>
+            <div class="flex items-center gap-2"><i class="fas fa-envelope text-primary-400"></i> admin@xyz.edu</div>
+          </div>
+
+          <div class="mt-auto w-full space-y-2">
+            <button class="w-full py-2 rounded-xl bg-primary-400 text-white font-medium hover:bg-primary-500 transition-colors">Edit Profile</button>
+            <button class="w-full py-2 rounded-xl border dark:border-gray-600 dark:text-gray-300 font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">Manage College</button>
+          </div>
+        </div>
+
+        <div class="col-span-9 flex flex-col gap-6">
+
+          <div class="grid grid-cols-4 gap-6">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl border dark:border-gray-700 p-5">
+              <p class="text-sm text-gray-500 dark:text-gray-400">Total Students</p>
+              <p class="text-3xl font-bold dark:text-white">2,340</p>
+            </div>
+            <div class="bg-white dark:bg-gray-800 rounded-2xl border dark:border-gray-700 p-5">
+              <p class="text-sm text-gray-500 dark:text-gray-400">Total Faculty</p>
+              <p class="text-3xl font-bold dark:text-white">148</p>
+            </div>
+            <div class="bg-white dark:bg-gray-800 rounded-2xl border dark:border-gray-700 p-5">
+              <p class="text-sm text-gray-500 dark:text-gray-400">Active Programs</p>
+              <p class="text-3xl font-bold dark:text-white">12</p>
+            </div>
+            <div class="bg-white dark:bg-gray-800 rounded-2xl border dark:border-gray-700 p-5">
+              <p class="text-sm text-gray-500 dark:text-gray-400">Ongoing Contests</p>
+              <p class="text-3xl font-bold dark:text-white">5</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-6 flex-1 min-h-0">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl border dark:border-gray-700 p-6 flex flex-col">
+              <h3 class="font-semibold mb-3 dark:text-white">Platform Usage</h3>
+              <div class="relative flex-1">
+                <canvas id="usageChart" class="absolute inset-0"></canvas>
+              </div>
+            </div>
+            <div class="bg-white dark:bg-gray-800 rounded-2xl border dark:border-gray-700 p-6 flex flex-col">
+              <h3 class="font-semibold mb-3 dark:text-white">Student Performance</h3>
+              <div class="relative flex-1">
+                <canvas id="performanceChart" class="absolute inset-0"></canvas>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+  // Theme Toggle Logic
+  function toggleTheme() {
+    const html = document.documentElement;
+    const icon = document.getElementById('themeIcon');
+    
+    if (html.classList.contains('dark')) {
+      html.classList.remove('dark');
+      icon.classList.replace('fa-sun', 'fa-moon');
+    } else {
+      html.classList.add('dark');
+      icon.classList.replace('fa-moon', 'fa-sun');
+    }
+  }
+
+  function toggleProfile() { console.log("Profile clicked"); }
+
+  // Charts Logic (Inherits colors well in dark mode naturally, or can be themed)
+  new Chart(document.getElementById('usageChart'), {
+    type: 'line',
+    data: {
+      labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+      datasets: [{
+        data: [320, 410, 380, 500, 620, 560, 590],
+        borderColor: '#2E5E99',
+        backgroundColor: 'rgba(46,94,153,0.15)',
+        tension: 0.4,
+        fill: true
+      }]
+    },
+    options: { 
+      maintainAspectRatio: false, 
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { grid: { color: 'rgba(156, 163, 175, 0.1)' } },
+        x: { grid: { display: false } }
+      }
+    }
+  })
+
+  new Chart(document.getElementById('performanceChart'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Excellent','Average','At Risk'],
+      datasets: [{
+        data: [45, 40, 15],
+        backgroundColor: ['#10B981','#F59E0B','#EF4444'],
+        borderWidth: 0
+      }]
+    },
+    options: { maintainAspectRatio: false, cutout: '70%' }
+  })
+</script>
+
+</body>
+</html>
