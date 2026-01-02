@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CampusCode - Central Portal Gateway</title>
+    <title>CampusCode - Gateway</title>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -25,6 +25,7 @@
                         'float': 'float 6s ease-in-out infinite',
                         'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
                         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'spin-slow': 'spin 12s linear infinite', 
                     },
                     keyframes: {
                         float: {
@@ -46,6 +47,7 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .dark ::-webkit-scrollbar-thumb { background: #4b5563; }
         
         .code-window {
             background: #1e1e1e;
@@ -54,6 +56,27 @@
             font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
             overflow: hidden;
         }
+        .search {
+  position: relative;
+  width: 400px;
+}
+
+.search input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+  /* Fully rounded pill shape */
+  font-size: 1rem;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.search input:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+  /* A nice, subtle focus ring */
+}
         .code-header { background: #2d2d2d; padding: 0.75rem 1rem; display: flex; gap: 0.5rem; align-items: center; }
         .window-dot { width: 0.75rem; height: 0.75rem; border-radius: 50%; }
         .red { background: #ff5f56; }
@@ -66,40 +89,43 @@
         .syntax-comment { color: #6a9955; }
         .line-num { color: #858585; margin-right: 1rem; user-select: none; }
 
-        /* Cursor blinking effect for typewriter */
-        .cursor-blink {
-            animation: blink 1s step-end infinite;
-        }
+        /* Cursor blinking effect */
+        .cursor-blink { animation: blink 1s step-end infinite; }
         @keyframes blink {
             0%, 100% { border-color: transparent; }
-            50% { border-color: #2E5E99; } /* match primary color */
+            50% { border-color: #2E5E99; }
         }
     </style>
 </head>
 
 <body class="bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 font-sans transition-colors duration-200 relative">
-
+<!-- Navbar -->
     <nav class="fixed w-full z-40 bg-white/80 dark:bg-gray-900/90 backdrop-blur-md border-b border-gray-100 dark:border-gray-800">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-20">
-                <div class="flex items-center gap-2 cursor-pointer" onclick="window.location.reload()">
+                <div class="flex items-center gap-2 cursor-pointer" onclick="window.location.href='index.html'">
                     <i class="fas fa-code text-primary-500 text-3xl"></i>
                     <span class="text-2xl font-bold text-gray-800 dark:text-white">CampusCode</span>
                 </div>
+                <div class="search">
+      <input type="text" placeholder="Search..." id="searchInput">
+    </div>
 
                 <div class="hidden md:flex items-center space-x-8">
                     <a href="#features" class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary-500 transition">Features</a>
-                    <a href="#contests" class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary-500 transition">Contests</a>
+                    <a href="#about" class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary-500 transition">About</a>
                     
                     <div class="h-6 w-px bg-gray-200 dark:bg-gray-700"></div>
                     
                     <button id="themeToggleBtn" class="text-gray-500 hover:text-primary-500 transition">
                         <i class="fas fa-moon text-lg"></i>
                     </button>
-                    <button onclick="openLoginModal()" class="text-sm font-semibold text-gray-800 dark:text-white hover:text-primary-500 transition">Log In</button>
-                    <button onclick="openLoginModal()" class="px-5 py-2.5 rounded-full bg-primary-500 hover:bg-primary-600 text-white text-sm font-semibold shadow-lg shadow-primary-500/30 transition-all transform hover:-translate-y-0.5">
+                    
+                    <a href="login.html" class="text-sm font-semibold text-gray-800 dark:text-white hover:text-primary-500 transition">Log In</a>
+                    
+                    <a href="login.html" class="px-5 py-2.5 rounded-full bg-primary-500 hover:bg-primary-600 text-white text-sm font-semibold shadow-lg shadow-primary-500/30 transition-all transform hover:-translate-y-0.5">
                         Get Started
-                    </button>
+                    </a>
                 </div>
 
                 <button id="mobileMenuBtn" class="md:hidden p-2 text-gray-600 dark:text-gray-300">
@@ -110,11 +136,12 @@
         
         <div id="mobileMenu" class="hidden md:hidden bg-white dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700 p-4 space-y-4 shadow-lg">
             <a href="#features" class="block text-gray-600 dark:text-gray-300 hover:text-primary-500 font-medium">Features</a>
-            <button onclick="openLoginModal()" class="block w-full text-center py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white font-semibold">Log In</button>
-            <button onclick="openLoginModal()" class="block w-full text-center py-2 rounded-lg bg-primary-500 text-white font-semibold">Sign Up</button>
+            <a href="login.html" class="block w-full text-center py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white font-semibold">Log In</a>
+            <a href="login.html" class="block w-full text-center py-2 rounded-lg bg-primary-500 text-white font-semibold">Sign Up</a>
         </div>
     </nav>
-
+    <!-- End Navbar -->
+    <!-- Hero Section -->
     <section class="relative pt-32 pb-20 lg:pt-40 lg:pb-32 overflow-hidden">
         <div class="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 bg-primary-100 dark:bg-primary-900/20 rounded-full blur-3xl opacity-50 -z-10"></div>
         <div class="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 bg-blue-100 dark:bg-blue-900/20 rounded-full blur-3xl opacity-50 -z-10"></div>
@@ -133,15 +160,15 @@
                     Access the integrated College Portal. Students, Faculty, HODs, and Admins collaborate in one unified space.
                 </p>
                 <div class="flex flex-col sm:flex-row gap-4">
-                    <button onclick="openLoginModal()" class="px-8 py-4 rounded-xl bg-primary-500 hover:bg-primary-600 text-white font-bold text-center shadow-xl shadow-primary-500/20 transition-all transform hover:-translate-y-1">
+                    <a href="login.html" class="px-8 py-4 rounded-xl bg-primary-500 hover:bg-primary-600 text-white font-bold text-center shadow-xl shadow-primary-500/20 transition-all transform hover:-translate-y-1 block sm:inline-block">
                         Enter Portal <i class="fas fa-arrow-right ml-2"></i>
-                    </button>
-                    <a href="#features" class="px-8 py-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 font-bold text-center hover:bg-gray-50 dark:hover:bg-gray-700 transition-all">
+                    </a>
+                    <a href="#features" class="px-8 py-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 font-bold text-center hover:bg-gray-50 dark:hover:bg-gray-700 transition-all block sm:inline-block">
                         Explore Features
                     </a>
                 </div>
             </div>
-
+            <!-- Code Snippet Visual -->
             <div class="relative lg:h-[500px] flex items-center justify-center animate-float hidden lg:flex">
                 <div class="code-window w-full max-w-lg transform rotate-2 hover:rotate-0 transition-transform duration-500">
                     <div class="code-header">
@@ -168,7 +195,8 @@
             </div>
         </div>
     </section>
-
+    <!-- End Hero Section -->
+    <!-- How It Works Section -->
     <section class="py-16 bg-gray-50 dark:bg-gray-800/50 border-y border-gray-100 dark:border-gray-800">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
@@ -200,7 +228,7 @@
                 </div>
 
                 <div class="relative flex justify-center items-center h-[350px]">
-                    <div class="absolute w-72 h-72 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-full animate-spin-slow" style="animation-duration: 20s;"></div>
+                    <div class="absolute w-72 h-72 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-full animate-spin-slow"></div>
 
                     <div class="absolute top-0 left-10 md:left-20 transform -translate-x-1/2 bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-xl shadow-blue-500/10 border border-gray-100 dark:border-gray-700 w-24 h-24 flex flex-col items-center justify-center z-10 animate-float" style="animation-delay: 0s;">
                         <i class="fas fa-code text-2xl text-blue-500 mb-1"></i>
@@ -233,8 +261,9 @@
             </div>
         </div>
     </section>
-
-    <section id="about" class="py-20 bg-white dark:bg-gray-900">
+    <!-- End How It Works Section -->
+    <!-- About Us Section -->
+      <section id="about" class="py-20 bg-white dark:bg-gray-900">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
                 <h3 class="text-primary-500 font-bold tracking-wide uppercase text-5xl mb-3">About Us</h3>
@@ -285,8 +314,9 @@
             </div>
         </div>
     </section>
-
-    <section id="features" class="py-20 bg-gray-50 dark:bg-gray-800/50">
+    <!-- End About Us Section -->
+    <!-- Features Section -->
+    <section id="features" class="py-20 bg-white dark:bg-gray-900">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
                 <h3 class="text-primary-500 font-bold tracking-wide uppercase text-5xl mb-3">Roles & Access</h3>
@@ -303,22 +333,8 @@
                     </div>
                     <p class="text-gray-600 dark:text-gray-400 mb-6">Empowering the next generation of developers with comprehensive learning tools and resources.</p>
                     <div class="space-y-3">
-                        <div class="flex items-start">
-                            <i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i>
-                            <span class="text-gray-700 dark:text-gray-300">Submit and track coding problems with real-time feedback</span>
-                        </div>
-                        <div class="flex items-start">
-                            <i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i>
-                            <span class="text-gray-700 dark:text-gray-300">Access college contest, peer competition, and college ranks</span>
-                        </div>
-                        <div class="flex items-start">
-                            <i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i>
-                            <span class="text-gray-700 dark:text-gray-300">Participate in coding battles and hackathons</span>
-                        </div>
-                        <div class="flex items-start">
-                            <i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i>
-                            <span class="text-gray-700 dark:text-gray-300">View performance analytics and personalized learning paths</span>
-                        </div>
+                        <div class="flex items-start"><i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i><span class="text-gray-700 dark:text-gray-300">Submit and track coding problems</span></div>
+                        <div class="flex items-start"><i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i><span class="text-gray-700 dark:text-gray-300">Access college contests</span></div>
                     </div>
                 </div>
 
@@ -329,24 +345,10 @@
                         </div>
                         <h3 class="text-2xl font-bold text-gray-900 dark:text-white">Faculty</h3>
                     </div>
-                    <p class="text-gray-600 dark:text-gray-400 mb-6">Powerful tools for course management and student assessment by contests</p>
+                    <p class="text-gray-600 dark:text-gray-400 mb-6">Powerful tools for course management and student assessment.</p>
                     <div class="space-y-3">
-                        <div class="flex items-start">
-                            <i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i>
-                            <span class="text-gray-700 dark:text-gray-300">Create and manage course content, assignments, and assessments</span>
-                        </div>
-                        <div class="flex items-start">
-                            <i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i>
-                            <span class="text-gray-700 dark:text-gray-300">Automated code evaluation with detailed feedback</span>
-                        </div>
-                        <div class="flex items-start">
-                            <i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i>
-                            <span class="text-gray-700 dark:text-gray-300">Track student progress and identify learning gaps</span>
-                        </div>
-                        <div class="flex items-start">
-                            <i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i>
-                            <span class="text-gray-700 dark:text-gray-300">Conduct calss contest and get detailed analysis</span>
-                        </div>
+                        <div class="flex items-start"><i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i><span class="text-gray-700 dark:text-gray-300">Create course content & assessments</span></div>
+                        <div class="flex items-start"><i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i><span class="text-gray-700 dark:text-gray-300">Track student progress analytics</span></div>
                     </div>
                 </div>
 
@@ -378,7 +380,7 @@
                     </div>
                 </div>
 
-                <div class="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition-all">
+                 <div class="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition-all">
                     <div class="flex items-center mb-6">
                         <div class="p-3 rounded-lg bg-purple-100 dark:bg-purple-900/30 mr-4">
                             <i class="fas fa-university text-2xl text-purple-600 dark:text-purple-400"></i>
@@ -405,17 +407,18 @@
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <div class="mt-16 text-center">
+                 <div class="mt-16 text-center">
                 <button onclick="openLoginModal()" class="px-8 py-3 rounded-xl bg-primary-500 hover:bg-primary-600 text-white font-bold shadow-lg shadow-primary-500/20 transition-all transform hover:-translate-y-0.5">
                     Explore Your Dashboard
                 </button>
             </div>
+            </div>
         </div>
     </section>
+    <!-- End Features Section -->
+    <!-- Footer -->
 
-    <footer class="bg-gray-900 text-white pt-16 pb-8 border-t border-gray-800">
+      <footer class="bg-gray-900 text-white pt-16 pb-8 border-t border-gray-800">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-2 md:grid-cols-4 gap-12 mb-12">
                 <div>
@@ -486,55 +489,10 @@
             </div>
         </div>
     </footer>
-
-    <div id="loginModal" class="fixed inset-0 z-50 hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-        <div class="fixed inset-0 bg-gray-900/75 backdrop-blur-sm transition-opacity" onclick="closeLoginModal()"></div>
-
-        <div class="fixed inset-0 z-10 overflow-y-auto">
-            <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
-                
-                <div class="relative transform overflow-hidden rounded-2xl bg-white dark:bg-gray-800 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-md border border-gray-200 dark:border-gray-700">
-                    
-                    <div class="bg-white dark:bg-gray-800 px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
-                        <div class="sm:flex sm:items-start">
-                            <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
-                                <h3 class="text-xl font-bold leading-6 text-gray-900 dark:text-white mb-2" id="modal-title">Select User Role</h3>
-                                <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">
-                                    This is a prototype integration. Select a module to simulate the login process.
-                                </p>
-
-                                <div class="space-y-3">
-                                    <div class="relative">
-                                        <select id="roleSelector" class="block w-full rounded-lg border-0 py-3 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-primary-600 sm:text-sm sm:leading-6 dark:bg-gray-700 dark:text-white dark:ring-gray-600">
-                                            <option value="" disabled selected>Choose your role...</option>
-                                            <option value="student">Student</option>
-                                            <option value="faculty">Faculty</option>
-                                            <option value="hod">Head of Dept.</option>
-                                            <option value="admin">College Administrator</option>
-                                        </select>
-                                    </div>
-                                    
-                                    <input type="password" placeholder="   Password (Any)" disabled class="block w-full rounded-lg border-0 py-2.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 bg-gray-100 dark:bg-gray-700 dark:text-gray-400 dark:ring-gray-600 cursor-not-allowed">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-gray-50 dark:bg-gray-900/50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                        <button type="button" onclick="executeLogin()" class="inline-flex w-full justify-center rounded-md bg-primary-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary-500 sm:ml-3 sm:w-auto transition-colors">
-                            Login
-                        </button>
-                        <button type="button" onclick="closeLoginModal()" class="mt-3 inline-flex w-full justify-center rounded-md bg-white dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 sm:mt-0 sm:w-auto transition-colors">
-                            Cancel
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- End Footer -->
 
     <script>
-        // --- Typewriter Effect Logic ---
+        // --- Typewriter Effect ---
         const words = ["CODE", "COMPETE", "COLLABORATE"];
         const typewriterElement = document.getElementById('typewriter');
         let wordIndex = 0;
@@ -544,97 +502,45 @@
 
         function typeWriter() {
             const currentWord = words[wordIndex];
-            
             if (isDeleting) {
                 typewriterElement.textContent = currentWord.substring(0, charIndex - 1);
                 charIndex--;
-                typeSpeed = 50; // Faster when deleting
+                typeSpeed = 50;
             } else {
                 typewriterElement.textContent = currentWord.substring(0, charIndex + 1);
                 charIndex++;
-                typeSpeed = 150; // Standard typing speed
+                typeSpeed = 150;
             }
 
             if (!isDeleting && charIndex === currentWord.length) {
                 isDeleting = true;
-                typeSpeed = 2000; // Pause at end of word
+                typeSpeed = 2000;
             } else if (isDeleting && charIndex === 0) {
                 isDeleting = false;
-                wordIndex = (wordIndex + 1) % words.length; // Loop back to start
-                typeSpeed = 500; // Pause before new word
+                wordIndex = (wordIndex + 1) % words.length;
+                typeSpeed = 500;
             }
-
             setTimeout(typeWriter, typeSpeed);
         }
-
-        // Start the typewriter when the page loads
         document.addEventListener('DOMContentLoaded', typeWriter);
 
-        // --- Dark Mode Logic ---
+        // --- Dark Mode ---
         const themeBtn = document.getElementById('themeToggleBtn');
-        const themeIcon = themeBtn.querySelector('i');
         const html = document.documentElement;
-
+        
         if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             html.classList.add('dark');
-            themeIcon.classList.replace('fa-moon', 'fa-sun');
         }
 
         themeBtn.addEventListener('click', () => {
             html.classList.toggle('dark');
-            if (html.classList.contains('dark')) {
-                localStorage.theme = 'dark';
-                themeIcon.classList.replace('fa-moon', 'fa-sun');
-            } else {
-                localStorage.theme = 'light';
-                themeIcon.classList.replace('fa-sun', 'fa-moon');
-            }
+            localStorage.theme = html.classList.contains('dark') ? 'dark' : 'light';
         });
 
-        // --- Mobile Menu Toggle ---
-        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-        const mobileMenu = document.getElementById('mobileMenu');
-
-        mobileMenuBtn.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
+        // --- Mobile Menu ---
+        document.getElementById('mobileMenuBtn').addEventListener('click', () => {
+            document.getElementById('mobileMenu').classList.toggle('hidden');
         });
-
-        // --- INTEGRATION LOGIC: Modal & Routing ---
-        const modal = document.getElementById('loginModal');
-
-        function openLoginModal() {
-            modal.classList.remove('hidden');
-        }
-
-        function closeLoginModal() {
-            modal.classList.add('hidden');
-        }
-
-        function executeLogin() {
-            const role = document.getElementById("roleSelector").value;
-            
-            // Set session storage to act as a fake backend session
-            sessionStorage.setItem("currentUserRole", role);
-
-            // Routing Logic based on Folder Structure
-            
-            switch(role) {
-                case "student":
-                    window.location.href = "/student/prototype/index.html"; 
-                    break;
-                case "faculty":
-                    window.location.href = "/faculty/dashboard.html";
-                    break;
-                case "hod":
-                    window.location.href = "/hod/dashboard.html";
-                    break;
-                case "admin":
-                    window.location.href = "/admin/dashboard.html";
-                    break;
-                default:
-                    alert("Please select a role to continue.");
-            }
-        }
     </script>
 </body>
 </html>

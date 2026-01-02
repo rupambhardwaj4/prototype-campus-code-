@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CampusCode - Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ["Poppins", "sans-serif"] },
+                    colors: {
+                        primary: { 500: "#1E4A7A", 600: "#0D2440" },
+                    },
+                },
+            },
+        };
+    </script>
+
+    <style>
+        body {
+            background-color: #f3f4f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        /* Wrapper Card */
+        .wrapper {
+            width: 1000px;
+            height: 600px;
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            display: flex;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Left Side (Animation) */
+        .left-panel {
+            width: 50%;
+            background: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .mascot-text {
+            position: absolute;
+            bottom: 40px;
+            right: -20px;
+            font-size: 80px;
+            opacity: 0;
+            transform: translateX(-50px);
+            z-index: 10;
+        }
+
+        /* Right Side (Form) */
+        .right-panel {
+            width: 50%;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: white;
+        }
+
+        /* Role Switcher */
+        .role-switch {
+            background: #f1f5f9;
+            padding: 5px;
+            border-radius: 12px;
+            display: flex;
+            margin-bottom: 2rem;
+        }
+
+        .role-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            color: #64748b;
+            font-size: 11px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            white-space: nowrap;
+        }
+
+        .role-btn:hover { color: #1E4A7A; }
+
+        .role-btn.active {
+            background: white;
+            color: #1E4A7A;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Form Elements */
+        .form-group { margin-bottom: 1.25rem; }
+        
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #334155;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            font-size: 0.875rem;
+            outline: none;
+            transition: all 0.2s;
+            background: #f8fafc;
+        }
+
+        .form-input:focus {
+            border-color: #1E4A7A;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(30, 74, 122, 0.1);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 0.875rem;
+            background: #1E4A7A;
+            color: white;
+            border: none;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 1rem;
+        }
+
+        .login-btn:hover { background: #0D2440; }
+
+        /* Back Button */
+        .back-btn {
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #64748b;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            z-index: 50;
+            transition: color 0.2s;
+        }
+        .back-btn:hover { color: #1E4A7A; }
+
+        /* Initial States for GSAP */
+        .card-content { opacity: 0; transform: translateY(20px); }
+    </style>
+</head>
+<body>
+
+    <a href="index.html" class="back-btn">
+        <i class="fas fa-arrow-left"></i> Back to Home
+    </a>
+
+    <div class="wrapper">
+        <div class="left-panel">
+            <lottie-player id="lottieAnim"
+                src="https://assets10.lottiefiles.com/packages/lf20_jcikwtux.json"
+                background="transparent" 
+                speed="1"
+                style="width: 100%; max-width: 450px;"
+                loop autoplay>
+            </lottie-player>
+            <div class="mascot-text" id="mascot">🚀</div>
+        </div>
+
+        <div class="right-panel">
+            <div class="card-content" id="loginCard">
+                
+                <div class="text-center mb-8">
+                    <h2 class="text-2xl font-bold text-gray-900" id="roleTitle">Student Login</h2>
+                    <p class="text-gray-500 text-sm mt-1">Welcome back! Please enter your details.</p>
+                </div>
+
+                <div class="role-switch">
+                    <button class="role-btn active" onclick="switchRole('Student', this)">
+                        <i class="fas fa-user-graduate"></i> Student
+                    </button>
+                    <button class="role-btn" onclick="switchRole('Faculty', this)">
+                        <i class="fas fa-chalkboard-teacher"></i> Faculty
+                    </button>
+                    <button class="role-btn" onclick="switchRole('HOD', this)">
+                        <i class="fas fa-user-tie"></i> HOD
+                    </button>
+                    <button class="role-btn" onclick="switchRole('Admin', this)">
+                        <i class="fas fa-shield-alt"></i> Admin
+                    </button>
+                </div>
+
+                <form id="loginForm" onsubmit="handleLogin(event)">
+                    </form>
+
+                <p class="text-center text-xs text-gray-400 mt-6">
+                    By logging in, you agree to CampusCode's Terms & Conditions.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. CONFIGURATION ---
+        
+        // Animation Assets for each role
+        const assets = {
+            Student: "https://assets10.lottiefiles.com/packages/lf20_jcikwtux.json",
+            Faculty: "https://assets6.lottiefiles.com/packages/lf20_tno6cg2w.json",
+            HOD: "https://assets6.lottiefiles.com/packages/lf20_tno6cg2w.json", // Reusing professional animation
+            Admin: "https://assets2.lottiefiles.com/packages/lf20_0fhlytwe.json"
+        };
+
+        // Form HTML Templates
+        const forms = {
+            Student: `
+                <div class="form-group">
+                    <label class="form-label">Enrollment Number</label>
+                    <input type="text" class="form-input" placeholder="e.g. 2023CS101" value="2023CS_User">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-input" value="password">
+                </div>
+                <div class="text-right mb-4">
+                    <a href="#" class="text-xs text-primary-600 hover:underline">Forgot Password?</a>
+                </div>
+                <button type="submit" class="login-btn">Login as Student</button>
+            `,
+            Faculty: `
+                <div class="form-group">
+                    <label class="form-label">Faculty ID</label>
+                    <input type="text" class="form-input" placeholder="e.g. FAC_099">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Department</label>
+                    <select class="form-input bg-white">
+                        <option>Computer Science</option>
+                        <option>Information Tech</option>
+                        <option>Electronics</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-input">
+                </div>
+                <button type="submit" class="login-btn">Login as Faculty</button>
+            `,
+            HOD: `
+                <div class="form-group">
+                    <label class="form-label">Official Email</label>
+                    <input type="email" class="form-input" placeholder="hod.cse@college.edu">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Department</label>
+                    <select class="form-input bg-white">
+                        <option>Computer Science</option>
+                        <option>Information Tech</option>
+                        <option>Electronics</option>
+                        <option>Mechanical</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-input">
+                </div>
+                <button type="submit" class="login-btn">Login as HOD</button>
+            `,
+            Admin: `
+                <div class="form-group">
+                    <label class="form-label">Admin Email</label>
+                    <input type="email" class="form-input" placeholder="admin@college.edu">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">College Code</label>
+                    <input type="password" class="form-input" placeholder="Unique College ID">
+                </div>
+                <button type="submit" class="login-btn">Access Admin Panel</button>
+            `
+        };
+
+        // --- 2. INITIALIZATION ---
+        
+        // Load Student form by default
+        document.getElementById("loginForm").innerHTML = forms.Student;
+
+        // Initial Entry Animation
+        const tl = gsap.timeline();
+        tl.from(".wrapper", { duration: 0.8, y: 50, opacity: 0, ease: "power3.out" })
+          .to("#loginCard", { duration: 0.5, opacity: 1, y: 0 }, "-=0.4")
+          .to("#mascot", { duration: 0.6, opacity: 1, x: 0, ease: "back.out(1.7)" }, "-=0.3");
+
+        // --- 3. FUNCTIONS ---
+
+        // Handle Role Switching
+        function switchRole(role, btn) {
+            // Update Active Button Style
+            document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            // Update Title
+            document.getElementById('roleTitle').innerText = role + " Login";
+
+            // Update Form HTML with Animation
+            const formContainer = document.getElementById("loginForm");
+            
+            gsap.to(formContainer, {
+                opacity: 0, 
+                y: 10, 
+                duration: 0.2, 
+                onComplete: () => {
+                    formContainer.innerHTML = forms[role];
+                    gsap.to(formContainer, { opacity: 1, y: 0, duration: 0.3 });
+                }
+            });
+
+            // Update Lottie Animation
+            const lottie = document.getElementById("lottieAnim");
+            // Simple fade out/in effect for smoother transition
+            gsap.to(lottie, {
+                opacity: 0,
+                scale: 0.8,
+                duration: 0.3,
+                onComplete: () => {
+                    lottie.setAttribute("src", assets[role]);
+                    gsap.to(lottie, { opacity: 1, scale: 1, duration: 0.4 });
+                }
+            });
+        }
+
+        /* LOGIN HANDLER */
+function handleLogin(e) {
+    e.preventDefault();
+    
+    const btn = e.target.querySelector('button');
+    // Gets "Student", "Faculty", "HOD", or "Admin" based on the active button
+    const currentRole = document.querySelector('.role-btn.active').innerText.trim().split(' ')[0]; 
+
+    // 1. Loading State
+    btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Authenticating...';
+    btn.style.opacity = '0.8';
+    btn.disabled = true;
+
+    // 2. Simulate API Call & Redirect
+    setTimeout(() => {
+        // 3. Routing Logic based on your Folder Structure
+        switch(currentRole) {
+            case "Student":
+                window.location.href = "student/prototype/index.html"; 
+                break;
+
+            case "Faculty":
+                window.location.href = "faculty/dashboard.html"; 
+                break;
+
+            case "HOD":
+                window.location.href = "hod/dashboard.html"; 
+                break;
+
+            case "Admin":
+                window.location.href = "admin/dashboard.html"; 
+                break;
+
+            default:
+                alert("Role not recognized.");
+                window.location.href = "index.html";
+        }
+    }, 1500);
+}
+    </script>
+</body>
+</html>
