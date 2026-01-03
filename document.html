@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CampusCode Documentation</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Lucida Grande"', 'Arial', 'sans-serif'], // Python Docs classic font stack
+                        mono: ['"Consolas"', '"Monaco"', 'monospace'],
+                    },
+                    colors: {
+                        pyblue: '#306998', // Python Logo Blue
+                        pyyellow: '#FFD43B', // Python Logo Yellow
+                        sidebar: '#f2f2f2', // Classic Sidebar Gray
+                        link: '#0070c0', // Classic Link Blue
+                    }
+                },
+            },
+        };
+    </script>
+
+    <style>
+        /* Custom scrollbar for sidebar */
+        aside::-webkit-scrollbar { width: 6px; }
+        aside::-webkit-scrollbar-thumb { background: #cbd5e1; }
+        
+        /* Typography overrides to match "Docs" feel */
+        h1 { font-size: 2rem; font-weight: normal; margin-bottom: 1.5rem; border-bottom: 1px solid #ddd; padding-bottom: 0.5rem; }
+        h2 { font-size: 1.5rem; font-weight: normal; margin-top: 2.5rem; margin-bottom: 1rem; border-bottom: 1px solid #eee; padding-bottom: 0.25rem; }
+        h3 { font-size: 1.2rem; font-weight: bold; margin-top: 1.5rem; margin-bottom: 0.75rem; }
+        p { margin-bottom: 1rem; line-height: 1.6; color: #333; }
+        a.doc-link { color: #0070c0; text-decoration: none; }
+        a.doc-link:hover { text-decoration: underline; color: #005696; }
+
+        /* Note/Admonition Block */
+        .admonition {
+            background-color: #eee;
+            border: 1px solid #ccc;
+            padding: 12px;
+            margin-bottom: 20px;
+            border-left: 5px solid #306998;
+        }
+        .admonition-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+        }
+    </style>
+</head>
+
+<body class="flex h-screen bg-white text-slate-800 font-sans">
+
+    <aside class="w-72 bg-sidebar border-r border-gray-300 flex-shrink-0 hidden md:flex flex-col h-full overflow-y-auto">
+        
+        <div class="p-6 pb-4">
+            <div class="font-bold text-xl mb-2 flex items-center gap-2">
+                <i class="fas fa-code text-pyblue"></i> CampusCode
+            </div>
+            <div class="text-xs text-gray-500">Version 1.0 (Prototype)</div>
+        </div>
+
+        <div class="px-6 mb-6">
+            <div class="relative">
+                <input type="text" placeholder="Quick search" class="w-full pl-8 pr-2 py-1.5 text-sm border border-gray-300 rounded bg-white focus:outline-none focus:border-pyblue">
+                <i class="fas fa-search absolute left-2.5 top-2 text-gray-400 text-xs"></i>
+            </div>
+        </div>
+
+        <nav class="px-6 space-y-6 text-sm">
+            <div>
+                <span class="font-bold text-gray-900 block mb-2">Table of Contents</span>
+                <ul class="space-y-1.5 border-l border-gray-300 ml-1">
+                    <li><a href="#introduction" class="block pl-3 text-gray-600 hover:text-pyblue hover:border-l-2 hover:border-pyblue -ml-px">1. Introduction</a></li>
+                    <li><a href="#quick-access" class="block pl-3 text-gray-600 hover:text-pyblue hover:border-l-2 hover:border-pyblue -ml-px">2. Quick Access (Credentials)</a></li>
+                    <li>
+                        <a href="#roles" class="block pl-3 text-gray-600 hover:text-pyblue hover:border-l-2 hover:border-pyblue -ml-px">3. User Roles</a>
+                        <ul class="ml-4 mt-1 space-y-1 text-xs">
+                            <li><a href="#role-student" class="text-gray-500 hover:text-gray-800">3.1 Student</a></li>
+                            <li><a href="#role-individual" class="text-gray-500 hover:text-gray-800">3.2 Individual User</a></li>
+                            <li><a href="#role-faculty" class="text-gray-500 hover:text-gray-800">3.3 Faculty</a></li>
+                            <li><a href="#role-hod" class="text-gray-500 hover:text-gray-800">3.4 HOD & Admin</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+
+            <div>
+                <span class="font-bold text-gray-900 block mb-2">Project Links</span>
+                <ul class="space-y-1">
+                    <li><a href="index.html" class="doc-link"><i class="fas fa-home w-4"></i> Return to Portal</a></li>
+                    <li><a href="#" class="doc-link"><i class="fab fa-github w-4"></i> Source Code</a></li>
+                </ul>
+            </div>
+        </nav>
+    </aside>
+
+    <main class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+        
+        <header class="px-8 py-3 bg-white border-b border-gray-200 text-sm text-gray-600 flex justify-between items-center sticky top-0 z-10">
+            <div class="flex items-center gap-2">
+                <span>CampusCode Docs</span>
+                <span class="text-gray-400">»</span>
+                <span class="font-medium text-gray-900">Platform Documentation</span>
+            </div>
+            <a href="index.html" class="text-xs bg-pyblue text-white px-3 py-1 rounded hover:bg-sky-700 transition">Back to App</a>
+        </header>
+
+        <div class="px-8 py-10 max-w-4xl mx-auto w-full">
+            
+            <section id="introduction">
+                <h1>CampusCode Platform Documentation</h1>
+                
+                <p>
+                    <strong>CampusCode</strong> is a unified ecosystem designed to bridge the gap between academic theory and industry reality. It serves as a central hub where code is written, evaluated, and ranked, creating a gamified environment for continuous improvement.
+                </p>
+                <p>
+                    The platform supports multiple distinct user types, ranging from institutional roles (Students, Faculty) to independent learners (Individual Users).
+                </p>
+
+                <div class="admonition">
+                    <span class="admonition-title"><i class="fas fa-info-circle"></i> Note</span>
+                    This documentation corresponds to <strong>version 1.0 (Prototype)</strong>. Some features described may be simulated for demonstration purposes.
+                </div>
+            </section>
+
+            <section id="quick-access">
+                <h2>2. Quick Access Guide (Credentials)</h2>
+                
+                <p>
+                    The current build of the application uses <strong>hardcoded credentials</strong> to facilitate easy testing and demonstration. You do not need to register a new account. Please use the following details to log in.
+                </p>
+
+                <div class="admonition" style="background-color: #fff8dc; border-left-color: #f0ad4e;">
+                    <span class="admonition-title" style="color: #8a6d3b;"><i class="fas fa-exclamation-triangle"></i> Important</span>
+                    The password for <strong>ALL</strong> accounts is the same: <code class="bg-gray-200 px-1 rounded font-mono text-red-600 font-bold">USER@1234</code>
+                </div>
+
+                <div class="mt-6 border border-gray-300 rounded shadow-sm overflow-hidden">
+                    <table class="min-w-full text-sm text-left">
+                        <thead class="bg-gray-100 border-b border-gray-300">
+                            <tr>
+                                <th class="px-6 py-3 font-bold text-gray-700">Role</th>
+                                <th class="px-6 py-3 font-bold text-gray-700">Email (Username)</th>
+                                <th class="px-6 py-3 font-bold text-gray-700">Password</th>
+                                <th class="px-6 py-3 font-bold text-gray-700">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-3 font-medium">Student</td>
+                                <td class="px-6 py-3 font-mono text-gray-600">user@edu.com</td>
+                                <td class="px-6 py-3 font-mono text-red-600">USER@1234</td>
+                                <td class="px-6 py-3">College-affiliated learner.</td>
+                            </tr>
+                            <tr class="bg-blue-50/50 hover:bg-blue-50">
+                                <td class="px-6 py-3 font-medium text-pyblue">Individual</td>
+                                <td class="px-6 py-3 font-mono text-gray-600">individual@gmail.com</td>
+                                <td class="px-6 py-3 font-mono text-red-600">USER@1234</td>
+                                <td class="px-6 py-3">Independent developer (No college).</td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-3 font-medium">Faculty</td>
+                                <td class="px-6 py-3 font-mono text-gray-600">faculty@edu.com</td>
+                                <td class="px-6 py-3 font-mono text-red-600">USER@1234</td>
+                                <td class="px-6 py-3">Course & Contest Manager.</td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-3 font-medium">HOD</td>
+                                <td class="px-6 py-3 font-mono text-gray-600">hod@edu.com</td>
+                                <td class="px-6 py-3 font-mono text-red-600">USER@1234</td>
+                                <td class="px-6 py-3">Department Head analytics.</td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-3 font-medium">Admin</td>
+                                <td class="px-6 py-3 font-mono text-gray-600">admin@edu.com</td>
+                                <td class="px-6 py-3 font-mono text-red-600">USER@1234</td>
+                                <td class="px-6 py-3">System configuration.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="roles">
+                <h2>3. User Roles & Capabilities</h2>
+                <p>
+                    Each user role has access to specific dashboards and features. Below is a detailed breakdown of what each user can do within the system.
+                </p>
+
+                <div id="role-student" class="mt-8">
+                    <h3>3.1. The Student</h3>
+                    <p>
+                        The Student is the primary end-user of the educational features. They are associated with a specific institution.
+                    </p>
+                    <ul class="list-disc ml-6 space-y-1 text-gray-700">
+                        <li><strong>Dashboard:</strong> View upcoming contests, assignments, and personal rank.</li>
+                        <li><strong>IDE:</strong> Write, compile, and submit code for evaluation.</li>
+                        <li><strong>Analytics:</strong> Track performance against peers in the same college.</li>
+                    </ul>
+                </div>
+
+                <div id="role-individual" class="mt-8">
+                    <h3>3.2. The Individual User <span class="text-xs bg-pyblue text-white px-2 py-0.5 rounded ml-2">New</span></h3>
+                    <p>
+                        The Individual User represents a developer who is <em>not</em> bound to a specific college curriculum. This role was introduced to allow open participation in global events.
+                    </p>
+                    <ul class="list-disc ml-6 space-y-1 text-gray-700">
+                        <li><strong>Global Access:</strong> Participate in open hackathons and global coding battles.</li>
+                        <li><strong>Public Profile:</strong> Build a portfolio visible to potential employers.</li>
+                        <li><strong>Restrictions:</strong> Cannot access college-specific internal exams or faculty-restricted content.</li>
+                    </ul>
+                </div>
+
+                <div id="role-faculty" class="mt-8">
+                    <h3>3.3. Faculty</h3>
+                    <p>
+                        Faculty members are responsible for creating content and assessing student performance.
+                    </p>
+                    <pre class="bg-gray-100 p-3 border border-gray-200 rounded text-sm font-mono overflow-x-auto mt-2">
+class Faculty(User):
+    def create_contest(self):
+        pass
+    def view_plagiarism_report(self):
+        pass
+    def grade_assignment(self):
+        pass</pre>
+                </div>
+
+                <div id="role-hod" class="mt-8">
+                    <h3>3.4. Head of Department (HOD) & Admin</h3>
+                    <p>
+                        <strong>HODs</strong> focus on high-level metrics: pass/fail rates, faculty performance, and curriculum adherence.
+                    </p>
+                    <p>
+                        <strong>Admins</strong> manage the technical infrastructure, user account provisioning, and system-wide settings.
+                    </p>
+                </div>
+
+            </section>
+            
+            <div class="mt-16 pt-8 border-t border-gray-200 flex justify-between text-sm text-gray-600">
+                <div>
+                    <span class="block text-xs text-gray-400">Previous</span>
+                    <a href="index.html" class="doc-link">« Homepage</a>
+                </div>
+                <div class="text-right">
+                    <span class="block text-xs text-gray-400">Next</span>
+                    <a href="#quick-access" class="doc-link">Getting Started »</a>
+                </div>
+            </div>
+
+            <footer class="mt-12 text-center text-xs text-gray-400">
+                &copy; 2025 CampusCode Foundation. All rights reserved. <br>
+                Documentation built with <a href="#" class="doc-link">Tailwind</a> using <a href="#" class="doc-link">Python Docs theme</a> inspiration.
+            </footer>
+
+        </div>
+    </main>
+
+</body>
+</html>
