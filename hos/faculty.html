@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Faculty - HOD Dashboard</title>
+    <title>Faculty - HOS Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet" />
@@ -120,8 +120,6 @@
                             <div
                                 class="h-9 w-9 rounded-full bg-primary-500 flex items-center justify-center text-white font-bold text-sm">
                                 JD</div>
-                            <span class="text-sm font-medium text-gray-700 dark:text-gray-200 hidden sm:block">Dr. John
-                                Doe</span>
                         </button>
                     </div>
                 </div>
@@ -161,7 +159,7 @@
                                 <i class="fas fa-flask text-xl"></i>
                             </div>
                             <div>
-                                <p class="text-sm text-gray-500 dark:text-gray-400 font-medium">Active Contests</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400 font-medium">Active Contest</p>
                                 <h3 class="text-2xl font-bold text-gray-800 dark:text-white">12</h3>
                             </div>
                         </div>
@@ -223,64 +221,54 @@
                                         <th class="px-6 py-4">Domain & Role</th>
                                         <th class="px-6 py-4">Status</th>
                                         <th class="px-6 py-4">Problems Created</th>
-                                        <th class="px-6 py-4 text-right rounded-tr-lg">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
                                     <!-- Faculty 1 -->
-                                    <tr class="group hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
-                                        <td class="px-6 py-4">
-                                            <div class="flex items-center gap-4">
-                                                <div
-                                                    class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-blue-900/40 dark:to-indigo-900/40 flex items-center justify-center text-blue-600 dark:text-blue-300 font-bold text-sm shadow-sm">
-                                                    VG
-                                                </div>
-                                                <div>
-                                                    <span
-                                                        class="faculty-name-trigger block text-sm font-semibold text-gray-900 dark:text-white hover:text-primary-600 dark:hover:text-primary-400 cursor-pointer transition-colors"
-                                                        data-faculty-id="FAT-001" data-name="Dr. Vishnu Gupta"
-                                                        data-email="vishnu.gupta@example.com"
-                                                        data-dept="Computer Science" data-role="HOD" data-joined="2015">
-                                                        Dr. Vishnu Gupta
-                                                    </span>
-                                                    <span
-                                                        class="text-xs text-gray-500 dark:text-gray-400">vishnu.gupta@example.com</span>
-                                                </div>
+
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center gap-4">
+                                            <div
+                                                class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-blue-900/40 dark:to-indigo-900/40 flex items-center justify-center text-blue-600 dark:text-blue-300 font-bold text-sm shadow-sm">
+                                                VG
                                             </div>
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            <div class="flex flex-col items-start gap-1">
+                                            <div>
                                                 <span
-                                                    class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
-                                                    HOD
+                                                    class="faculty-name-trigger block text-sm font-semibold text-gray-900 dark:text-white hover:text-primary-600 dark:hover:text-primary-400 cursor-pointer transition-colors"
+                                                    data-faculty-id="FAT-001" data-name="Dr. Vishnu Gupta"
+                                                    data-email="vishnu.gupta@example.com" data-dept="Computer Science"
+                                                    data-role="HOD" data-joined="2015">
+                                                    Dr. Vishnu Gupta
                                                 </span>
-                                                <span class="text-xs text-gray-600 dark:text-gray-300">Computer
-                                                    Science</span>
+                                                <span
+                                                    class="text-xs text-gray-500 dark:text-gray-400">vishnu.gupta@example.com</span>
                                             </div>
-                                        </td>
-                                        <td class="px-6 py-4">
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex flex-col items-start gap-1">
                                             <span
-                                                class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400 border border-green-100 dark:border-green-800">
-                                                <span class="flex h-1.5 w-1.5 rounded-full bg-green-500"></span> Active
+                                                class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
+                                                HOS
                                             </span>
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            <span
-                                                class="subject-count-trigger inline-flex items-center justify-center w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs font-bold hover:bg-primary-50 hover:text-primary-600 dark:hover:bg-primary-900/20 dark:hover:text-primary-400 cursor-pointer transition-colors"
-                                                data-subjects='["Data Structures", "Algorithms", "Operating Systems"]'
-                                                title="Problems Created">
-                                                45
-                                            </span>
-                                        </td>
-                                        <td class="px-6 py-4 text-right">
-                                            <div class="flex justify-end gap-1">
-                                                <button
-                                                    class="edit-faculty-btn w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all"
-                                                    title="Edit" data-faculty-id="FAT-001">
-                                                    <i class="fas fa-edit"></i>
-                                                </button>
-                                            </div>
-                                        </td>
+                                            <span class="text-xs text-gray-600 dark:text-gray-300">DBMS</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <span
+                                            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400 border border-green-100 dark:border-green-800">
+                                            <span class="flex h-1.5 w-1.5 rounded-full bg-green-500"></span> Active
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <span
+                                            class="subject-count-trigger inline-flex items-center justify-center w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs font-bold hover:bg-primary-50 hover:text-primary-600 dark:hover:bg-primary-900/20 dark:hover:text-primary-400 cursor-pointer transition-colors"
+                                            data-subjects='["Data Structures", "Algorithms", "Operating Systems"]'
+                                            title="Problems Created">
+                                            45
+                                        </span>
+                                    </td>
+
                                     </tr>
 
                                     <!-- Faculty 2 -->
@@ -328,15 +316,7 @@
                                                 2
                                             </span>
                                         </td>
-                                        <td class="px-6 py-4 text-right">
-                                            <div class="flex justify-end gap-1">
-                                                <button
-                                                    class="edit-faculty-btn w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all"
-                                                    title="Edit" data-faculty-id="FAT-002">
-                                                    <i class="fas fa-edit"></i>
-                                                </button>
-                                            </div>
-                                        </td>
+
                                     </tr>
 
                                     <!-- Faculty 3 -->
@@ -385,15 +365,7 @@
                                                 1
                                             </span>
                                         </td>
-                                        <td class="px-6 py-4 text-right">
-                                            <div class="flex justify-end gap-1">
-                                                <button
-                                                    class="edit-faculty-btn w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all"
-                                                    title="Edit" data-faculty-id="FAT-003">
-                                                    <i class="fas fa-edit"></i>
-                                                </button>
-                                            </div>
-                                        </td>
+
                                     </tr>
 
                                     <!-- Faculty 4 -->
@@ -441,15 +413,7 @@
                                                 42
                                             </span>
                                         </td>
-                                        <td class="px-6 py-4 text-right">
-                                            <div class="flex justify-end gap-1">
-                                                <button
-                                                    class="edit-faculty-btn w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all"
-                                                    title="Edit" data-faculty-id="FAT-004">
-                                                    <i class="fas fa-edit"></i>
-                                                </button>
-                                            </div>
-                                        </td>
+
                                     </tr>
 
                                     <!-- Faculty 5 -->
@@ -497,15 +461,7 @@
                                                 28
                                             </span>
                                         </td>
-                                        <td class="px-6 py-4 text-right">
-                                            <div class="flex justify-end gap-1">
-                                                <button
-                                                    class="edit-faculty-btn w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all"
-                                                    title="Edit" data-faculty-id="FAT-005">
-                                                    <i class="fas fa-edit"></i>
-                                                </button>
-                                            </div>
-                                        </td>
+
                                     </tr>
                                 </tbody>
                             </table>
@@ -865,7 +821,7 @@
                         </span>
                         <span
                             class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300">
-                            <i class="fas fa-user-tie mr-1.5"></i> HOD
+                            <i class="fas fa-user-tie mr-1.5"></i> HOS(DBMS)
                         </span>
                     </div>
                 </div>
@@ -1068,147 +1024,6 @@
     </div>
 
     <script src="index1_logic.js"></script>
-    <script>
-        // Faculty Edit Functionality
-        const facultyModal = document.getElementById('faculty-detail-modal');
-        const closeModalBtn = document.getElementById('closeFacultyModal');
-        const cancelEditBtn = document.getElementById('cancelEditFaculty');
-        const editFacultyForm = document.getElementById('editFacultyForm');
-
-        // All edit buttons
-        const editBtns = document.querySelectorAll('.edit-faculty-btn');
-
-        // Form fields
-        const modalFacultyName = document.getElementById('modalFacultyName');
-        const modalFacultyEmail = document.getElementById('modalFacultyEmail');
-        const modalFacultyPhone = document.getElementById('modalFacultyPhone');
-        const modalFacultyDept = document.getElementById('modalFacultyDept');
-        const modalFacultyRole = document.getElementById('modalFacultyRole');
-        const modalFacultyStatus = document.getElementById('modalFacultyStatus');
-
-        let currentFacultyId = null;
-
-        // Handle Edit Button Click
-        editBtns.forEach(btn => {
-            btn.addEventListener('click', function () {
-                const facultyId = this.getAttribute('data-faculty-id');
-                const row = this.closest('tr');
-
-                // Get faculty data from the row
-                const nameElement = row.querySelector('.faculty-name-trigger');
-                const name = nameElement.getAttribute('data-name');
-                const email = nameElement.getAttribute('data-email');
-                const dept = nameElement.getAttribute('data-dept');
-                const role = nameElement.getAttribute('data-role');
-
-                // Get status
-                const statusElement = row.querySelector('.inline-flex.items-center.gap-1\\.5');
-                let status = 'Active';
-                if (statusElement) {
-                    const statusText = statusElement.textContent.trim();
-                    if (statusText.includes('On Leave')) status = 'On Leave';
-                    else if (statusText.includes('Inactive')) status = 'Inactive';
-                }
-
-                // Populate modal
-                currentFacultyId = facultyId;
-                if (modalFacultyName) modalFacultyName.value = name || '';
-                if (modalFacultyEmail) modalFacultyEmail.value = email || '';
-                if (modalFacultyPhone) modalFacultyPhone.value = '+91 98765 43210'; // Default
-                if (modalFacultyDept) modalFacultyDept.value = dept || '';
-                if (modalFacultyRole) modalFacultyRole.value = role || '';
-                if (modalFacultyStatus) modalFacultyStatus.value = status;
-
-                // Show modal
-                if (facultyModal) {
-                    facultyModal.classList.remove('hidden');
-                }
-            });
-        });
-
-        // Close modal handlers
-        if (closeModalBtn) {
-            closeModalBtn.addEventListener('click', () => {
-                facultyModal.classList.add('hidden');
-                currentFacultyId = null;
-            });
-        }
-
-        if (cancelEditBtn) {
-            cancelEditBtn.addEventListener('click', () => {
-                facultyModal.classList.add('hidden');
-                currentFacultyId = null;
-            });
-        }
-
-        // Handle form submission
-        if (editFacultyForm) {
-            editFacultyForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-
-                // Get updated values
-                const updatedData = {
-                    name: modalFacultyName.value,
-                    email: modalFacultyEmail.value,
-                    phone: modalFacultyPhone.value,
-                    dept: modalFacultyDept.value,
-                    role: modalFacultyRole.value,
-                    status: modalFacultyStatus.value
-                };
-
-                // Find the row and update it
-                const btn = document.querySelector(`[data-faculty-id="${currentFacultyId}"]`);
-                if (btn) {
-                    const row = btn.closest('tr');
-                    const nameElement = row.querySelector('.faculty-name-trigger');
-                    const emailElement = row.querySelector('.text-xs.text-gray-500');
-
-                    // Update name and data attributes
-                    if (nameElement) {
-                        nameElement.textContent = updatedData.name;
-                        nameElement.setAttribute('data-name', updatedData.name);
-                        nameElement.setAttribute('data-email', updatedData.email);
-                        nameElement.setAttribute('data-dept', updatedData.dept);
-                        nameElement.setAttribute('data-role', updatedData.role);
-                    }
-
-                    // Update email
-                    if (emailElement) {
-                        emailElement.textContent = updatedData.email;
-                    }
-
-                    // Update status badge
-                    const statusBadge = row.querySelector('.inline-flex.items-center.gap-1\\.5');
-                    if (statusBadge) {
-                        let badgeClass = 'bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400 border border-green-100 dark:border-green-800';
-                        let dotClass = 'bg-green-500';
-
-                        if (updatedData.status === 'On Leave') {
-                            badgeClass = 'bg-yellow-50 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400 border border-yellow-100 dark:border-yellow-800';
-                            dotClass = 'bg-yellow-500';
-                        } else if (updatedData.status === 'Inactive') {
-                            badgeClass = 'bg-gray-50 text-gray-700 dark:bg-gray-900/20 dark:text-gray-400 border border-gray-100 dark:border-gray-800';
-                            dotClass = 'bg-gray-500';
-                        }
-
-                        statusBadge.className = `inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${badgeClass}`;
-                        const dot = statusBadge.querySelector('.flex');
-                        if (dot) {
-                            dot.className = `flex h-1.5 w-1.5 rounded-full ${dotClass}`;
-                        }
-                        statusBadge.innerHTML = `<span class="flex h-1.5 w-1.5 rounded-full ${dotClass}"></span> ${updatedData.status}`;
-                    }
-                }
-
-                // Close modal
-                facultyModal.classList.add('hidden');
-                currentFacultyId = null;
-
-                // Show success message (optional)
-                alert('Faculty information updated successfully!');
-            });
-        }
-    </script>
 </body>
 
 </html>

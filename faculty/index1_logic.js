@@ -6,6 +6,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const sections = document.querySelectorAll('.content-section');
     const pageTitle = document.getElementById('page-title');
 
+    // *** PASTE LOGOUT LOGIC HERE ***
+   
     // --- Sidebar Toggle Logic ---
     const sidebar = document.getElementById('mainSidebar');
     const toggleBtn = document.getElementById('sidebarToggleBtn');
@@ -13,15 +15,22 @@ document.addEventListener("DOMContentLoaded", function () {
         const toggleIcon = toggleBtn.querySelector('i');
         const sidebarLogoText = document.getElementById('sidebarLogoText');
         const headerLogoText = document.getElementById('headerLogoText');
+        const sidebarHeader = document.getElementById('sidebarHeader');
+        const sidebarLogoIcon = document.getElementById('sidebarLogoIcon');
 
         toggleBtn.addEventListener('click', () => {
             sidebar.classList.toggle('collapsed');
-            if (sidebar.classList.contains('w-64')) {
+            if (sidebar.classList.contains('collapsed')) {
                 sidebar.classList.replace('w-64', 'w-20');
                 if (toggleIcon) toggleIcon.style.transform = 'rotate(180deg)';
+
+                if (sidebarHeader) sidebarHeader.classList.replace('p-6', 'p-2');
+                if (sidebarLogoIcon) sidebarLogoIcon.style.display = 'none';
+
                 if (sidebarLogoText) {
-                    sidebarLogoText.style.opacity = '0';
-                    sidebarLogoText.style.width = '0px';
+                    sidebarLogoText.textContent = 'CC';
+                    sidebarLogoText.style.opacity = '1';
+                    sidebarLogoText.style.width = 'auto';
                 }
                 if (headerLogoText) {
                     headerLogoText.classList.remove('hidden');
@@ -30,7 +39,12 @@ document.addEventListener("DOMContentLoaded", function () {
             } else {
                 sidebar.classList.replace('w-20', 'w-64');
                 if (toggleIcon) toggleIcon.style.transform = 'rotate(0deg)';
+
+                if (sidebarHeader) sidebarHeader.classList.replace('p-2', 'p-6');
+                if (sidebarLogoIcon) sidebarLogoIcon.style.display = '';
+
                 if (sidebarLogoText) {
+                    sidebarLogoText.textContent = 'CampusCode';
                     sidebarLogoText.style.opacity = '1';
                     sidebarLogoText.style.width = 'auto';
                 }
@@ -118,7 +132,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     }
-     
+
     // --- Profile Overlay ---
     const overlay = document.getElementById("profileOverlay");
     const navProfileBtn = document.getElementById("navProfileBtn");
@@ -150,9 +164,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // --- Logout Functionality ---
     const logoutBtn = document.getElementById('logoutBtn');
     if (logoutBtn) {
-        logoutBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            // Redirect to login page
+        logoutBtn.addEventListener('click', () => {
             window.location.href = '../index.html';
         });
     }
@@ -529,7 +541,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    
+
 
 
 
@@ -1005,5 +1017,202 @@ document.addEventListener("DOMContentLoaded", function () {
             }, 1200);
         });
     }
+
+    // --- PROBLEM PAGE ACTIONS (ADDED) ---
+    const problemForm = typeof problemFormView !== 'undefined' && problemFormView ? problemFormView.querySelector('form') : null;
+    const inputTitle = document.getElementById('problem-title-input');
+    const selectSubject = document.getElementById('problem-subject-select');
+    const selectDifficulty = document.getElementById('problem-difficulty-select');
+    let isEditing = false;
+    let editingRow = null;
+
+    if (problemForm && typeof problemsListContainer !== 'undefined' && typeof problemFormView !== 'undefined') {
+        problemForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const title = inputTitle.value;
+            const subject = selectSubject.value;
+            const difficulty = selectDifficulty.value;
+
+            let diffClass = "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400";
+            if (difficulty === "Medium") diffClass = "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400";
+            if (difficulty === "Hard") diffClass = "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400";
+
+            if (isEditing && editingRow) {
+                // Edit Existing
+                const titleEl = editingRow.querySelector('td:nth-child(1) .text-sm');
+                const diffSpan = editingRow.querySelector('td:nth-child(3) span');
+                if (titleEl) titleEl.innerText = title;
+                if (diffSpan) {
+                    diffSpan.className = `px-2 py-1 text-xs font-medium rounded-full ${diffClass}`;
+                    diffSpan.innerText = difficulty;
+                }
+                alert('Problem updated successfully!');
+            } else {
+                // Create New
+                const createdTbody = document.querySelector('#created-problems tbody');
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors group";
+                tr.innerHTML = `
+                    <td class="px-6 py-4">
+                        <div class="text-sm font-medium text-gray-900 dark:text-white">${title}</div>
+                        <div class="text-xs text-gray-500">${subject}</div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400">Rejected</span>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="px-2 py-1 text-xs font-medium rounded-full ${diffClass}">${difficulty}</span>
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                        <div class="flex justify-end items-center gap-2">
+                             <a href="problem_page.html" class="bg-primary-50 text-primary-600 hover:bg-primary-100 px-3 py-1 rounded-md text-xs font-medium transition-colors">Solve</a>
+                            <button class="text-blue-500 hover:text-blue-700 transition-colors edit-problem-btn" title="Edit"><i class="fas fa-edit"></i></button>
+                            <button class="text-red-500 hover:text-red-700 transition-colors delete-problem-btn" title="Delete"><i class="fas fa-trash-alt"></i></button>
+                            <button class="text-gray-400 hover:text-gray-400 transform hover:scale-110 transition-all bookmark-btn" title="Bookmark"><i class="far fa-bookmark"></i></button>
+                        </div>
+                    </td>
+                `;
+                if (createdTbody) createdTbody.appendChild(tr);
+
+                // Add to All Problems (Mock sync)
+                const allTbody = document.querySelector('#all-problems tbody');
+                const trAll = document.createElement('tr');
+                trAll.className = "hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors group";
+                trAll.innerHTML = `
+                    <td class="px-6 py-4"><i class="far fa-circle text-gray-300"></i></td>
+                    <td class="px-6 py-4">
+                        <div class="text-sm font-medium text-gray-900 dark:text-white">${title}</div>
+                        <div class="text-xs text-gray-500">${subject}</div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="px-2 py-1 text-xs font-medium rounded-full ${diffClass}">${difficulty}</span>
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                        <div class="flex justify-end items-center">
+                            <a href="problem_page.html" class="bg-primary-50 text-primary-600 hover:bg-primary-100 px-3 py-1 rounded-md text-xs font-medium transition-colors">Solve</a>
+                            <button class="text-gray-400 hover:text-yellow-400 transition-colors mx-2 bookmark-btn" title="Bookmark"><i class="far fa-bookmark"></i></button>
+                        </div>
+                    </td>
+                `;
+                if (allTbody) allTbody.appendChild(trAll);
+
+                alert('Problem created successfully!');
+            }
+
+            // Close form
+            problemFormView.classList.add('hidden');
+            problemsListContainer.classList.remove('hidden');
+            // Reset
+            problemForm.reset();
+            isEditing = false;
+            editingRow = null;
+            document.querySelector('#problem-form-view h2').innerText = "Create New Problem";
+        });
+
+        // Input reset on cancel
+        const resetHandler = () => {
+            isEditing = false;
+            editingRow = null;
+            problemForm.reset();
+            document.querySelector('#problem-form-view h2').innerText = "Create New Problem";
+        };
+        // Use references from earlier in the scope if available
+        if (typeof btnBackToList !== 'undefined' && btnBackToList) btnBackToList.addEventListener('click', resetHandler);
+        if (typeof btnCancelProblem !== 'undefined' && btnCancelProblem) btnCancelProblem.addEventListener('click', resetHandler);
+    }
+
+    document.addEventListener('click', function (e) {
+        // EDIT
+        const editBtn = e.target.closest('.edit-problem-btn');
+        if (editBtn) {
+            const row = editBtn.closest('tr');
+            if (row && typeof problemsListContainer !== 'undefined' && typeof problemFormView !== 'undefined') {
+                const titleStr = row.querySelector('td:nth-child(1) .text-sm').innerText.trim();
+                const diffSpan = row.querySelector('td:nth-child(3) span'); // Difficulty is now 3rd col
+                const diffStr = diffSpan ? diffSpan.innerText.trim() : "Medium";
+                const textXs = row.querySelector('td:nth-child(1) .text-xs');
+                const subjStr = textXs ? textXs.innerText.split(',')[0].trim() : "Algorithms";
+
+                if (inputTitle) inputTitle.value = titleStr;
+                if (selectDifficulty) selectDifficulty.value = diffStr;
+                if (selectSubject) selectSubject.value = subjStr;
+
+                problemsListContainer.classList.add('hidden');
+                problemFormView.classList.remove('hidden');
+
+                isEditing = true;
+                editingRow = row;
+                document.querySelector('#problem-form-view h2').innerText = "Edit Problem";
+            }
+        }
+
+        // DELETE
+        const delBtn = e.target.closest('.delete-problem-btn');
+        if (delBtn) {
+            if (confirm('Are you sure you want to delete this problem?')) {
+                delBtn.closest('tr').remove();
+            }
+        }
+
+        // REMOVE BOOKMARK (from Bookmarked tab)
+        const removeBmBtn = e.target.closest('.remove-bookmark-btn');
+        if (removeBmBtn) {
+            const row = removeBmBtn.closest('tr');
+            const title = row.querySelector('.text-sm').innerText.trim();
+            row.remove();
+
+            // Update other tabs
+            document.querySelectorAll('.bookmark-btn').forEach(b => {
+                const r = b.closest('tr');
+                if (r.querySelector('.text-sm') && r.querySelector('.text-sm').innerText.trim() === title) {
+                    const i = b.querySelector('i');
+                    i.className = 'far fa-bookmark'; // reset
+                    i.classList.remove('text-yellow-400');
+                }
+            });
+        }
+
+        // TOGGLE BOOKMARK (Logic extension)
+        const bmBtn = e.target.closest('.bookmark-btn');
+        if (bmBtn) {
+            // Wait for partial existing toggle to finish
+            setTimeout(() => {
+                const icon = bmBtn.querySelector('i');
+                const isBookmarked = icon.classList.contains('fas'); // 'fas' is solid/active
+                const row = bmBtn.closest('tr');
+                const titleEl = row.querySelector('.text-sm');
+                if (!titleEl) return;
+                const title = titleEl.innerText.trim();
+                const bmTable = document.querySelector('#bookmarked-problems tbody');
+
+                if (isBookmarked) {
+                    // Add to table
+                    const existing = Array.from(bmTable.querySelectorAll('tr')).find(r => r.querySelector('.text-sm') && r.querySelector('.text-sm').innerText.trim() === title);
+                    if (!existing) {
+                        const clone = row.cloneNode(true);
+
+                        if (clone.children.length === 4) clone.removeChild(clone.firstElementChild);
+
+                        // Update Action Button
+                        const actions = clone.querySelector('td:last-child');
+                        actions.innerHTML = `
+                            <div class="flex justify-end items-center">
+                                <a href="problem_page.html" class="bg-primary-50 text-primary-600 hover:bg-primary-100 px-3 py-1 rounded-md text-xs font-medium transition-colors">Solve</a>
+                                <button class="text-red-500 hover:text-red-700 transition-colors flex items-center gap-1 text-xs font-medium bg-red-50 dark:bg-red-900/20 px-2 py-1 rounded ml-2 remove-bookmark-btn" title="Remove Bookmark">
+                                    <i class="fas fa-times"></i> Remove
+                                </button>
+                            </div>
+                         `;
+                        bmTable.appendChild(clone);
+                    }
+                } else {
+                    // Remove from table
+                    const existing = Array.from(bmTable.querySelectorAll('tr')).find(r => r.querySelector('.text-sm') && r.querySelector('.text-sm').innerText.trim() === title);
+                    if (existing) existing.remove();
+                }
+            }, 50);
+        }
+    });
 
 });

@@ -78,7 +78,7 @@
                 <a href="program.html" class="nav-item"><i class="fa-solid fa-layer-group"></i><span>Programs</span></a>
                 <a href="contest.html" class="nav-item"><i class="fas fa-trophy"></i><span>Contests</span></a>
                 <a href="manage_user.html" class="nav-item"><i class="fa-solid fa-users"></i><span>User</span></a>
-                <a href="update-report.html" class="nav-item"><i class="fas fa-file-invoice"></i><span>Reports</span></a>
+                <a href="report.html" class="nav-item"><i class="fas fa-file-invoice"></i><span>Reports</span></a>
                 <a href="profile.html" class="nav-item"><i class="fas fa-user"></i><span>Profile</span></a>
             </nav>
 
@@ -117,15 +117,15 @@
                             <div id="notifDropdown" class="hidden absolute right-0 mt-3 w-80 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 z-50">
                                 <div class="p-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
                                     <h3 class="font-semibold text-gray-800 dark:text-white text-sm">Notifications</h3>
-                                    <button class="text-xs text-primary-500 font-medium hover:text-primary-600">Mark all read</button>
+                                    <button id="markAllBtn" class="text-xs text-primary-500 font-medium hover:text-primary-600">Mark all read</button>
                                 </div>
                                 <div class="max-h-64 overflow-y-auto">
-                                    <div class="p-3 hover:bg-gray-50 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-700 cursor-pointer">
-                                        <p class="text-xs font-semibold text-primary-500">New Registration</p>
+                                    <div class="p-3 hover:bg-gray-50 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-700 cursor-pointer notif-item unread">
+                                        <p class="text-xs font-semibold notif-title text-primary-500">New Registration</p>
                                         <p class="text-xs text-gray-600 dark:text-gray-300 mt-1">Student registered in CSE Dept.</p>
                                     </div>
-                                    <div class="p-3 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer">
-                                        <p class="text-xs font-semibold text-yellow-500">Contest Alert</p>
+                                    <div class="p-3 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer notif-item unread">
+                                        <p class="text-xs font-semibold notif-title text-yellow-500">Contest Alert</p>
                                         <p class="text-xs text-gray-600 dark:text-gray-300 mt-1">New college-level contest created.</p>
                                     </div>
                                 </div>
@@ -332,121 +332,158 @@
         </div>
     </div>
 
-    <!-- setting  -->
-<div id="settingsMenu" class="hidden fixed bottom-16 left-4 w-72 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-2xl rounded-2xl z-[9999] overflow-hidden transform transition-all duration-200 origin-bottom-left">
-    
-        <div class="p-2 space-y-1">
-            <div class="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">Account</div>
-            <a href="profile.html" class="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl transition-colors cursor-pointer group">
-                <i class="fas fa-user-circle w-5 text-gray-400 group-hover:text-primary-500 transition-colors"></i>
-                Profile
-            </a>
-        </div>
-
-        <div class="h-px bg-gray-100 dark:bg-gray-700 mx-4"></div>
-
-        <div class="p-2 space-y-1">
-            <div class="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">Preferences</div>
-            
-            <button id="themeAccordionBtn" class="w-full flex justify-between items-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl transition-colors cursor-pointer group focus:outline-none">
-                <div class="flex items-center gap-3">
-                    <i class="fas fa-palette w-5 text-gray-400 group-hover:text-primary-500 transition-colors"></i>
-                    <span>Theme</span>
-                </div>
-                <i id="themeChevron" class="fas fa-chevron-right text-xs text-gray-400 transition-transform duration-200"></i>
-            </button>
-
-            <div id="themeOptionsContainer" class="hidden pl-4 pr-1 space-y-1 pb-1">
-                <button data-value="light" class="theme-option w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors">
-                    <span class="flex items-center gap-2"><i class="fas fa-sun text-orange-400 w-4"></i> Light</span>
-                    <i class="fas fa-check text-primary-500 opacity-0 check-icon"></i>
-                </button>
-                <button data-value="dark" class="theme-option w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors">
-                    <span class="flex items-center gap-2"><i class="fas fa-moon text-indigo-400 w-4"></i> Dark</span>
-                    <i class="fas fa-check text-primary-500 opacity-0 check-icon"></i>
-                </button>
-                <button data-value="system" class="theme-option w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors">
-                    <span class="flex items-center gap-2"><i class="fas fa-desktop text-gray-400 w-4"></i> System</span>
-                    <i class="fas fa-check text-primary-500 opacity-0 check-icon"></i>
-                </button>
-            </div>
-        </div>
-    </div>
+   
+        
     <script>
-        // --- Global Toggle Profile Function ---
-        function toggleProfile() {
-            const overlay = document.getElementById('profileOverlay');
-            overlay.classList.toggle('hidden');
-        }
-
-        // --- Theme Toggle ---
-        const themeToggleBtn = document.getElementById('themeToggleBtn');
-        const themeIcon = themeToggleBtn.querySelector('i');
+        // --- Theme Logic & Initialization ---
         const html = document.documentElement;
+        const themeToggleBtn = document.getElementById('themeToggleBtn');
+        const themeIcon = themeToggleBtn ? themeToggleBtn.querySelector('i') : null;
+        // notification badge (red dot) on header bell
+        const notifBadge = document.querySelector('#notificationBtn > span');
 
-        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            html.classList.add('dark');
-            themeIcon.classList.remove('fa-moon');
-            themeIcon.classList.add('fa-sun');
-        } else {
-            html.classList.remove('dark');
+        // Function to apply theme
+        function applyTheme(theme) {
+            if (!themeIcon) return;
+            if (theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                html.classList.add('dark');
+                themeIcon.classList.replace('fa-moon', 'fa-sun');
+            } else {
+                html.classList.remove('dark');
+                themeIcon.classList.replace('fa-sun', 'fa-moon');
+            }
+            
+            // Update active state in settings menu if open
+            document.querySelectorAll('.theme-option').forEach(opt => {
+                const check = opt.querySelector('.check-icon');
+                if (opt.dataset.value === theme) {
+                    check.classList.remove('opacity-0');
+                } else {
+                    check.classList.add('opacity-0');
+                }
+            });
         }
 
-        themeToggleBtn.addEventListener('click', () => {
-            html.classList.toggle('dark');
-            if (html.classList.contains('dark')) {
-                localStorage.theme = 'dark';
-                themeIcon.classList.remove('fa-moon');
-                themeIcon.classList.add('fa-sun');
-            } else {
-                localStorage.theme = 'light';
-                themeIcon.classList.remove('fa-sun');
-                themeIcon.classList.add('fa-moon');
-            }
+        // Initial Load
+        const savedTheme = localStorage.getItem('theme') || 'system';
+        applyTheme(savedTheme);
+
+        // Header Toggle Button (Quick Switch)
+        if (themeToggleBtn) {
+            themeToggleBtn.addEventListener('click', () => {
+                const isDark = html.classList.contains('dark');
+                const newTheme = isDark ? 'light' : 'dark';
+                localStorage.setItem('theme', newTheme);
+                applyTheme(newTheme);
+            });
+        }
+
+        // --- Settings Menu Theme Accordion ---
+        const themeAccordionBtn = document.getElementById('themeAccordionBtn');
+        const themeOptionsContainer = document.getElementById('themeOptionsContainer');
+        const themeChevron = document.getElementById('themeChevron');
+
+        if (themeAccordionBtn) {
+            themeAccordionBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (themeOptionsContainer) themeOptionsContainer.classList.toggle('hidden');
+                if (themeChevron) themeChevron.classList.toggle('rotate-90');
+            });
+        }
+
+        document.querySelectorAll('.theme-option').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const selected = btn.dataset.value;
+                localStorage.setItem('theme', selected);
+                applyTheme(selected);
+            });
         });
+
+        
 
         // --- Sidebar Toggle ---
         const sidebar = document.getElementById('mainSidebar');
         const sidebarToggleBtn = document.getElementById('sidebarToggleBtn');
-        const toggleIcon = sidebarToggleBtn.querySelector('i');
+        const toggleIcon = sidebarToggleBtn ? sidebarToggleBtn.querySelector('i') : null;
 
-        sidebarToggleBtn.addEventListener('click', () => {
-            sidebar.classList.toggle('collapsed');
-            if (sidebar.classList.contains('collapsed')) {
-                toggleIcon.classList.replace('fa-chevron-left', 'fa-chevron-right');
-            } else {
-                toggleIcon.classList.replace('fa-chevron-right', 'fa-chevron-left');
-            }
-        });
+        if (sidebarToggleBtn && sidebar && toggleIcon) {
+            sidebarToggleBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('collapsed');
+                toggleIcon.classList.toggle('fa-chevron-right');
+                toggleIcon.classList.toggle('fa-chevron-left');
+            });
+        }
 
-        // --- Notification Dropdown ---
+        // --- Profile & Notification Toggles ---
+        function toggleProfile() {
+            const overlay = document.getElementById('profileOverlay');
+            if (overlay) overlay.classList.toggle('hidden');
+        }
+
         const notificationBtn = document.getElementById('notificationBtn');
         const notifDropdown = document.getElementById('notifDropdown');
 
-        notificationBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            notifDropdown.classList.toggle('hidden');
-        });
+        if (notificationBtn && notifDropdown) {
+            notificationBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                notifDropdown.classList.toggle('hidden');
+            });
+        }
 
-        // Global Click Handler (Closes Dropdowns & Overlay when clicking outside)
+        // Mark all notifications as read
+        const markAllBtn = document.getElementById('markAllBtn');
+        if (markAllBtn && notifDropdown) {
+            markAllBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const items = notifDropdown.querySelectorAll('.notif-item.unread');
+                items.forEach(it => {
+                    it.classList.remove('unread');
+                    it.classList.add('read');
+                    // soften the title color to indicate read state
+                    const t = it.querySelector('.notif-title');
+                    if (t) {
+                        t.classList.remove('text-primary-500', 'text-yellow-500');
+                        t.classList.add('text-gray-500', 'dark:text-gray-300');
+                    }
+                    // tone down body text
+                    it.querySelectorAll('p:not(.notif-title)').forEach(p => {
+                        p.classList.remove('text-gray-600');
+                        p.classList.add('text-gray-500', 'dark:text-gray-400');
+                    });
+                });
+                // remove header badge
+                const badge = document.querySelector('#notificationBtn > span');
+                if (badge) badge.remove();
+                markAllBtn.innerText = 'All read';
+            });
+        }
+
+        // Global Click Handler
         document.addEventListener('click', (e) => {
-            // Close Notification Dropdown
-            if (!notifDropdown.contains(e.target) && !notificationBtn.contains(e.target)) {
+            if (notifDropdown && notificationBtn && !notifDropdown.contains(e.target) && !notificationBtn.contains(e.target)) {
                 notifDropdown.classList.add('hidden');
             }
-
-            // Close Profile Overlay if clicking on the dark backdrop
             const profileOverlay = document.getElementById('profileOverlay');
-            if (e.target === profileOverlay) {
-                toggleProfile();
+            if (e.target === profileOverlay) toggleProfile();
+            
+            // Close settings if clicking outside
+            const settingsMenu = document.getElementById('settingsMenu');
+            if (settingsMenu && !settingsMenu.contains(e.target) && !e.target.closest('a[href="setting.html"]')) {
+                settingsMenu.classList.add('hidden');
             }
         });
 
-        // --- Charts ---
+        // --- Charts Implementation ---
         document.addEventListener('DOMContentLoaded', () => {
-            const lineCtx = document.getElementById('lineChart');
-            if (lineCtx) {
-                new Chart(lineCtx, {
+            const chartConfig = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } }
+            };
+
+            const lineEl = document.getElementById('lineChart');
+            if (lineEl) {
+                new Chart(lineEl, {
                     type: 'line',
                     data: {
                         labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
@@ -455,167 +492,38 @@
                             data: [65, 59, 80, 81, 56, 120],
                             borderColor: '#2E5E99',
                             backgroundColor: 'rgba(46, 94, 153, 0.1)',
-                            tension: 0.3,
                             fill: true,
-                            pointBackgroundColor: '#2E5E99'
+                            tension: 0.4
                         }]
                     },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { display: false } },
-                        scales: {
-                            y: { grid: { display: true, color: 'rgba(0,0,0,0.05)' } },
-                            x: { grid: { display: false } }
-                        }
-                    }
+                    options: chartConfig
                 });
             }
 
-            const pieCtx = document.getElementById('pieChart');
-            if (pieCtx) {
-                new Chart(pieCtx, {
+            const pieEl = document.getElementById('pieChart');
+            if (pieEl) {
+                new Chart(pieEl, {
                     type: 'doughnut',
                     data: {
-                        labels: ['Students', 'Faculty', 'Alumni'],
+                        labels: ['Students', 'Faculty', 'Staff'],
                         datasets: [{
-                            data: [300, 50, 100],
+                            data: [1200, 150, 50],
                             backgroundColor: ['#2E5E99', '#7BA4D0', '#D0E1F5'],
                             borderWidth: 0
                         }]
                     },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        cutout: '75%',
-                        plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } } }
-                    }
+                    options: { ...chartConfig, cutout: '70%' }
                 });
             }
         });
 
-        // --- ADDED: Logout Logic ---
+        // --- ADDED: Logout Logic (kept for compatibility) ---
         const logoutBtn = document.getElementById('logoutBtn');
         if (logoutBtn) {
             logoutBtn.addEventListener('click', () => {
                 window.location.href = '../index.html';
             });
         }
-
-        // --- Settings Menu Toggle ---
-        // --- 2. SETTINGS, THEME & ACCORDION LOGIC ---
-            const settingsTrigger = document.getElementById('settingsTrigger');
-            const settingsMenu = document.getElementById('settingsMenu');
-            const themeAccordionBtn = document.getElementById('themeAccordionBtn');
-            const themeOptionsContainer = document.getElementById('themeOptionsContainer');
-            const themeChevron = document.getElementById('themeChevron');
-            const themeOptions = document.querySelectorAll('.theme-option');
-            const headerThemeBtn = document.getElementById('themeToggleBtn');
-            const headerThemeIcon = headerThemeBtn ? headerThemeBtn.querySelector('i') : null;
-
-            // A. Apply Theme Function
-            function applyTheme(themeName) {
-                const html = document.documentElement;
-                
-                if (themeName === 'dark') {
-                    html.classList.add('dark');
-                    localStorage.theme = 'dark';
-                } else if (themeName === 'light') {
-                    html.classList.remove('dark');
-                    localStorage.theme = 'light';
-                } else {
-                    // System Preference
-                    localStorage.removeItem('theme');
-                    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                        html.classList.add('dark');
-                    } else {
-                        html.classList.remove('dark');
-                    }
-                }
-
-                // Update Header Icon
-                if (headerThemeIcon) {
-                    if (html.classList.contains('dark')) {
-                        headerThemeIcon.classList.replace('fa-moon', 'fa-sun');
-                    } else {
-                        headerThemeIcon.classList.replace('fa-sun', 'fa-moon');
-                    }
-                }
-                
-                // Update Chart (if exists)
-                if(window.myPerformanceChart) window.myPerformanceChart.update();
-
-                // Update Settings Menu Checkmarks
-                themeOptions.forEach(btn => {
-                    const checkIcon = btn.querySelector('.check-icon');
-                    const isSelected = btn.getAttribute('data-value') === themeName;
-                    
-                    if (isSelected) {
-                        btn.classList.add('bg-primary-50', 'dark:bg-primary-900/20', 'text-primary-600', 'dark:text-primary-400');
-                        checkIcon.classList.remove('opacity-0');
-                    } else {
-                        btn.classList.remove('bg-primary-50', 'dark:bg-primary-900/20', 'text-primary-600', 'dark:text-primary-400');
-                        checkIcon.classList.add('opacity-0');
-                    }
-                });
-            }
-
-            // B. Toggle Settings Menu
-            if (settingsTrigger && settingsMenu) {
-                settingsTrigger.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    settingsMenu.classList.toggle('hidden');
-                    
-                    // Adjust position if sidebar is collapsed
-                    if (sidebar && sidebar.classList.contains('collapsed')) {
-                        settingsMenu.style.left = '80px';
-                    } else {
-                        settingsMenu.style.left = '16px';
-                    }
-                });
-
-                document.addEventListener('click', (e) => {
-                    if (!settingsMenu.contains(e.target) && !settingsTrigger.contains(e.target)) {
-                        settingsMenu.classList.add('hidden');
-                    }
-                });
-            }
-
-            // C. Toggle Theme Accordion
-            if (themeAccordionBtn && themeOptionsContainer) {
-                themeAccordionBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    themeOptionsContainer.classList.toggle('hidden');
-                    themeChevron.style.transform = themeOptionsContainer.classList.contains('hidden') 
-                        ? 'rotate(0deg)' 
-                        : 'rotate(90deg)';
-                });
-            }
-
-            // D. Theme Option Clicks
-            themeOptions.forEach(option => {
-                option.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const selectedTheme = option.getAttribute('data-value');
-                    applyTheme(selectedTheme);
-                });
-            });
-
-            // E. Header Quick Toggle
-            if (headerThemeBtn) {
-                headerThemeBtn.addEventListener('click', () => {
-                    const isDark = document.documentElement.classList.contains('dark');
-                    applyTheme(isDark ? 'light' : 'dark');
-                });
-            }
-
-            // F. Initialize
-            const savedTheme = localStorage.theme || 'system';
-            applyTheme(savedTheme);
-
-            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-                if (!localStorage.theme) applyTheme('system');
-            });
     </script>
 </body>
 </html>

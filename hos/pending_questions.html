@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pending Questions Approval - HOD Dashboard</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ["Poppins", "sans-serif"] },
+                    colors: {
+                        primary: { 50: "#E7F0FA", 100: "#D0E1F5", 200: "#7BA4D0", 300: "#4D84C0", 400: "#2E5E99", 500: "#1E4A7A", 600: "#0D2440" },
+                        dark: { bg: "#111827", card: "#1F2937", text: "#F9FAFB", border: "#374151" }
+                    },
+                },
+            },
+        };
+    </script>
+
+    <style>
+        /* --- Scrollbar --- */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .dark ::-webkit-scrollbar-track {
+            background: #111827;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #7ba4d0;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #2e5e99;
+        }
+
+        /* --- Sidebar Logic --- */
+        .sidebar.collapsed {
+            width: 5rem;
+        }
+
+        .sidebar.collapsed .nav-item {
+            justify-content: center;
+            padding-left: 0;
+            padding-right: 0;
+        }
+
+        .sidebar.collapsed .nav-item span {
+            display: none;
+        }
+
+        .sidebar.collapsed .bottom-menu span {
+            display: none;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Custom SELECT dropdown styling */
+        select.status-dropdown {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 dark:bg-gray-900 min-h-screen font-sans transition-colors duration-200">
+    <div class="flex h-screen overflow-hidden">
+        <aside id="mainSidebar"
+            class="sidebar w-64 bg-white dark:bg-gray-800 shadow-sm border-r border-gray-200 dark:border-gray-700 flex flex-col h-screen flex-shrink-0 transition-all duration-300 z-50">
+
+            <div class="p-6 flex-shrink-0 flex items-center justify-between h-[88px]">
+                <h1
+                    class="text-2xl font-bold text-gray-800 dark:text-white flex items-center gap-2 overflow-hidden whitespace-nowrap">
+                    <i class="fas fa-code text-primary-500 text-2xl flex-shrink-0"></i>
+                    <span id="sidebarLogoText" class="transition-all duration-300 opacity-100">CampusCode</span>
+                </h1>
+                <button id="sidebarToggleBtn"
+                    class="p-1.5 rounded-lg text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-primary-500 transition-colors focus:outline-none">
+                    <i class="fas fa-chevron-left transition-transform duration-300"></i>
+                </button>
+            </div>
+
+            <nav class="flex-1 space-y-1 overflow-y-auto mt-2 font-sans">
+
+                <a href="dashboard.html"
+                    class="group flex items-center gap-3 px-6 py-3.5 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white transition-all border-r-4 border-transparent">
+                    <i class="fas fa-home w-5 text-center text-lg"></i>
+                    <span class="whitespace-nowrap">Dashboard</span>
+                </a>
+
+                <a href="problem.html"
+                    class="group flex items-center gap-3 px-6 py-3.5 text-sm font-medium bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 border-r-4 border-primary-600 dark:border-primary-400 transition-all">
+                    <i class="fas fa-tasks w-5 text-center text-lg group-hover:scale-110 transition-transform"></i>
+                    <span class="whitespace-nowrap">Problems</span>
+                </a>
+
+                <a href="contest.html"
+                    class="group flex items-center gap-3 px-6 py-3.5 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white transition-all border-r-4 border-transparent">
+                    <i class="fas fa-trophy w-5 text-center text-lg"></i>
+                    <span class="whitespace-nowrap">Contests</span>
+                </a>
+
+                <a href="faculty.html"
+                    class="group flex items-center gap-3 px-6 py-3.5 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white transition-all border-r-4 border-transparent">
+                    <i class="fas fa-users w-5 text-center text-lg group-hover:scale-110 transition-transform"></i>
+                    <span class="whitespace-nowrap">Faculty</span>
+                </a>
+
+                <a href="student.html"
+                    class="group flex items-center gap-3 px-6 py-3.5 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white transition-all border-r-4 border-transparent">
+                    <i class="fas fa-users w-5 text-center text-lg group-hover:scale-110 transition-transform"></i>
+                    <span class="whitespace-nowrap">Students</span>
+                </a>
+
+                <a href="community.html"
+                    class="group flex items-center gap-3 px-6 py-3.5 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white transition-all border-r-4 border-transparent">
+                    <i class="fas fa-comments w-5 text-center text-lg group-hover:scale-110 transition-transform"></i>
+                    <span class="whitespace-nowrap">Community</span>
+                </a>
+
+                <a href="report.html"
+                    class="group flex items-center gap-3 px-6 py-3.5 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white transition-all border-r-4 border-transparent">
+                    <i class="fas fa-chart-pie w-5 text-center text-lg group-hover:scale-110 transition-transform"></i>
+                    <span class="whitespace-nowrap">Reports</span>
+                </a>
+
+            </nav>
+
+            <div
+                class="p-4 space-y-1 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 flex-shrink-0">
+
+                <a href="help.html"
+                    class="group flex items-center gap-3 px-6 py-3.5 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white transition-all rounded-lg">
+                    <i
+                        class="far fa-question-circle w-5 text-center text-lg group-hover:scale-110 transition-transform"></i>
+                    <span class="whitespace-nowrap">Help & Support</span>
+                </a>
+
+                <a href="settings.html"
+                    class="group flex items-center gap-3 px-6 py-3.5 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white transition-all rounded-lg">
+                    <i class="fas fa-cog w-5 text-center text-lg group-hover:scale-110 transition-transform"></i>
+                    <span class="whitespace-nowrap">Settings</span>
+                </a>
+
+            </div>
+        </aside>
+
+        <div class="flex-1 overflow-y-auto">
+            <header class="bg-white dark:bg-gray-800 shadow-sm transition-colors duration-200 sticky top-0 z-40">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
+
+                    <div class="flex-1 max-w-2xl ml-4 flex items-center gap-4">
+                        <h1 id="headerLogoText"
+                            class="text-xl font-bold text-gray-800 dark:text-white hidden transition-all duration-300 opacity-0 transform -translate-x-2 whitespace-nowrap">
+                            CampusCode
+                        </h1>
+
+                        <div class="relative flex items-center w-full">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-search text-gray-400"></i>
+                            </div>
+                            <input type="text" id="globalSearch"
+                                class="block w-full pl-10 pr-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-500 focus:ring-2 focus:ring-primary-400 focus:border-transparent transition-all"
+                                placeholder="Search questions..." />
+                        </div>
+                    </div>
+
+                    <div class="ml-4 flex items-center gap-3">
+                        <button id="themeToggleBtn"
+                            class="p-2 rounded-full text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 focus:outline-none transition-transform active:scale-95">
+                            <i class="fas fa-moon text-xl"></i>
+                        </button>
+                        <div class="relative">
+                            <button id="notificationBtn"
+                                class="p-2 rounded-full text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 focus:outline-none">
+                                <i class="fas fa-bell text-xl"></i>
+                                <span
+                                    class="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500 border-2 border-white dark:border-gray-800"></span>
+                            </button>
+                        </div>
+                        <button id="headerProfileBtn"
+                            class="ml-2 flex items-center gap-3 p-1 pr-3 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                            <div
+                                class="h-9 w-9 rounded-full bg-primary-500 flex items-center justify-center text-white font-bold text-sm">
+                                JD</div>
+                            <span class="text-sm font-medium text-gray-700 dark:text-gray-200 hidden sm:block">Dr. John
+                                Doe</span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                <!-- Page Title -->
+                <div class="mb-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
+                                <i class="fas fa-clipboard-check text-orange-500"></i>
+                                Pending Questions Approval
+                            </h1>
+                            <p class="text-gray-600 dark:text-gray-400 mt-1">Review and approve questions submitted by
+                                faculty members</p>
+                        </div>
+                        <div class="flex gap-3">
+                            <a href="problem.html"
+                                class="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg text-sm font-medium transition-colors shadow-sm flex items-center gap-2">
+                                <i class="fas fa-arrow-left"></i>
+                                Back to Problems
+                            </a>
+                            <button id="btnBulkApprove"
+                                class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg text-sm font-medium transition-colors shadow-sm flex items-center gap-2">
+                                <i class="fas fa-check-double"></i>
+                                Bulk Approve
+                            </button>
+                            <button id="btnExportData"
+                                class="px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg text-sm font-medium transition-colors shadow-sm flex items-center gap-2">
+                                <i class="fas fa-download"></i>
+                                Export
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                    <div
+                        class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 border border-gray-100 dark:border-gray-700">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Total Pending
+                                </p>
+                                <h3 class="text-2xl font-bold text-gray-900 dark:text-white mt-1" id="statTotal">24</h3>
+                            </div>
+                            <div class="p-3 bg-orange-500/10 rounded-lg">
+                                <i class="fas fa-clock text-orange-500 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 border border-gray-100 dark:border-gray-700">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Approved</p>
+                                <h3 class="text-2xl font-bold text-gray-900 dark:text-white mt-1" id="statApproved">18
+                                </h3>
+                            </div>
+                            <div class="p-3 bg-green-500/10 rounded-lg">
+                                <i class="fas fa-check-circle text-green-500 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 border border-gray-100 dark:border-gray-700">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Rejected</p>
+                                <h3 class="text-2xl font-bold text-gray-900 dark:text-white mt-1" id="statRejected">6
+                                </h3>
+                            </div>
+                            <div class="p-3 bg-red-500/10 rounded-lg">
+                                <i class="fas fa-times-circle text-red-500 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 border border-gray-100 dark:border-gray-700">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">This Week</p>
+                                <h3 class="text-2xl font-bold text-gray-900 dark:text-white mt-1" id="statWeek">12</h3>
+                            </div>
+                            <div class="p-3 bg-blue-500/10 rounded-lg">
+                                <i class="fas fa-calendar-week text-blue-500 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filters and Table Container -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+
+                    <!-- Tabs -->
+                    <div class="flex border-b border-gray-200 dark:border-gray-700 overflow-x-auto">
+                        <button
+                            class="approval-tab active px-6 py-4 text-sm font-medium text-primary-600 dark:text-primary-400 border-b-2 border-primary-500 focus:outline-none whitespace-nowrap"
+                            data-tab="all">
+                            <i class="fas fa-list mr-2"></i>All Questions <span
+                                class="ml-2 px-2 py-0.5 rounded-full bg-primary-100 dark:bg-primary-900/30 text-xs">24</span>
+                        </button>
+                        <button
+                            class="approval-tab px-6 py-4 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 focus:outline-none whitespace-nowrap"
+                            data-tab="approved">
+                            <i class="fas fa-check mr-2"></i>Approved <span
+                                class="ml-2 px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-700 text-xs">18</span>
+                        </button>
+                        <button
+                            class="approval-tab px-6 py-4 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 focus:outline-none whitespace-nowrap"
+                            data-tab="rejected">
+                            <i class="fas fa-times mr-2"></i>Rejected <span
+                                class="ml-2 px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-700 text-xs">6</span>
+                        </button>
+                    </div>
+
+                    <!-- Filters Bar -->
+                    <div class="p-4 bg-gray-50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-700">
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <!-- Subject Filter -->
+                            <div>
+                                <label
+                                    class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Subject</label>
+                                <select id="filterSubject"
+                                    class="w-full text-sm border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500">
+                                    <option value="">All Subjects</option>
+                                    <option value="DSA">Data Structures & Algorithms</option>
+                                    <option value="DBMS">Database Management</option>
+
+                                </select>
+                            </div>
+
+                            <!-- Date Range From -->
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Date
+                                    From</label>
+                                <input type="date" id="filterDateFrom"
+                                    class="w-full text-sm border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500">
+                            </div>
+
+                            <!-- Date Range To -->
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Date
+                                    To</label>
+                                <input type="date" id="filterDateTo"
+                                    class="w-full text-sm border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500">
+                            </div>
+
+                            <!-- Approved By HOS -->
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Approved
+                                    By HOD</label>
+                                <select id="filterApprovedBy"
+                                    class="w-full text-sm border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500">
+                                    <option value="">All</option>
+                                    <option value="yes">Yes</option>
+                                    <option value="no">No - Pending</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between mt-4">
+                            <div class="flex gap-2">
+                                <button id="btnApplyFilters"
+                                    class="px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg text-xs font-medium transition-colors">
+                                    <i class="fas fa-filter mr-1"></i>Apply Filters
+                                </button>
+                                <button id="btnResetFilters"
+                                    class="px-4 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg text-xs font-medium transition-colors">
+                                    <i class="fas fa-redo mr-1"></i>Reset
+                                </button>
+                            </div>
+                            <div class="text-xs text-gray-600 dark:text-gray-400">
+                                Showing <span id="displayCount" class="font-semibold">24</span> questions
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Table -->
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr
+                                    class="text-xs font-semibold text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-700/50 uppercase tracking-wider">
+                                    <th class="px-4 py-3">
+                                        <input type="checkbox" id="selectAll"
+                                            class="rounded border-gray-300 text-primary-600">
+                                    </th>
+                                    <th class="px-4 py-3">Title</th>
+                                    <th class="px-4 py-3">Difficulty</th>
+                                    <th class="px-4 py-3">Faculty Name</th>
+                                    <th class="px-4 py-3">Subject</th>
+
+                                    <th class="px-4 py-3">Approval Status</th>
+                                    <th class="px-4 py-3">Date Submitted</th>
+                                    <th class="px-4 py-3 text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="questionsTableBody" class="divide-y divide-gray-200 dark:divide-gray-700">
+                                <!-- Dynamic content will be inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div
+                        class="px-4 py-4 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
+                        <div class="text-sm text-gray-600 dark:text-gray-400">
+                            Page <span id="currentPage" class="font-semibold">1</span> of <span id="totalPages"
+                                class="font-semibold">3</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <button id="btnPrevPage"
+                                class="px-3 py-1.5 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                                <i class="fas fa-chevron-left"></i> Previous
+                            </button>
+                            <button id="btnNextPage"
+                                class="px-3 py-1.5 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                                Next <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Question Detail Modal -->
+    <div id="questionDetailModal"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm hidden">
+        <div
+            class="w-full max-w-4xl bg-white dark:bg-gray-800 rounded-3xl shadow-2xl overflow-hidden animate-fadeIn m-4 max-h-[90vh] overflow-y-auto">
+            <div class="bg-gradient-to-br from-primary-500 to-primary-700 relative px-6 py-4">
+                <button id="closeQuestionModal"
+                    class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white/90 transition-all flex items-center justify-center backdrop-blur-sm">
+                    <i class="fas fa-times text-sm"></i>
+                </button>
+                <h2 class="text-xl font-bold text-white">Question Details</h2>
+            </div>
+
+            <div class="p-6" id="questionDetailContent">
+                <!-- Dynamic content will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Dropdown -->
+    <div id="notificationDropdown"
+        class="fixed top-16 right-6 z-[70] w-80 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 hidden animate-[fadeIn_0.1s_ease-out]">
+        <div class="p-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
+            <h3 class="font-semibold text-gray-800 dark:text-white">Notifications</h3>
+            <span class="text-xs text-primary-500 cursor-pointer hover:underline">Mark all read</span>
+        </div>
+        <div class="p-2">
+            <div class="p-3 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg cursor-pointer">
+                <p class="text-sm text-gray-800 dark:text-gray-200 font-medium">New Question Submission</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400">Dr. Smith submitted a new DSA question.</p>
+            </div>
+            <div class="p-3 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg cursor-pointer">
+                <p class="text-sm text-gray-800 dark:text-gray-200 font-medium">Approval Required</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400">5 questions pending your approval.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Overlay -->
+    <div id="profileOverlay"
+        class="fixed inset-0 z-[80] flex items-center justify-center bg-black/50 backdrop-blur-sm hidden">
+        <div
+            class="w-[380px] bg-white dark:bg-gray-800 rounded-3xl shadow-2xl overflow-hidden animate-[fadeIn_0.2s_ease-out]">
+            <div class="bg-gradient-to-br from-[#1E4A7A] to-[#153255] relative pt-12 pb-20 px-6 text-center">
+                <button id="closeProfileOverlay"
+                    class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white/90 transition-all flex items-center justify-center backdrop-blur-sm">
+                    <i class="fas fa-times text-sm"></i>
+                </button>
+
+                <div class="absolute left-1/2 bottom-[-48px] -translate-x-1/2">
+                    <div
+                        class="relative w-24 h-24 rounded-full p-1.5 bg-white dark:bg-gray-800 ring-4 ring-[#1E4A7A]/10 dark:ring-[#1E4A7A]/30">
+                        <div
+                            class="w-full h-full rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-3xl font-bold shadow-inner">
+                            JD
+                        </div>
+                        <div
+                            class="absolute bottom-0 right-0 w-6 h-6 bg-green-500 border-4 border-white dark:border-gray-800 rounded-full">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-16 pb-8 px-6">
+                <div class="text-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-1">Dr. John Doe</h2>
+                    <p class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3">Head of Subject (DBMS)</p>
+
+                    <div class="flex items-center justify-center gap-2 flex-wrap">
+                        <span
+                            class="px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 border border-blue-100 dark:border-blue-800">
+                            CSE Dept
+                        </span>
+                        <span
+                            class="px-3 py-1 rounded-full text-xs font-semibold bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300 border border-purple-100 dark:border-purple-800">
+                            HOS
+                        </span>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <button id="logoutBtn"
+                        class="w-full flex items-center justify-between p-3 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 group transition-all duration-200 border border-transparent hover:border-red-100 dark:hover:border-red-800">
+                        <div class="flex items-center gap-3">
+                            <div
+                                class="w-8 h-8 rounded-full bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 flex items-center justify-center">
+                                <i class="fas fa-sign-out-alt text-sm"></i>
+                            </div>
+                            <span
+                                class="text-sm font-medium text-gray-700 dark:text-gray-200 group-hover:text-red-600 dark:group-hover:text-red-400">Logout</span>
+                        </div>
+                        <i
+                            class="fas fa-chevron-right text-xs text-gray-400 group-hover:text-red-500 dark:group-hover:text-red-400"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample Data
+        const sampleQuestions = [
+            { id: 1, title: "Binary Tree Traversal", difficulty: "Medium", faculty: "Dr. Smith", subject: "DBMS", hos: "Dr. Johnson", status: "pending", date: "2026-01-20", tags: ["Trees", "Recursion"] },
+            { id: 2, title: "SQL Join Operations", difficulty: "Easy", faculty: "Prof. Brown", subject: "DBMS", hos: "Dr. Wilson", status: "approved", date: "2026-01-18", tags: ["SQL", "Joins"] },
+            { id: 3, title: "Dynamic Programming", difficulty: "Hard", faculty: "Dr. Davis", subject: "DBMS", hos: "Dr. Johnson", status: "pending", date: "2026-01-22", tags: ["DP", "Optimization"] },
+            { id: 4, title: "Process Scheduling", difficulty: "Medium", faculty: "Dr. Miller", subject: "DBMS", hos: "Dr. Taylor", status: "approved", date: "2026-01-15", tags: ["Scheduling", "CPU"] },
+            { id: 5, title: "Network Protocols", difficulty: "Hard", faculty: "Prof. White", subject: "DBMS", hos: "Dr. Anderson", status: "rejected", date: "2026-01-19", tags: ["TCP/IP", "Protocols"] },
+            { id: 6, title: "Array Manipulation", difficulty: "Easy", faculty: "Dr. Clark", subject: "DBMS", hos: "Dr. Johnson", status: "pending", date: "2026-01-23", tags: ["Arrays", "Strings"] },
+            { id: 7, title: "Database Normalization", difficulty: "Medium", faculty: "Prof. Brown", subject: "DBMS", hos: "Dr. Wilson", status: "approved", date: "2026-01-21", tags: ["Normalization", "Design"] },
+            { id: 8, title: "Inheritance Concepts", difficulty: "Easy", faculty: "Dr. Lee", subject: "DBMS", hos: "Dr. Martinez", status: "pending", date: "2026-01-24", tags: ["Inheritance", "Polymorphism"] },
+            { id: 9, title: "Deadlock Prevention", difficulty: "Hard", faculty: "Dr. Miller", subject: "DBMS", hos: "Dr. Taylor", status: "approved", date: "2026-01-17", tags: ["Deadlock", "Synchronization"] },
+            { id: 10, title: "Graph Algorithms", difficulty: "Hard", faculty: "Dr. Smith", subject: "DBMS", hos: "Dr. Johnson", status: "pending", date: "2026-01-25", tags: ["Graphs", "BFS", "DFS"] },
+            { id: 11, title: "Sorting Techniques", difficulty: "Medium", faculty: "Dr. Clark", subject: "DBMS", hos: "Dr. Johnson", status: "approved", date: "2026-01-16", tags: ["Sorting", "Arrays"] },
+            { id: 12, title: "File System Implementation", difficulty: "Hard", faculty: "Prof. White", subject: "DBMS", hos: "Dr. Taylor", status: "rejected", date: "2026-01-14", tags: ["File System", "Storage"] },
+        ];
+
+        let currentTab = 'all';
+        let currentPage = 1;
+        const itemsPerPage = 10;
+
+        // Theme Toggle
+        const themeToggleBtn = document.getElementById('themeToggleBtn');
+        const html = document.documentElement;
+
+        function applyTheme(theme) {
+            if (theme === 'dark') {
+                html.classList.add('dark');
+                themeToggleBtn.querySelector('i').classList.replace('fa-moon', 'fa-sun');
+            } else {
+                html.classList.remove('dark');
+                themeToggleBtn.querySelector('i').classList.replace('fa-sun', 'fa-moon');
+            }
+            localStorage.theme = theme;
+        }
+
+        themeToggleBtn.addEventListener('click', () => {
+            applyTheme(html.classList.contains('dark') ? 'light' : 'dark');
+        });
+
+        // Initialize theme
+        const savedTheme = localStorage.theme || 'light';
+        applyTheme(savedTheme);
+
+        // Sidebar Toggle
+        const sidebar = document.getElementById('mainSidebar');
+        const sidebarToggleBtn = document.getElementById('sidebarToggleBtn');
+        const toggleIcon = sidebarToggleBtn.querySelector('i');
+        const sidebarLogoText = document.getElementById('sidebarLogoText');
+        const headerLogoText = document.getElementById('headerLogoText');
+
+        sidebarToggleBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('collapsed');
+            if (sidebar.classList.contains('collapsed')) {
+                sidebar.classList.replace('w-64', 'w-20');
+                toggleIcon.style.transform = 'rotate(180deg)';
+                sidebarLogoText.style.opacity = '0';
+                sidebarLogoText.style.width = '0px';
+                headerLogoText.classList.remove('hidden');
+                setTimeout(() => headerLogoText.classList.remove('opacity-0', '-translate-x-2'), 50);
+            } else {
+                sidebar.classList.replace('w-20', 'w-64');
+                toggleIcon.style.transform = 'rotate(0deg)';
+                sidebarLogoText.style.opacity = '1';
+                sidebarLogoText.style.width = 'auto';
+                headerLogoText.classList.add('opacity-0', '-translate-x-2');
+                setTimeout(() => headerLogoText.classList.add('hidden'), 300);
+            }
+        });
+
+        // Tab Switching
+        const tabs = document.querySelectorAll('.approval-tab');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => {
+                    t.classList.remove('active', 'text-primary-600', 'dark:text-primary-400', 'border-primary-500');
+                    t.classList.add('text-gray-500', 'dark:text-gray-400');
+                });
+                tab.classList.add('active', 'text-primary-600', 'dark:text-primary-400', 'border-primary-500');
+                tab.classList.remove('text-gray-500', 'dark:text-gray-400');
+                currentTab = tab.dataset.tab;
+                renderTable();
+            });
+        });
+
+        // Render Table
+        function renderTable() {
+            const tbody = document.getElementById('questionsTableBody');
+            let filteredData = sampleQuestions;
+
+            // Filter by tab
+            if (currentTab === 'approved') {
+                filteredData = filteredData.filter(q => q.status === 'approved');
+            } else if (currentTab === 'rejected') {
+                filteredData = filteredData.filter(q => q.status === 'rejected');
+            }
+
+            // Apply filters
+            const subject = document.getElementById('filterSubject').value;
+            const dateFrom = document.getElementById('filterDateFrom').value;
+            const dateTo = document.getElementById('filterDateTo').value;
+            const approvedBy = document.getElementById('filterApprovedBy').value;
+
+            if (subject) filteredData = filteredData.filter(q => q.subject === subject);
+            if (dateFrom) filteredData = filteredData.filter(q => q.date >= dateFrom);
+            if (dateTo) filteredData = filteredData.filter(q => q.date <= dateTo);
+            if (approvedBy === 'yes') filteredData = filteredData.filter(q => q.status === 'approved');
+            if (approvedBy === 'no') filteredData = filteredData.filter(q => q.status === 'pending');
+
+            // Pagination
+            const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+            const startIdx = (currentPage - 1) * itemsPerPage;
+            const endIdx = startIdx + itemsPerPage;
+            const pageData = filteredData.slice(startIdx, endIdx);
+
+            // Update stats
+            document.getElementById('displayCount').textContent = filteredData.length;
+            document.getElementById('totalPages').textContent = totalPages || 1;
+            document.getElementById('currentPage').textContent = currentPage;
+
+            // Render rows
+            tbody.innerHTML = pageData.map(q => {
+                const difficultyColors = {
+                    'Easy': 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
+                    'Medium': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
+                    'Hard': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
+                };
+
+                const statusColors = {
+                    'pending': 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400',
+                    'approved': 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
+                    'rejected': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
+                };
+
+                return `
+                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors" data-id="${q.id}">
+                        <td class="px-4 py-3">
+                            <input type="checkbox" class="row-checkbox rounded border-gray-300 text-primary-600">
+                        </td>
+                        <td class="px-4 py-3">
+                            <div class="text-sm font-medium text-gray-900 dark:text-white">${q.title}</div>
+                            <div class="text-xs text-gray-500">${q.tags.join(', ')}</div>
+                        </td>
+                        <td class="px-4 py-3">
+                            <span class="px-2 py-1 text-xs font-medium rounded-full ${difficultyColors[q.difficulty]}">${q.difficulty}</span>
+                        </td>
+                        <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">${q.faculty}</td>
+                        <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">${q.subject}</td>
+
+                        <td class="px-4 py-3">
+                            ${q.status === 'pending' ? `
+                                <select class="status-dropdown px-3 py-1.5 text-xs font-medium rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-primary-500" data-id="${q.id}">
+                                    <option value="pending" selected>Pending</option>
+                                    <option value="approve">Approve</option>
+                                    <option value="reject">Reject</option>
+                                </select>
+                            ` : `
+                                <span class="px-2 py-1 text-xs font-medium rounded-full ${statusColors[q.status]}">${q.status.charAt(0).toUpperCase() + q.status.slice(1)}</span>
+                            `}
+                        </td>
+                        <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">${new Date(q.date).toLocaleDateString()}</td>
+                        <td class="px-4 py-3 text-center">
+                            <button class="btn-view-details text-primary-600 hover:text-primary-800 dark:text-primary-400 dark:hover:text-primary-300 transition-colors" data-id="${q.id}">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="ml-3 text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-300 transition-colors" title="Add Comment">
+                                <i class="fas fa-comment"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            // Attach event listeners
+            document.querySelectorAll('.status-dropdown').forEach(dropdown => {
+                dropdown.addEventListener('change', handleStatusChange);
+            });
+
+            document.querySelectorAll('.btn-view-details').forEach(btn => {
+                btn.addEventListener('click', () => showQuestionDetails(btn.dataset.id));
+            });
+        }
+
+        // Handle Status Change
+        async function handleStatusChange(e) {
+            const questionId = parseInt(e.target.dataset.id);
+            const newStatus = e.target.value;
+
+            if (newStatus === 'approve') {
+                const confirmed = await showConfirm('Are you sure you want to approve this question?', 'Approve Question', 'info');
+                if (confirmed) {
+                    const question = sampleQuestions.find(q => q.id === questionId);
+                    question.status = 'approved';
+                    renderTable();
+                    updateStats();
+                } else {
+                    e.target.value = 'pending'; // Reset dropdown
+                }
+            } else if (newStatus === 'reject') {
+                const confirmed = await showConfirm('Are you sure you want to reject this question?', 'Reject Question', 'danger');
+                if (confirmed) {
+                    const question = sampleQuestions.find(q => q.id === questionId);
+                    question.status = 'rejected';
+                    renderTable();
+                    updateStats();
+                } else {
+                    e.target.value = 'pending'; // Reset dropdown
+                }
+            }
+        }
+
+        // Show Question Details Modal
+        function showQuestionDetails(id) {
+            const question = sampleQuestions.find(q => q.id === parseInt(id));
+            const modal = document.getElementById('questionDetailModal');
+            const content = document.getElementById('questionDetailContent');
+
+            // Complete question description based on the question title
+            let problemStatement = '';
+            let inputFormat = '';
+            let outputFormat = '';
+            let examples = '';
+            let constraints = '';
+            let hints = '';
+
+            if (question.title === 'Binary Tree Traversal') {
+                problemStatement = `Given the root of a binary tree, return its <strong>inorder traversal</strong> as an array of integers.
+
+In an inorder traversal, we visit nodes in the following order:
+1. Traverse the left subtree
+2. Visit the root node
+3. Traverse the right subtree
+
+You need to implement this both iteratively and recursively.`;
+
+                inputFormat = `The function receives a single parameter:
+<ul class="list-disc ml-6 mt-2 space-y-1">
+    <li><code class="px-2 py-0.5 bg-gray-100 dark:bg-gray-700 rounded">root</code>: TreeNode - The root of the binary tree</li>
+</ul>`;
+
+                outputFormat = `Return an array of integers representing the inorder traversal of the tree.`;
+
+                examples = `<div class="space-y-4">
+    <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg">
+        <p class="font-semibold text-sm mb-2">Example 1:</p>
+        <pre class="bg-white dark:bg-gray-800 p-3 rounded text-xs overflow-x-auto"><code>Input: root = [1,null,2,3]
+       1
+        \\
+         2
+        /
+       3
+
+Output: [1,3,2]
+
+Explanation: The inorder traversal visits nodes in order: 1 → 3 → 2</code></pre>
+    </div>
+
+    <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg">
+        <p class="font-semibold text-sm mb-2">Example 2:</p>
+        <pre class="bg-white dark:bg-gray-800 p-3 rounded text-xs overflow-x-auto"><code>Input: root = [1,2,3,4,5,6,7]
+         1
+       /   \\
+      2     3
+     / \\   / \\
+    4   5 6   7
+
+Output: [4,2,5,1,6,3,7]
+
+Explanation: Inorder: Left → Root → Right for each subtree</code></pre>
+    </div>
+
+    <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg">
+        <p class="font-semibold text-sm mb-2">Example 3:</p>
+        <pre class="bg-white dark:bg-gray-800 p-3 rounded text-xs overflow-x-auto"><code>Input: root = []
+
+Output: []
+
+Explanation: Empty tree returns empty array</code></pre>
+    </div>
+</div>`;
+
+                constraints = `<ul class="list-disc ml-6 space-y-1 text-sm">
+    <li>The number of nodes in the tree is in the range <code class="px-1 bg-gray-100 dark:bg-gray-700 rounded">[0, 100]</code></li>
+    <li><code class="px-1 bg-gray-100 dark:bg-gray-700 rounded">-100 ≤ Node.val ≤ 100</code></li>
+    <li>Each node's value is unique</li>
+    <li>Tree nodes contain integer values</li>
+</ul>`;
+
+                hints = `<div class="space-y-2">
+    <div class="flex gap-2 items-start">
+        <span class="px-2 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400 rounded text-xs font-medium">Hint 1</span>
+        <p class="text-sm text-gray-700 dark:text-gray-300">For recursive solution, think about the natural order: left → root → right</p>
+    </div>
+    <div class="flex gap-2 items-start">
+        <span class="px-2 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400 rounded text-xs font-medium">Hint 2</span>
+        <p class="text-sm text-gray-700 dark:text-gray-300">For iterative solution, use a stack to simulate the recursion. Push left nodes until null, then pop and visit.</p>
+    </div>
+    <div class="flex gap-2 items-start">
+        <span class="px-2 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400 rounded text-xs font-medium">Hint 3</span>
+        <p class="text-sm text-gray-700 dark:text-gray-300">Time Complexity: O(n) where n is the number of nodes. Space Complexity: O(h) where h is tree height for recursion stack.</p>
+    </div>
+</div>`;
+            } else {
+                // Generic template for other questions
+                problemStatement = `This problem tests fundamental concepts in ${question.subject}. Students are required to demonstrate understanding of ${question.tags.join(', ')} and apply algorithmic thinking to solve real-world computational challenges.
+
+The problem requires implementing an efficient solution that balances correctness, performance, and code quality. Students should consider edge cases, optimize for the given constraints, and follow best coding practices.`;
+
+                inputFormat = `The function receives appropriate parameters based on the problem requirements. All inputs are guaranteed to be valid and within specified constraints.`;
+
+                outputFormat = `Return the result in the specified format. Ensure the output matches the expected type and structure exactly.`;
+
+                examples = `<div class="space-y-4">
+    <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg">
+        <p class="font-semibold text-sm mb-2">Example 1:</p>
+        <pre class="bg-white dark:bg-gray-800 p-3 rounded text-xs overflow-x-auto"><code>Input: [Sample input data]
+Output: [Expected output]
+
+Explanation: Step-by-step breakdown of the solution</code></pre>
+    </div>
+</div>`;
+
+                constraints = `<ul class="list-disc ml-6 space-y-1 text-sm">
+    <li>Input size is bounded by reasonable limits</li>
+    <li>All inputs are valid and well-formed</li>
+    <li>Solution should handle edge cases appropriately</li>
+    <li>Time and space complexity requirements apply</li>
+</ul>`;
+
+                hints = `<div class="space-y-2">
+    <div class="flex gap-2 items-start">
+        <span class="px-2 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400 rounded text-xs font-medium">Hint 1</span>
+        <p class="text-sm text-gray-700 dark:text-gray-300">Start by understanding the problem requirements and identifying the core algorithm needed.</p>
+    </div>
+    <div class="flex gap-2 items-start">
+        <span class="px-2 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400 rounded text-xs font-medium">Hint 2</span>
+        <p class="text-sm text-gray-700 dark:text-gray-300">Consider the time and space complexity of your approach. Can it be optimized further?</p>
+    </div>
+</div>`;
+            }
+
+            content.innerHTML = `
+                <div class="space-y-6">
+                    <!-- Metadata Header -->
+                    <div class="grid grid-cols-3 gap-4 pb-4 border-b border-gray-200 dark:border-gray-700">
+                        <div>
+                            <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1">Question ID</p>
+                            <p class="text-sm font-medium text-gray-900 dark:text-white">#${1000 + question.id}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1">Difficulty</p>
+                            <span class="inline-flex px-3 py-1 text-xs font-semibold rounded-full ${question.difficulty === 'Easy' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' :
+                    question.difficulty === 'Medium' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400' :
+                        'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
+                }">${question.difficulty}</span>
+                        </div>
+                        <div>
+                            <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1">Subject</p>
+                            <p class="text-sm font-medium text-gray-900 dark:text-white">${question.subject}</p>
+                        </div>
+                    </div>
+
+                    <!-- Question Title -->
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">${question.title}</h3>
+                        <div class="flex flex-wrap gap-2">
+                            ${question.tags.map(tag => `<span class="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">${tag}</span>`).join('')}
+                        </div>
+                    </div>
+
+                    <!-- Problem Statement -->
+                    <div class="bg-gray-50 dark:bg-gray-700/30 p-4 rounded-lg">
+                        <h4 class="text-sm font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                            <i class="fas fa-file-alt text-primary-500"></i>
+                            Problem Statement
+                        </h4>
+                        <div class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed space-y-2">
+                            ${problemStatement}
+                        </div>
+                    </div>
+
+                    <!-- Input/Output Format -->
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="bg-blue-50 dark:bg-blue-900/10 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+                            <h4 class="text-sm font-bold text-gray-900 dark:text-white mb-2">Input Format</h4>
+                            <div class="text-sm text-gray-700 dark:text-gray-300">${inputFormat}</div>
+                        </div>
+                        <div class="bg-green-50 dark:bg-green-900/10 p-4 rounded-lg border border-green-200 dark:border-green-800">
+                            <h4 class="text-sm font-bold text-gray-900 dark:text-white mb-2">Output Format</h4>
+                            <div class="text-sm text-gray-700 dark:text-gray-300">${outputFormat}</div>
+                        </div>
+                    </div>
+
+                    <!-- Examples -->
+                    <div>
+                        <h4 class="text-sm font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                            <i class="fas fa-code text-primary-500"></i>
+                            Examples
+                        </h4>
+                        ${examples}
+                    </div>
+
+                    <!-- Constraints -->
+                    <div class="bg-orange-50 dark:bg-orange-900/10 p-4 rounded-lg border border-orange-200 dark:border-orange-800">
+                        <h4 class="text-sm font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+                            <i class="fas fa-exclamation-triangle text-orange-500"></i>
+                            Constraints
+                        </h4>
+                        ${constraints}
+                    </div>
+
+                    <!-- Hints -->
+                    <div class="bg-purple-50 dark:bg-purple-900/10 p-4 rounded-lg border border-purple-200 dark:border-purple-800">
+                        <h4 class="text-sm font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                            <i class="fas fa-lightbulb text-purple-500"></i>
+                            Hints
+                        </h4>
+                        ${hints}
+                    </div>
+
+                    <!-- Submission Details -->
+                    <div class="grid md:grid-cols-4 gap-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                        <div>
+                            <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1">Submitted By</p>
+                            <p class="text-sm font-medium text-gray-900 dark:text-white">${question.faculty}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1">Head of Subject</p>
+                            <p class="text-sm font-medium text-gray-900 dark:text-white">${question.hos}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1">Submission Date</p>
+                            <p class="text-sm font-medium text-gray-900 dark:text-white">${new Date(question.date).toLocaleDateString()}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1">Points</p>
+                            <p class="text-sm font-medium text-gray-900 dark:text-white">${question.difficulty === 'Easy' ? '10' : question.difficulty === 'Medium' ? '20' : '30'} marks</p>
+                        </div>
+                    </div>
+
+                    <!-- Test Cases Info -->
+                    <div class="bg-gray-50 dark:bg-gray-700/30 p-4 rounded-lg">
+                        <h4 class="text-sm font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+                            <i class="fas fa-vial text-primary-500"></i>
+                            Test Cases Information
+                        </h4>
+                        <div class="grid md:grid-cols-3 gap-4 text-sm">
+                            <div>
+                                <p class="text-gray-500 dark:text-gray-400 text-xs mb-1">Sample Test Cases</p>
+                                <p class="font-semibold text-gray-900 dark:text-white">3 provided</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-500 dark:text-gray-400 text-xs mb-1">Hidden Test Cases</p>
+                                <p class="font-semibold text-gray-900 dark:text-white">7 cases</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-500 dark:text-gray-400 text-xs mb-1">Time Limit</p>
+                                <p class="font-semibold text-gray-900 dark:text-white">1 second</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Comments Section -->
+                    <div class="bg-gray-50 dark:bg-gray-700/30 p-4 rounded-lg">
+                        <h4 class="text-sm font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                            <i class="fas fa-comments text-primary-500"></i>
+                            HOD Comments
+                        </h4>
+                        <textarea 
+                            class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 resize-none" 
+                            rows="3" 
+                            placeholder="Add your comments or feedback about this question..."></textarea>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+                        ${question.status === 'pending' ? `
+                            <button onclick="handleApprove(${question.id})" class="flex-1 px-4 py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg text-sm font-semibold transition-colors shadow-md hover:shadow-lg flex items-center justify-center gap-2">
+                                <i class="fas fa-check-circle"></i>
+                                Approve Question
+                            </button>
+                            <button onclick="handleReject(${question.id})" class="flex-1 px-4 py-3 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm font-semibold transition-colors shadow-md hover:shadow-lg flex items-center justify-center gap-2">
+                                <i class="fas fa-times-circle"></i>
+                                Reject Question
+                            </button>
+                        ` : `
+                            <div class="flex-1 px-4 py-3 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
+                                <span class="text-sm font-semibold text-gray-600 dark:text-gray-400">
+                                    Status: <span class="${question.status === 'approved' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}">${question.status.toUpperCase()}</span>
+                                </span>
+                            </div>
+                        `}
+                        <button onclick="document.getElementById('questionDetailModal').classList.add('hidden')" class="px-6 py-3 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-semibold transition-colors">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            modal.classList.remove('hidden');
+        }
+
+        // Handle approve from modal
+        async function handleApprove(id) {
+            const confirmed = await showConfirm('Are you sure you want to approve this question?', 'Approve Question', 'info');
+            if (confirmed) {
+                const question = sampleQuestions.find(q => q.id === id);
+                question.status = 'approved';
+                document.getElementById('questionDetailModal').classList.add('hidden');
+                renderTable();
+                updateStats();
+            }
+        }
+
+        // Handle reject from modal
+        async function handleReject(id) {
+            const confirmed = await showConfirm('Are you sure you want to reject this question?', 'Reject Question', 'danger');
+            if (confirmed) {
+                const question = sampleQuestions.find(q => q.id === id);
+                question.status = 'rejected';
+                document.getElementById('questionDetailModal').classList.add('hidden');
+                renderTable();
+                updateStats();
+            }
+        }
+
+        document.getElementById('closeQuestionModal').addEventListener('click', () => {
+            document.getElementById('questionDetailModal').classList.add('hidden');
+        });
+
+        // Update Stats
+        function updateStats() {
+            const pending = sampleQuestions.filter(q => q.status === 'pending').length;
+            const approved = sampleQuestions.filter(q => q.status === 'approved').length;
+            const rejected = sampleQuestions.filter(q => q.status === 'rejected').length;
+
+            document.getElementById('statTotal').textContent = pending;
+            document.getElementById('statApproved').textContent = approved;
+            document.getElementById('statRejected').textContent = rejected;
+        }
+
+        // Show Notification
+        function showNotification(message, type) {
+            // Simple alert for now - can be replaced with toast notification
+            showToast(message, 'error', 'Validation Error');
+        }
+
+        // Filter Buttons
+        document.getElementById('btnApplyFilters').addEventListener('click', () => {
+            currentPage = 1;
+            renderTable();
+        });
+
+        document.getElementById('btnResetFilters').addEventListener('click', () => {
+            document.getElementById('filterSubject').value = '';
+            document.getElementById('filterDateFrom').value = '';
+            document.getElementById('filterDateTo').value = '';
+            document.getElementById('filterApprovedBy').value = '';
+            currentPage = 1;
+            renderTable();
+        });
+
+        // Pagination
+        document.getElementById('btnPrevPage').addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                renderTable();
+            }
+        });
+
+        document.getElementById('btnNextPage').addEventListener('click', () => {
+            const totalPages = parseInt(document.getElementById('totalPages').textContent);
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderTable();
+            }
+        });
+
+        // Profile & Notification Dropdowns
+        const notifBtn = document.getElementById('notificationBtn');
+        const notifDropdown = document.getElementById('notificationDropdown');
+        const profileBtn = document.getElementById('headerProfileBtn');
+        const profileOverlay = document.getElementById('profileOverlay');
+        const closeProfileBtn = document.getElementById('closeProfileOverlay');
+
+        notifBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            notifDropdown.classList.toggle('hidden');
+        });
+
+        profileBtn.addEventListener('click', () => {
+            profileOverlay.classList.remove('hidden');
+        });
+
+        closeProfileBtn.addEventListener('click', () => {
+            profileOverlay.classList.add('hidden');
+        });
+
+        profileOverlay.addEventListener('click', (e) => {
+            if (e.target === profileOverlay) {
+                profileOverlay.classList.add('hidden');
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!notifDropdown.contains(e.target) && !notifBtn.contains(e.target)) {
+                notifDropdown.classList.add('hidden');
+            }
+        });
+
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            window.location.href = '../../index.html';
+        });
+
+        // Select All Checkbox
+        document.getElementById('selectAll').addEventListener('change', (e) => {
+            document.querySelectorAll('.row-checkbox').forEach(cb => {
+                cb.checked = e.target.checked;
+            });
+        });
+
+        // Bulk Approve
+        document.getElementById('btnBulkApprove').addEventListener('click', async () => {
+            const selected = document.querySelectorAll('.row-checkbox:checked');
+            if (selected.length === 0) {
+                showToast('Please select at least one question.', 'warning', 'No Selection');
+                return;
+            }
+            const confirmed = await showConfirm(`Are you sure you want to approve ${selected.length} questions?`, 'Bulk Approve', 'warning');
+            if (confirmed) {
+                selected.forEach(cb => {
+                    const row = cb.closest('tr');
+                    const id = parseInt(row.dataset.id);
+                    const question = sampleQuestions.find(q => q.id === id);
+                    if (question) question.status = 'approved';
+                });
+                renderTable();
+                updateStats();
+            }
+        });
+
+        // Export Data
+        document.getElementById('btnExportData').addEventListener('click', () => {
+            // Export logic here
+        });
+
+        // Global Search
+        document.getElementById('globalSearch').addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            // Implement search functionality here
+        });
+
+        // Initialize
+        renderTable();
+        updateStats();
+    </script>
+
+    <!-- Toast Notification -->
+    <div id="toastNotification" class="fixed top-20 right-6 z-[90] hidden animate-[fadeIn_0.3s_ease-out]">
+        <div id="toastContent"
+            class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 p-4 min-w-[320px] max-w-md">
+            <div class="flex items-start gap-3">
+                <div id="toastIcon" class="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center"></div>
+                <div class="flex-1">
+                    <h4 id="toastTitle" class="font-semibold text-gray-900 dark:text-white text-sm mb-1"></h4>
+                    <p id="toastMessage" class="text-xs text-gray-600 dark:text-gray-400"></p>
+                </div>
+                <button onclick="hideToast()"
+                    class="flex-shrink-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+                    <i class="fas fa-times text-sm"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Dialog -->
+    <div id="confirmDialog"
+        class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm hidden">
+        <div
+            class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 max-w-md w-full m-4 animate-[fadeIn_0.2s_ease-out]">
+            <div class="flex items-start gap-4 mb-4">
+                <div id="confirmIcon" class="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center">
+                </div>
+                <div class="flex-1">
+                    <h3 id="confirmTitle" class="text-lg font-bold text-gray-900 dark:text-white mb-2"></h3>
+                    <p id="confirmMessage" class="text-sm text-gray-600 dark:text-gray-400 whitespace-pre-line"></p>
+                </div>
+            </div>
+            <div class="flex gap-3 justify-end">
+                <button id="confirmCancelBtn"
+                    class="px-4 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium transition-colors">
+                    Cancel
+                </button>
+                <button id="confirmOkBtn"
+                    class="px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg text-sm font-medium transition-colors">
+                    Confirm
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="notifications.js"></script>
+</body>
+
+</html>

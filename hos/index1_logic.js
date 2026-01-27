@@ -89,8 +89,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
     problemTabs.forEach(tab => {
         tab.addEventListener('click', () => {
-            problemTabs.forEach(t => t.classList.remove('active', 'border-primary-500', 'text-primary-600'));
-            tab.classList.add('active', 'border-primary-500', 'text-primary-600');
+            // Reset ALL tabs to inactive state
+            problemTabs.forEach(t => {
+                // Remove active classes
+                t.classList.remove('active', 'border-primary-500', 'text-primary-600', 'dark:text-primary-400', 'dark:border-primary-400');
+                // Add inactive classes (gray text, transparent border)
+                t.classList.add('border-transparent', 'text-gray-500', 'dark:text-gray-400');
+            });
+
+            // Set clicked tab to active state
+            // Remove inactive classes
+            tab.classList.remove('border-transparent', 'text-gray-500', 'dark:text-gray-400');
+            // Add active classes
+            tab.classList.add('active', 'border-primary-500', 'text-primary-600', 'dark:text-primary-400', 'dark:border-primary-400');
 
             const target = tab.dataset.tab;
             problemTabContents.forEach(content => {
@@ -164,7 +175,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const problemId = problemRow?.dataset.problemId;
             const problemTitle = problemRow?.querySelector('.text-sm.font-medium')?.textContent.trim();
             const problemTags = problemRow?.querySelectorAll('.text-xs.text-gray-500')[0]?.textContent.trim();
-            const difficultyBadge = problemRow?.querySelector('span[class*="rounded-full"]');
+            const difficultyBadge = problemRow?.querySelector('.difficulty-badge') || problemRow?.querySelector('span[class*="rounded-full"]');
             const difficultyText = difficultyBadge?.textContent.trim();
 
             // Open edit modal and populate with current data
@@ -458,12 +469,12 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             // Update difficulty badge
-            const difficultyBadge = row.querySelector('span[class*="rounded-full"]');
+            const difficultyBadge = row.querySelector('.difficulty-badge') || row.querySelector('span[class*="rounded-full"]');
             if (difficultyBadge) {
                 const difficultyColors = {
-                    'Easy': 'px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
-                    'Medium': 'px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
-                    'Hard': 'px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
+                    'Easy': 'difficulty-badge px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
+                    'Medium': 'difficulty-badge px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
+                    'Hard': 'difficulty-badge px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
                 };
 
                 difficultyBadge.className = difficultyColors[difficulty] || difficultyColors['Medium'];
@@ -2200,10 +2211,10 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    const logoutBtn = document.getElementById('logoutBtn');
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', () => {
-            window.location.href = '../index.html';
+    const btnLogout = document.getElementById('btnLogout');
+    if (btnLogout) {
+        btnLogout.addEventListener('click', () => {
+            window.location.href = 'dashboard.html';
         });
     }
 
@@ -3615,261 +3626,165 @@ document.addEventListener("DOMContentLoaded", function () {
         if (btnCreateContest) setTimeout(() => btnCreateContest.click(), 100);
     }
 
-    // FAQ Toggle Function
-    window.toggleFaq = function (button) {
-        const content = button.nextElementSibling;
-        const icon = button.querySelector('.faq-icon');
+    // --- CONTEST ACTION VIEWS LOGIC ---
 
-        if (content.classList.contains('hidden')) {
-            content.classList.remove('hidden');
-            content.classList.add('block', 'animate-[fadeIn_0.2s_ease-out]');
-            if (icon) icon.style.transform = 'rotate(180deg)';
-        } else {
-            content.classList.add('hidden');
-            content.classList.remove('block', 'animate-[fadeIn_0.2s_ease-out]');
-            if (icon) icon.style.transform = 'rotate(0deg)';
+    // 1. View Details Modal
+    const detailsModal = document.getElementById('detailsModal');
+    const contestListUpcomingContainer = document.getElementById('contest-list-upcoming'); // Valid Variable Name
+
+    if (contestListUpcomingContainer) {
+        contestListUpcomingContainer.addEventListener('click', (e) => {
+            const btn = e.target.closest('.btn-view-details');
+            if (btn && detailsModal) {
+                const data = btn.dataset;
+
+                // Populate Modal
+                const title = document.getElementById('detFullTitle');
+                if (title) title.textContent = data.title || 'Contest Details';
+
+                const desc = document.getElementById('detDesc');
+                if (desc) desc.textContent = data.desc || 'No description available.';
+
+                const eligibility = document.getElementById('detEligibility');
+                if (eligibility) eligibility.textContent = data.eligibility || 'Open for all';
+
+                const deadlineFull = document.getElementById('detDeadlineFull');
+                const deadlineDate = new Date(data.deadline || Date.now());
+                if (deadlineFull) deadlineFull.textContent = deadlineDate.toLocaleString('en-US', {
+                    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                });
+
+                const detDay = document.getElementById('detDay');
+                if (detDay) detDay.textContent = deadlineDate.getDate();
+
+                const detMonth = document.getElementById('detMonth');
+                if (detMonth) detMonth.textContent = deadlineDate.toLocaleString('default', { month: 'short' });
+
+                // Start Countdown
+                startContestTimer(deadlineDate);
+
+                // Show Modal
+                detailsModal.classList.remove('hidden');
+                setTimeout(() => {
+                    const content = document.getElementById('detailsModalContent');
+                    if (content) {
+                        content.classList.remove('opacity-0', 'scale-95');
+                        content.classList.add('opacity-100', 'scale-100');
+                    }
+                }, 10);
+            }
+        });
+    }
+
+    // Close Details Modal
+    const btnModalClose = document.getElementById('btn-modal-close');
+    const btnModalEdit = document.getElementById('btn-modal-edit'); // Just closes for now or redirects
+
+    const closeDetailsModal = () => {
+        const content = document.getElementById('detailsModalContent');
+        if (content) {
+            content.classList.remove('opacity-100', 'scale-100');
+            content.classList.add('opacity-0', 'scale-95');
         }
+        setTimeout(() => {
+            if (detailsModal) detailsModal.classList.add('hidden');
+        }, 300);
     };
 
-    // --- STUDENT EXPORT LOGIC ---
-    const btnExportStudent = document.getElementById('btn-export-students-v2');
-    const exportStudentModal = document.getElementById('exportStudentModal');
-    const closeExportStudentModalBtn = document.getElementById('closeExportStudentModal');
-    const studentColumnSelectionList = document.getElementById('studentColumnSelectionList');
-    const selectAllStudentColumnsBtn = document.getElementById('selectAllStudentColumns');
-    const exportStudentSearchInput = document.getElementById('exportStudentSearchInput');
-    const exportStudentFilterYear = document.getElementById('exportStudentFilterYear');
-    const exportStudentFilterSection = document.getElementById('exportStudentFilterSection');
-    const exportStudentFilterStatus = document.getElementById('exportStudentFilterStatus');
-    const exportStudentSortSelect = document.getElementById('exportStudentSortSelect');
-    const studentPreviewCount = document.getElementById('studentPreviewCount');
-    const btnFinalDownloadStudentPDF = document.getElementById('btnFinalDownloadStudentPDF');
-    const btnFinalDownloadStudentExcel = document.getElementById('btnFinalDownloadStudentExcel');
+    if (btnModalClose) btnModalClose.addEventListener('click', closeDetailsModal);
+    if (btnModalEdit) btnModalEdit.addEventListener('click', () => {
+        alert('Edit Contest feature coming soon!');
+        closeDetailsModal();
+    });
 
-    // State for Student Export
-    let allStudentData = [];
-    let displayedStudentData = [];
+    if (detailsModal) {
+        detailsModal.addEventListener('click', (e) => {
+            if (e.target === detailsModal) closeDetailsModal();
+        });
+    }
 
-    // Column Definitions for Students
-    const studentExportColumns = [
-        { id: 'student_id', label: 'ID', selected: true, mock: false },
-        { id: 'name', label: 'Name', selected: true, mock: false },
-        { id: 'email', label: 'Email', selected: true, mock: false },
-        { id: 'section', label: 'Section', selected: true, mock: false },
-        { id: 'year', label: 'Year', selected: true, mock: false },
-        { id: 'problems_solved', label: 'Problems Solved', selected: true, mock: false },
-        { id: 'global_rank', label: 'Global Rank', selected: true, mock: false },
-        { id: 'status', label: 'Status', selected: true, mock: false },
-        // Extra mock fields if needed
-        { id: 'attendance', label: 'Attendance', selected: false, mock: true },
-        { id: 'contests_participated', label: 'Contests', selected: false, mock: true },
-        { id: 'cgpa', label: 'CGPA', selected: false, mock: true }
-    ];
+    // Timer Logic
+    let contestTimerInterval;
+    function startContestTimer(deadline) {
+        if (contestTimerInterval) clearInterval(contestTimerInterval);
 
-    if (exportStudentModal) {
-        // Function to open modal
-        const openStudentExportModal = () => {
-            scrapeAndMockStudentData();
-            renderStudentColumnSelection();
-            populateStudentFilters();
-            applyStudentFiltersAndRender();
-            exportStudentModal.classList.remove('hidden');
+        const updateTimer = () => {
+            const now = new Date().getTime();
+            const distance = deadline.getTime() - now;
+
+            const timerDisplay = document.getElementById('timerDisplay');
+            if (!timerDisplay) return;
+
+            if (distance < 0) {
+                clearInterval(contestTimerInterval);
+                timerDisplay.textContent = "REGISTRATION CLOSED";
+                timerDisplay.classList.add('text-red-500');
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            timerDisplay.textContent = `${days}d : ${hours}h : ${minutes}m : ${seconds}s`;
+            timerDisplay.classList.remove('text-red-500');
         };
 
-        if (btnExportStudent) {
-            btnExportStudent.addEventListener('click', openStudentExportModal);
-        }
+        updateTimer();
+        contestTimerInterval = setInterval(updateTimer, 1000);
+    }
 
-        if (closeExportStudentModalBtn) {
-            closeExportStudentModalBtn.addEventListener('click', () => exportStudentModal.classList.add('hidden'));
-        }
 
-        // Close on background click
-        exportStudentModal.addEventListener('click', (e) => {
-            if (e.target === exportStudentModal) exportStudentModal.classList.add('hidden');
-        });
+    // 2. Leaderboard Modal
+    const leaderboardModal = document.getElementById('leaderboardModal');
+    const closeLeaderboardBtn = document.getElementById('closeLeaderboardBtn');
 
-        // Data Gathering
-        function scrapeAndMockStudentData() {
-            const table = document.getElementById('studentsTable');
-            if (table) {
-                const rows = Array.from(table.querySelectorAll('tbody tr'));
-                allStudentData = rows.map((row) => {
-                    // Extract data from row or data attributes
-                    // Use data attributes where available for cleaner data
-                    const ds = row.dataset;
-
-                    // Fallback to cell content if data attributes missing
-                    const cells = row.querySelectorAll('td');
-                    const statusText = cells[5]?.textContent.trim().replace('Active', '').replace('Inactive', '').trim() || 'Active'; // Simple cleanup
-
-                    return {
-                        student_id: ds.id || cells[1]?.textContent.trim(),
-                        name: ds.name || cells[0]?.querySelector('.font-medium')?.textContent.trim(),
-                        email: ds.email || cells[0]?.querySelector('.text-xs')?.textContent.trim(),
-                        section: ds.section || (Math.random() > 0.5 ? 'A' : 'B'), // Mock if missing
-                        year: ds.year || '2nd Year',
-                        problems_solved: ds.solved || cells[3]?.textContent.trim(),
-                        global_rank: ds.rank || cells[4]?.textContent.trim(),
-                        status: statusText || 'Active', // Needs refinement based on badge
-
-                        // Mocks
-                        attendance: Math.floor(70 + Math.random() * 30) + '%',
-                        contests_participated: Math.floor(Math.random() * 20),
-                        cgpa: (6 + Math.random() * 4).toFixed(2)
-                    };
-                });
-            } else {
-                // Mock data if table empty or not found (fallback)
-                allStudentData = Array.from({ length: 20 }).map((_, i) => ({
-                    student_id: `2023${1000 + i}`,
-                    name: `Student ${i + 1}`,
-                    email: `student${i + 1}@example.com`,
-                    section: i % 2 === 0 ? 'A' : 'B',
-                    year: ['1st Year', '2nd Year', '3rd Year', '4th Year'][i % 4],
-                    problems_solved: Math.floor(Math.random() * 500),
-                    global_rank: Math.floor(Math.random() * 1000),
-                    status: i % 5 === 0 ? 'Inactive' : 'Active',
-                    attendance: '85%',
-                    contests_participated: 10,
-                    cgpa: '8.5'
-                }));
+    // Delegation for upcoming contests list
+    if (contestListUpcomingContainer) {
+        contestListUpcomingContainer.addEventListener('click', (e) => {
+            const btn = e.target.closest('.btn-view-leaderboard');
+            if (btn && leaderboardModal) {
+                leaderboardModal.classList.remove('hidden');
             }
-        }
+        });
+    }
 
-        // Render Columns
-        function renderStudentColumnSelection() {
-            studentColumnSelectionList.innerHTML = '';
-            studentExportColumns.forEach(col => {
-                const label = document.createElement('label');
-                label.className = "flex items-center space-x-3 cursor-pointer group p-2 hover:bg-gray-100 dark:hover:bg-gray-700/50 rounded-lg transition-colors";
-                label.innerHTML = `
-                    <input type="checkbox" data-col="${col.id}" ${col.selected ? 'checked' : ''} 
-                        class="rounded border-gray-300 text-primary-600 focus:ring-primary-500 transition-all">
-                    <span class="text-sm text-gray-600 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white font-medium">${col.label}</span>
-                `;
-
-                label.querySelector('input').addEventListener('change', (e) => {
-                    col.selected = e.target.checked;
-                    applyStudentFiltersAndRender();
-                });
-
-                studentColumnSelectionList.appendChild(label);
-            });
-        }
-
-        if (selectAllStudentColumnsBtn) {
-            selectAllStudentColumnsBtn.addEventListener('click', () => {
-                const allChecked = studentExportColumns.every(c => c.selected);
-                studentExportColumns.forEach(c => c.selected = !allChecked);
-                renderStudentColumnSelection();
-                applyStudentFiltersAndRender();
-            });
-        }
-
-        // Populate Filters
-        function populateStudentFilters() {
-            const fillSelect = (select, values, labelPrefix) => {
-                const current = select.value;
-                select.innerHTML = `<option value="all">${labelPrefix}: All</option>`;
-                values.forEach(v => {
-                    select.innerHTML += `<option value="${v}">${v}</option>`;
-                });
-                if (values.includes(current)) select.value = current;
-            };
-
-            const years = [...new Set(allStudentData.map(d => d.year))].sort();
-            const sections = [...new Set(allStudentData.map(d => d.section))].sort();
-
-            fillSelect(exportStudentFilterYear, years, 'Year');
-            fillSelect(exportStudentFilterSection, sections, 'Sec');
-        }
-
-        // Apply Filters & Render
-        function applyStudentFiltersAndRender() {
-            const term = exportStudentSearchInput.value.toLowerCase();
-            const year = exportStudentFilterYear.value;
-            const section = exportStudentFilterSection.value;
-            const status = exportStudentFilterStatus.value;
-            const sort = exportStudentSortSelect.value;
-
-            // Filter
-            let filtered = allStudentData.filter(item => {
-                const matchSearch = item.name.toLowerCase().includes(term) || String(item.student_id).includes(term);
-                const matchYear = year === 'all' || item.year === year;
-                const matchSec = section === 'all' || item.section === section;
-                const matchStatus = status === 'all' || (item.status && item.status.includes(status)); // Robust status check
-                return matchSearch && matchYear && matchSec && matchStatus;
-            });
-
-            // Sort
-            filtered.sort((a, b) => {
-                if (sort === 'name_asc') return a.name.localeCompare(b.name);
-                if (sort === 'name_desc') return b.name.localeCompare(a.name);
-                if (sort === 'rank_asc') return parseInt(a.global_rank) - parseInt(b.global_rank);
-                if (sort === 'solved_desc') return parseInt(b.problems_solved) - parseInt(a.problems_solved);
-                return 0;
-            });
-
-            displayedStudentData = filtered;
-            renderStudentPreviewTable(filtered);
-            studentPreviewCount.textContent = `Showing ${filtered.length} records`;
-        }
-
-        // Listeners for Filters
-        [exportStudentSearchInput, exportStudentFilterYear, exportStudentFilterSection, exportStudentFilterStatus, exportStudentSortSelect]
-            .forEach(el => {
-                if (el) el.addEventListener(el.tagName === 'INPUT' ? 'input' : 'change', applyStudentFiltersAndRender);
-            });
+    if (closeLeaderboardBtn) {
+        closeLeaderboardBtn.addEventListener('click', () => {
+            leaderboardModal.classList.add('hidden');
+        });
+    }
+    if (leaderboardModal) {
+        leaderboardModal.addEventListener('click', (e) => {
+            if (e.target === leaderboardModal) leaderboardModal.classList.add('hidden');
+        });
+    }
 
 
-        // Render Table
-        function renderStudentPreviewTable(data) {
-            const thead = document.getElementById('exportStudentTableHeadRow');
-            const tbody = document.getElementById('exportStudentTableBody');
+    // 3. Results Modal
+    const resultsModal = document.getElementById('resultsModal');
+    const closeResultsBtn = document.getElementById('closeResultsBtn');
+    const contestListPastContainer = document.getElementById('contest-list-past');
 
-            // Headers
-            thead.innerHTML = '';
-            studentExportColumns.forEach(col => {
-                if (!col.selected) return;
-                const th = document.createElement('th');
-                th.className = "px-4 py-2 bg-gray-50 dark:bg-gray-700/50 whitespace-nowrap";
-                th.textContent = col.label;
-                thead.appendChild(th);
-            });
+    if (contestListPastContainer) {
+        contestListPastContainer.addEventListener('click', (e) => {
+            const btn = e.target.closest('.btn-view-results');
+            if (btn && resultsModal) {
+                resultsModal.classList.remove('hidden');
+            }
+        });
+    }
 
-            // Rows (Limit 50 for preview)
-            tbody.innerHTML = '';
-            data.slice(0, 50).forEach(item => {
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-gray-50 dark:hover:bg-gray-700/50";
-
-                studentExportColumns.forEach(col => {
-                    if (!col.selected) return;
-                    const td = document.createElement('td');
-                    td.className = "px-4 py-2 border-b border-gray-100 dark:border-gray-700";
-                    td.textContent = item[col.id] || '-';
-                    tr.appendChild(td);
-                });
-                tbody.appendChild(tr);
-            });
-        }
-
-        // Mock Download Actions
-        if (btnFinalDownloadStudentPDF) {
-            btnFinalDownloadStudentPDF.addEventListener('click', () => {
-                // In a real app, generate PDF here
-                alert(`Preparing PDF Report for ${displayedStudentData.length} students...\n(Download Simulation)`);
-                exportStudentModal.classList.add('hidden');
-            });
-        }
-        if (btnFinalDownloadStudentExcel) {
-            btnFinalDownloadStudentExcel.addEventListener('click', () => {
-                // In a real app, generate Excel here
-                alert(`Preparing Excel Sheet for ${displayedStudentData.length} students...\n(Download Simulation)`);
-                exportStudentModal.classList.add('hidden');
-            });
-        }
+    if (closeResultsBtn) {
+        closeResultsBtn.addEventListener('click', () => {
+            resultsModal.classList.add('hidden');
+        });
+    }
+    if (resultsModal) {
+        resultsModal.addEventListener('click', (e) => {
+            if (e.target === resultsModal) resultsModal.classList.add('hidden');
+        });
     }
 
 });

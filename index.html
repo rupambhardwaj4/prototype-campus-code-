@@ -893,7 +893,8 @@
             "individual@gmail.com": { password: "USER@1234", role: "Student" },
             "faculty@edu.com": { password: "USER@1234", role: "Faculty" },
             "hod@edu.com": { password: "USER@1234", role: "HOD" },
-            "admin@edu.com": { password: "USER@1234", role: "Admin" }
+            "admin@edu.com": { password: "USER@1234", role: "Admin" },
+            "hos@edu.com":{ password: "USER@1234", role: "hos" }
         };
 
         function executeLogin(event) {
@@ -912,6 +913,7 @@
                         case "Faculty": window.location.href = "faculty/dashboard.html"; break;
                         case "HOD": window.location.href = "hod/dashboard.html"; break;
                         case "Admin": window.location.href = "admin/dashboard.html"; break;
+                         case "hos": window.location.href = "hos/dashboard.html"; break;
                         default: alert("Role Error");
                     }
                 } else {
