@@ -483,6 +483,171 @@
                                             class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none">
                                     </div>
                                 </div>
+
+                                <!-- Target Audience Section -->
+                                <div class="mt-6">
+                                    <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Target
+                                        Audience</h4>
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                        <!-- Target Years -->
+                                        <div class="relative group">
+                                            <label
+                                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Target
+                                                Year(s)</label>
+                                            <div class="relative">
+                                                <button type="button" id="btn-dropdown-year"
+                                                    class="w-full text-left rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none flex justify-between items-center transition-all"
+                                                    onclick="toggleDropdown('dropdown-year', 'icon-year'); event.stopPropagation();">
+                                                    <span id="text-dropdown-year" class="truncate text-gray-500">Select
+                                                        Years...</span>
+                                                    <i id="icon-year"
+                                                        class="fas fa-chevron-down text-gray-400 transition-transform duration-200"></i>
+                                                </button>
+                                                <div id="dropdown-year"
+                                                    class="hidden absolute top-full left-0 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50 p-2 max-h-48 overflow-y-auto">
+                                                    <label
+                                                        class="flex items-center p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded cursor-pointer transition-colors">
+                                                        <input type="checkbox"
+                                                            onchange="updateDropdownText('dropdown-year', 'text-dropdown-year', 'Years')"
+                                                            class="rounded text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 mr-3 w-4 h-4"
+                                                            value="1st Year">
+                                                        <span class="text-sm text-gray-700 dark:text-gray-200">1st
+                                                            Year</span>
+                                                    </label>
+                                                    <label
+                                                        class="flex items-center p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded cursor-pointer transition-colors">
+                                                        <input type="checkbox"
+                                                            onchange="updateDropdownText('dropdown-year', 'text-dropdown-year', 'Years')"
+                                                            class="rounded text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 mr-3 w-4 h-4"
+                                                            value="2nd Year">
+                                                        <span class="text-sm text-gray-700 dark:text-gray-200">2nd
+                                                            Year</span>
+                                                    </label>
+                                                    <label
+                                                        class="flex items-center p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded cursor-pointer transition-colors">
+                                                        <input type="checkbox"
+                                                            onchange="updateDropdownText('dropdown-year', 'text-dropdown-year', 'Years')"
+                                                            class="rounded text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 mr-3 w-4 h-4"
+                                                            value="3rd Year">
+                                                        <span class="text-sm text-gray-700 dark:text-gray-200">3rd
+                                                            Year</span>
+                                                    </label>
+                                                    <label
+                                                        class="flex items-center p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded cursor-pointer transition-colors">
+                                                        <input type="checkbox"
+                                                            onchange="updateDropdownText('dropdown-year', 'text-dropdown-year', 'Years')"
+                                                            class="rounded text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 mr-3 w-4 h-4"
+                                                            value="4th Year">
+                                                        <span class="text-sm text-gray-700 dark:text-gray-200">4th
+                                                            Year</span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Target Sections -->
+                                        <div class="relative group">
+                                            <label
+                                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Target
+                                                Section(s)</label>
+                                            <div class="relative">
+                                                <button type="button" id="btn-dropdown-section"
+                                                    class="w-full text-left rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none flex justify-between items-center transition-all"
+                                                    onclick="toggleDropdown('dropdown-section', 'icon-section'); event.stopPropagation();">
+                                                    <span id="text-dropdown-section"
+                                                        class="truncate text-gray-500">Select Sections...</span>
+                                                    <i id="icon-section"
+                                                        class="fas fa-chevron-down text-gray-400 transition-transform duration-200"></i>
+                                                </button>
+                                                <div id="dropdown-section"
+                                                    class="hidden absolute top-full left-0 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50 p-2 max-h-48 overflow-y-auto">
+                                                    <label
+                                                        class="flex items-center p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded cursor-pointer transition-colors">
+                                                        <input type="checkbox"
+                                                            onchange="updateDropdownText('dropdown-section', 'text-dropdown-section', 'Sections')"
+                                                            class="rounded text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 mr-3 w-4 h-4"
+                                                            value="A">
+                                                        <span class="text-sm text-gray-700 dark:text-gray-200">Section
+                                                            A</span>
+                                                    </label>
+                                                    <label
+                                                        class="flex items-center p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded cursor-pointer transition-colors">
+                                                        <input type="checkbox"
+                                                            onchange="updateDropdownText('dropdown-section', 'text-dropdown-section', 'Sections')"
+                                                            class="rounded text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 mr-3 w-4 h-4"
+                                                            value="B">
+                                                        <span class="text-sm text-gray-700 dark:text-gray-200">Section
+                                                            B</span>
+                                                    </label>
+                                                    <label
+                                                        class="flex items-center p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded cursor-pointer transition-colors">
+                                                        <input type="checkbox"
+                                                            onchange="updateDropdownText('dropdown-section', 'text-dropdown-section', 'Sections')"
+                                                            class="rounded text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 mr-3 w-4 h-4"
+                                                            value="C">
+                                                        <span class="text-sm text-gray-700 dark:text-gray-200">Section
+                                                            C</span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Target Subjects -->
+                                        <div class="relative group">
+                                            <label
+                                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Subject(s)</label>
+                                            <div class="relative">
+                                                <button type="button" id="btn-dropdown-subject"
+                                                    class="w-full text-left rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none flex justify-between items-center transition-all"
+                                                    onclick="toggleDropdown('dropdown-subject', 'icon-subject'); event.stopPropagation();">
+                                                    <span id="text-dropdown-subject"
+                                                        class="truncate text-gray-500">Select Subjects...</span>
+                                                    <i id="icon-subject"
+                                                        class="fas fa-chevron-down text-gray-400 transition-transform duration-200"></i>
+                                                </button>
+                                                <div id="dropdown-subject"
+                                                    class="hidden absolute top-full left-0 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50 p-2 max-h-48 overflow-y-auto">
+                                                    <label
+                                                        class="flex items-center p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded cursor-pointer transition-colors">
+                                                        <input type="checkbox"
+                                                            onchange="updateDropdownText('dropdown-subject', 'text-dropdown-subject', 'Subjects')"
+                                                            class="rounded text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 mr-3 w-4 h-4"
+                                                            value="DSA">
+                                                        <span
+                                                            class="text-sm text-gray-700 dark:text-gray-200">DSA</span>
+                                                    </label>
+                                                    <label
+                                                        class="flex items-center p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded cursor-pointer transition-colors">
+                                                        <input type="checkbox"
+                                                            onchange="updateDropdownText('dropdown-subject', 'text-dropdown-subject', 'Subjects')"
+                                                            class="rounded text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 mr-3 w-4 h-4"
+                                                            value="OOPs">
+                                                        <span
+                                                            class="text-sm text-gray-700 dark:text-gray-200">OOPs</span>
+                                                    </label>
+                                                    <label
+                                                        class="flex items-center p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded cursor-pointer transition-colors">
+                                                        <input type="checkbox"
+                                                            onchange="updateDropdownText('dropdown-subject', 'text-dropdown-subject', 'Subjects')"
+                                                            class="rounded text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 mr-3 w-4 h-4"
+                                                            value="Web Development">
+                                                        <span class="text-sm text-gray-700 dark:text-gray-200">Web
+                                                            Development</span>
+                                                    </label>
+                                                    <label
+                                                        class="flex items-center p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded cursor-pointer transition-colors">
+                                                        <input type="checkbox"
+                                                            onchange="updateDropdownText('dropdown-subject', 'text-dropdown-subject', 'Subjects')"
+                                                            class="rounded text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 mr-3 w-4 h-4"
+                                                            value="DBMS">
+                                                        <span
+                                                            class="text-sm text-gray-700 dark:text-gray-200">DBMS</span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
                             <div>
@@ -1474,6 +1639,70 @@
                         : `Read More <i class="fas fa-chevron-down text-[10px]"></i>`;
                 });
             }
+
+            // Custom Dropdown Logic
+            window.toggleDropdown = function (id, iconId) {
+                const dropdown = document.getElementById(id);
+                const icon = document.getElementById(iconId);
+                const allDropdowns = ['dropdown-year', 'dropdown-section', 'dropdown-subject'];
+                const allIcons = ['icon-year', 'icon-section', 'icon-subject'];
+
+                // Close others
+                allDropdowns.forEach((d, index) => {
+                    if (d !== id) {
+                        const el = document.getElementById(d);
+                        if (el && !el.classList.contains('hidden')) {
+                            el.classList.add('hidden');
+                            document.getElementById(allIcons[index]).classList.remove('rotate-180');
+                        }
+                    }
+                });
+
+                if (dropdown) dropdown.classList.toggle('hidden');
+                if (icon) icon.classList.toggle('rotate-180');
+            };
+
+            window.updateDropdownText = function (dropdownId, textId, defaultText) {
+                const container = document.getElementById(dropdownId);
+                const checkboxes = container.querySelectorAll('input[type="checkbox"]:checked');
+                const textSpan = document.getElementById(textId);
+
+                if (checkboxes.length > 0) {
+                    if (checkboxes.length <= 2) {
+                        const values = Array.from(checkboxes).map(cb => cb.value).join(', ');
+                        textSpan.textContent = values;
+                        textSpan.classList.add('text-gray-900', 'dark:text-white');
+                        textSpan.classList.remove('text-gray-500');
+                    } else {
+                        textSpan.textContent = `${checkboxes.length} ${defaultText} Selected`;
+                        textSpan.classList.add('text-gray-900', 'dark:text-white');
+                        textSpan.classList.remove('text-gray-500');
+                    }
+                } else {
+                    textSpan.textContent = `Select ${defaultText}...`;
+                    textSpan.classList.remove('text-gray-900', 'dark:text-white');
+                    textSpan.classList.add('text-gray-500');
+                }
+            };
+
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', function (event) {
+                const isDropdownButton = event.target.closest('button[id^="btn-dropdown"]');
+                const isDropdownContent = event.target.closest('div[id^="dropdown-"]');
+
+                if (!isDropdownButton && !isDropdownContent) {
+                    ['dropdown-year', 'dropdown-section', 'dropdown-subject'].forEach((id, index) => {
+                        const el = document.getElementById(id);
+                        if (el && !el.classList.contains('hidden')) {
+                            el.classList.add('hidden');
+                            const iconId = ['icon-year', 'icon-section', 'icon-subject'][index];
+                            const icon = document.getElementById(iconId);
+                            if (icon) icon.classList.remove('rotate-180');
+                        }
+                    });
+                }
+            });
+
         });
     </script>
 
